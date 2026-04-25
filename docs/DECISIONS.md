@@ -228,3 +228,18 @@ Format: decision → rationale → alternatives considered.
 
 - Option B (integrate codebase-memory-mcp): faster time to market but runtime dependency, MCP IPC overhead, and loss of graph/FEAT integration
 - LSP-based approach: more accurate type resolution but requires language server per language — too heavy for MVP
+
+---
+
+### D017 — en-US as the only language for all project artifacts
+
+**Decision:** All code, comments, documentation, commit messages, error messages, and CLI output must be written in en-US.
+
+**Rationale:** Mnemo is an open source product targeting an international developer audience. Mixed-language projects create friction for contributors, make automated tooling less reliable, and reduce discoverability. en-US is the de-facto standard for developer tooling globally.
+
+**Scope:** Source code, comments, all docs (README, PRD, ARCHITECTURE, DECISIONS, STACK, TASKS, CLAUDE.md), CLI help text, error messages, commit messages.
+
+**Alternatives considered:**
+
+- Portuguese for internal docs only: creates two-tier documentation that diverges over time
+- No enforcement: leads to gradual language mixing as the project grows

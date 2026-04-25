@@ -2,11 +2,11 @@
 
 ## Runtime
 
-| Item          | Versão    | Notas                                            |
+| Item          | Version   | Notes                                            |
 | ------------- | --------- | ------------------------------------------------ |
-| Node.js       | 20+ (LTS) | Mínimo para ESM nativo e worker_threads estável  |
-| TypeScript    | 5.x       | strict mode habilitado                           |
-| Module system | ESM       | `"type": "module"` no package.json; sem CommonJS |
+| Node.js       | 20+ (LTS) | Minimum for stable native ESM and worker_threads |
+| TypeScript    | 5.x       | strict mode enabled                              |
+| Module system | ESM       | `"type": "module"` in package.json; no CommonJS  |
 
 ---
 
@@ -14,10 +14,9 @@
 
 **Commander.js** (`commander`)
 
-Escolhido por: API simples, TypeScript nativo, mínimo boilerplate, sem opinião sobre estrutura de projeto.
+Chosen for: simple API, native TypeScript support, minimal boilerplate, unopinionated about project structure.
 
 ```typescript
-// Padrão de uso
 import { Command } from 'commander'
 const program = new Command()
 program
@@ -26,7 +25,7 @@ program
   .action(async (name) => { ... })
 ```
 
-Alternativas descartadas: Yargs (API mais verbosa), Oclif (opinionado demais para MVP).
+Discarded alternatives: Yargs (more verbose API), Oclif (too opinionated for MVP).
 
 ---
 
@@ -34,7 +33,7 @@ Alternativas descartadas: Yargs (API mais verbosa), Oclif (opinionado demais par
 
 **Vitest**
 
-Escolhido por: ESM nativo, TypeScript-first sem config extra, compatível com API do Jest, watch mode rápido.
+Chosen for: native ESM, TypeScript-first with no extra config, Jest-compatible API, fast watch mode.
 
 ```bash
 npm run test          # run all
@@ -42,7 +41,7 @@ npm run test:watch    # watch mode
 npm run test:coverage # coverage report
 ```
 
-Convenção: arquivos de teste ao lado do módulo (`store.test.ts` junto de `store.ts`).
+Convention: test files live next to the module they test (`store.test.ts` next to `store.ts`).
 
 ---
 
@@ -50,14 +49,14 @@ Convenção: arquivos de teste ao lado do módulo (`store.test.ts` junto de `sto
 
 **Biome** (`@biomejs/biome`)
 
-Único tool para lint + format. Substitui ESLint + Prettier com configuração mínima.
+Single tool for lint + format. Replaces ESLint + Prettier with minimal configuration.
 
 ```bash
 npm run lint           # check
 npm run lint:fix       # auto-fix
 ```
 
-Configuração base (`biome.json`):
+Base config (`biome.json`):
 
 ```json
 {
@@ -69,31 +68,31 @@ Configuração base (`biome.json`):
 
 ---
 
-## Dependências principais
+## Main dependencies
 
-### Produção
+### Production
 
-| Pacote            | Versão | Uso                                                                         |
-| ----------------- | ------ | --------------------------------------------------------------------------- |
-| `commander`       | ^12    | CLI framework                                                               |
-| `better-sqlite3`  | ^9     | SQLite síncrono (core store)                                                |
-| `@node-rs/xxhash` | ^2     | XXH3 hashing para freshness (bindings nativas, ~10x mais rápido que SHA256) |
-| `chokidar`        | ^4     | File watcher (ESM nativo no v4)                                             |
-| `simple-git`      | ^3     | Git operations (branch name, remote URL, diff)                              |
+| Package           | Version | Use                                                                          |
+| ----------------- | ------- | ---------------------------------------------------------------------------- |
+| `commander`       | ^12     | CLI framework                                                                |
+| `better-sqlite3`  | ^9      | Synchronous SQLite (core store)                                              |
+| `@node-rs/xxhash` | ^2      | XXH3 hashing for freshness checks (native bindings, ~10x faster than SHA256) |
+| `chokidar`        | ^4      | File watcher (native ESM in v4)                                              |
+| `simple-git`      | ^3      | Git operations (branch name, remote URL, diff)                               |
 
-### Desenvolvimento
+### Development
 
-| Pacote                  | Versão | Uso               |
-| ----------------------- | ------ | ----------------- |
-| `typescript`            | ^5     | Compilador        |
-| `vitest`                | ^2     | Test runner       |
-| `@biomejs/biome`        | ^1     | Lint + format     |
-| `@types/better-sqlite3` | ^7     | Tipos para SQLite |
-| `@types/node`           | ^20    | Tipos Node.js     |
+| Package                 | Version | Use           |
+| ----------------------- | ------- | ------------- |
+| `typescript`            | ^5      | Compiler      |
+| `vitest`                | ^2      | Test runner   |
+| `@biomejs/biome`        | ^1      | Lint + format |
+| `@types/better-sqlite3` | ^7      | SQLite types  |
+| `@types/node`           | ^20     | Node.js types |
 
-### Phase 2+ (não instalar agora)
+### Phase 2+ (do not install now)
 
-| Pacote                      | Uso futuro                        |
+| Package                     | Future use                        |
 | --------------------------- | --------------------------------- |
 | `sqlite-vec`                | Vector store (Layer 1)            |
 | `onnxruntime-node`          | Bundled ONNX embeddings (Layer 1) |
@@ -158,12 +157,12 @@ Configuração base (`biome.json`):
 
 ---
 
-## Estrutura de arquivos
+## File structure
 
 ```
 mnemo/
   src/
-    cli.ts                    # entry: registra Program e todos os commands
+    cli.ts                    # entry point: registers Program and all commands
     commands/
       init.ts                 # mnemo init
       feat.ts                 # mnemo feat *
@@ -174,20 +173,20 @@ mnemo/
       graph.ts                # mnemo graph (Phase 3+)
     core/
       feat/
-        store.ts              # FeatStore: leitura/escrita de events.jsonl
+        store.ts              # FeatStore: events.jsonl read/write
         renderer.ts           # renderContext(): events → context.md string
         active.ts             # getActiveFeat(), setActiveFeat()
         types.ts              # FeatureEvent, FeatureContext, LinkedFile, etc.
       project.ts              # resolveProjectId(): git remote → xxh3 hash
-      paths.ts                # getPaths(): retorna todos os caminhos ~/.mnemo/
+      paths.ts                # getPaths(): returns all ~/.mnemo/ paths
       error.ts                # MnemoError, handleError(), exit codes
     integrations/
       agents/
-        claude.ts             # gera CLAUDE.md snippet + instala skill
-        codex.ts              # gera AGENTS.md
-        copilot.ts            # gera .github/copilot-instructions.md
-        cursor.ts             # gera .cursorrules
-    types.ts                  # tipos exportados publicamente
+        claude.ts             # generates CLAUDE.md snippet + installs skill
+        codex.ts              # generates AGENTS.md
+        copilot.ts            # generates .github/copilot-instructions.md
+        cursor.ts             # generates .cursorrules
+    types.ts                  # publicly exported types
   tests/
     core/
       feat/
@@ -199,7 +198,7 @@ mnemo/
     commands/
       feat.test.ts
       init.test.ts
-  dist/                       # output do build (gitignored)
+  dist/                       # build output (gitignored)
   docs/
   package.json
   tsconfig.json
@@ -211,20 +210,20 @@ mnemo/
 
 ---
 
-## Convenções de código
+## Code conventions
 
 ### Imports
 
 ```typescript
-// Sempre com extensão .js (NodeNext module resolution)
+// Always use .js extension (NodeNext module resolution)
 import { FeatStore } from './core/feat/store.js';
 import type { FeatureEvent } from './core/feat/types.js';
 ```
 
-### Erros
+### Errors
 
 ```typescript
-// Nunca process.exit() direto — usar MnemoError
+// Never call process.exit() directly — throw MnemoError
 import { MnemoError } from './core/error.js';
 throw new MnemoError('Project not initialized. Run `mnemo init` first.', 1);
 ```
@@ -232,21 +231,21 @@ throw new MnemoError('Project not initialized. Run `mnemo init` first.', 1);
 ### Async
 
 ```typescript
-// Top-level await permitido em ESM
-// Commander actions devem ser async e usar try/catch
+// Top-level await is allowed in ESM
+// Commander actions must be async and use try/catch
 .action(async (name, opts) => {
   try {
-    await doSomething()
+    await doSomething();
   } catch (e) {
-    handleError(e)
+    handleError(e);
   }
 })
 ```
 
-### Tipos
+### Types
 
 ```typescript
-// Preferir types sobre interfaces para data shapes
+// Prefer type aliases over interfaces for data shapes
 type FeatureEvent = {
 	ts: number;
 	type: 'decision' | 'blocker' | 'file_linked' | 'status' | 'note';

@@ -1,79 +1,103 @@
-# Mnemo — Copilot Instructions
+# Mnemo — Agent Context
 
-## Project
+## What is this
 
-Mnemo (`mnemo`) is a CLI tool that gives AI coding agents persistent memory of a codebase. It solves the cold-start problem: agents stop rediscovering the project from scratch each session.
+Mnemo is a CLI tool (`mnemo`) that gives AI coding agents persistent memory of a codebase. It solves the cold-start problem: agents stop rediscovering the project from scratch each session.
 
-Three layers (only Layer 3 is in scope now):
+Three layers:
 
-- **Layer 1** — Semantic index (embeddings, Phase 2)
-- **Layer 2** — Structural graph via Tree-sitter (Phase 3)
-- **Layer 3** — FEAT Context Cache: per-feature files, decisions, blockers, status (Phase 1 — current)
+1. **Semantic Index** — local embeddings for natural language queries
+2. **Structural Graph** — dependency graph via Tree-sitter
+3. **FEAT Context Cache** — per-feature context: files, decisions, blockers, status (the differentiator)
 
 ## Current phase
 
-**Phase 1: FEAT Context Cache only.**
+**Phase 1 in progress: FEAT Context Cache**
 
-Do not implement anything related to embeddings, vector stores, or Tree-sitter parsing. That is Phase 2 and 3.
+Exclusive focus on Layer 3. Layers 1 and 2 are Phase 2 and 3. Do not implement anything outside Phase 1 scope without explicit approval.
 
-Read `docs/TASKS.md` to find what to work on. Mark tasks `[x]` when done.
-
-## Stack
-
-- **Runtime**: Node.js 20+, TypeScript 5, ESM (`"type": "module"`)
-- **CLI**: Commander.js
-- **Database**: better-sqlite3 (synchronous)
-- **Hashing**: @node-rs/xxhash (XXH3, not SHA256)
-- **Tests**: Vitest
-- **Lint/Format**: Biome
-
-Full spec: `docs/STACK.md`
+See tasks: `docs/TASKS.md`
 
 ## Project structure
 
 ```
-src/
-  cli.ts                  # entry point
-  commands/               # CLI command handlers
-    feat.ts, init.ts, install.ts, config.ts
-  core/
-    feat/
-      store.ts            # events.jsonl read/write
-      renderer.ts         # context.md generator
-      active.ts           # active feat tracking
-      types.ts            # FeatureEvent, FeatureContext, etc.
-    project.ts            # project identity (XXH3 of git remote)
-    paths.ts              # ~/.mnemo/ directory structure
-    error.ts              # MnemoError, handleError()
-  integrations/agents/    # mnemo install <agent> generators
+mnemo/
+  src/
+    cli.ts                  # entry point — registers all commands
+    commands/               # CLI command handlers (one file per group)
+      feat.ts
+      install.ts
+      init.ts
+      config.ts
+    core/
+      feat/
+        store.ts            # events.jsonl read/write
+        renderer.ts         # generates context.md from events
+        active.ts           # tracks active feat
+      project.ts            # project identity (XXH3 hash of git remote)
+      paths.ts              # ~/.mnemo/ directory structure
+    types.ts                # shared types (FeatureEvent, etc.)
+  tests/
+  dist/
+  docs/
+    PRD.md
+    ARCHITECTURE.md
+    DECISIONS.md
+    STACK.md
+    TASKS.md
 ```
 
-Data lives in `~/.mnemo/projects/{id}/feats/{name}/`:
+## How to run
 
-- `events.jsonl` — append-only source of truth
-- `context.md` — derived from events, regenerated on every write
-- `meta.json` — feat metadata
+```bash
+npm install
+npm run dev -- feat start my-feature   # run without building
+npm run build                          # compile to dist/
+npm run test                           # vitest
+npm run lint                           # biome check
+npm run typecheck                      # tsc --noEmit
+```
 
 ## Conventions
 
-- Imports always use `.js` extension (NodeNext module resolution)
-- Never use `process.exit()` directly — throw `MnemoError` from `src/core/error.ts`
-- No `any` types without explicit justification
-- Tests go next to the file they test (`store.test.ts` alongside `store.ts`)
-- `events.jsonl` is append-only — never mutate existing lines, only append
+- **en-US only** — all code, comments, docs, commit messages, and error messages in English
+- **ESM only** — `import`/`export`, never `require()`
+- **TypeScript strict** — no implicit `any`, no unnecessary `!`
+- **Biome** for lint and format — run before committing
+- **Errors** — never call `process.exit()` directly; use `MnemoError` from `src/core/error.ts`
+- **Tests** — one test file per module (`*.test.ts` next to the source file)
+- **No obvious comments** — comment only non-evident logic
 
-## Key architectural decisions
+## Runtime data
 
-- **XXH3** for file hashing (not SHA256) — non-cryptographic, ~10x faster
-- **In-memory accumulation + single SQLite flush** for indexing batches
-- **events.jsonl** is source of truth; `context.md` is always derived, never edited directly
-- **FEAT commands are typed** (`decision`, `blocker`, `link-file`) — not free-form notes
-- All data is local, no servers, no internet required
+```
+~/.mnemo/
+  config.json
+  projects/
+    {project-id}/           # xxh3(git remote)[0:16]
+      meta.json
+      feats/
+        {feat-name}/
+          events.jsonl      # source of truth (append-only)
+          context.md        # derived from events.jsonl
+          meta.json
+      active_feat           # name of the active feat (plain text)
+```
 
-Full decision log: `docs/DECISIONS.md` (D001–D016)
+## Reference docs
 
-## Before writing code
+| Doc                    | When to read                                                |
+| ---------------------- | ----------------------------------------------------------- |
+| `docs/PRD.md`          | To understand the problem and target users                  |
+| `docs/ARCHITECTURE.md` | To understand the 3 layers and technical design             |
+| `docs/DECISIONS.md`    | To understand the _why_ behind each choice (ADRs D001–D017) |
+| `docs/STACK.md`        | For dependencies, versions, and project configuration       |
+| `docs/TASKS.md`        | To find what to implement now (Phase 1)                     |
 
-1. Read `docs/TASKS.md` — find the next unchecked task
-2. Read `docs/ARCHITECTURE.md` section for Layer 3 (FEAT Context Cache)
-3. Read `docs/STACK.md` for exact package names and config
+## Rules for agents
+
+1. **Read `docs/TASKS.md` before writing any code** — to know what is pending and what is done
+2. **Phase 1 = FEAT cache only** — do not start embedding or graph layers
+3. **Before creating a new file**, check if something similar already exists in the structure above
+4. **When completing a task**, mark it as done in `docs/TASKS.md`
+5. **Architectural decisions** are recorded in `docs/DECISIONS.md` — do not reopen without explicit reason

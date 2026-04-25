@@ -1,42 +1,42 @@
 # Mnemo — Agent Context
 
-## O que é
+## What is this
 
-Mnemo é um CLI tool (`mnemo`) que dá memória persistente de codebase para agentes de IA. Resolve o problema de cold-start: agentes param de redescobrir o projeto do zero a cada sessão.
+Mnemo is a CLI tool (`mnemo`) that gives AI coding agents persistent memory of a codebase. It solves the cold-start problem: agents stop rediscovering the project from scratch each session.
 
-Três camadas:
+Three layers:
 
-1. **Semantic Index** — embeddings locais para busca por linguagem natural
-2. **Structural Graph** — grafo de dependências via Tree-sitter
-3. **FEAT Context Cache** — contexto por feature: arquivos, decisões, blockers, status (o diferencial)
+1. **Semantic Index** — local embeddings for natural language queries
+2. **Structural Graph** — dependency graph via Tree-sitter
+3. **FEAT Context Cache** — per-feature context: files, decisions, blockers, status (the differentiator)
 
-## Status atual
+## Current phase
 
-**Phase 1 em andamento: FEAT Context Cache**
+**Phase 1 in progress: FEAT Context Cache**
 
-Foco exclusivo no Layer 3. Layers 1 e 2 são Phase 2 e 3. Não implementar nada fora do escopo do Phase 1 sem aprovação.
+Exclusive focus on Layer 3. Layers 1 and 2 are Phase 2 and 3. Do not implement anything outside Phase 1 scope without explicit approval.
 
-Ver tarefas: `docs/TASKS.md`
+See tasks: `docs/TASKS.md`
 
-## Estrutura do projeto
+## Project structure
 
 ```
 mnemo/
   src/
-    cli.ts                  # entry point — registra todos os comandos
-    commands/               # handlers de comandos CLI (um por grupo)
+    cli.ts                  # entry point — registers all commands
+    commands/               # CLI command handlers (one file per group)
       feat.ts
       install.ts
       init.ts
       config.ts
     core/
       feat/
-        store.ts            # leitura/escrita de events.jsonl
-        renderer.ts         # gera context.md a partir dos eventos
-        active.ts           # rastreia feat ativa
-      project.ts            # identidade do projeto (hash do git remote)
-      paths.ts              # ~/.mnemo/ dir structure
-    types.ts                # tipos compartilhados (FeatureEvent, etc.)
+        store.ts            # events.jsonl read/write
+        renderer.ts         # generates context.md from events
+        active.ts           # tracks active feat
+      project.ts            # project identity (XXH3 hash of git remote)
+      paths.ts              # ~/.mnemo/ directory structure
+    types.ts                # shared types (FeatureEvent, etc.)
   tests/
   dist/
   docs/
@@ -47,56 +47,57 @@ mnemo/
     TASKS.md
 ```
 
-## Como rodar
+## How to run
 
 ```bash
 npm install
-npm run dev -- feat start minha-feature   # executa sem build
-npm run build                             # compila para dist/
-npm run test                              # vitest
-npm run lint                              # biome check
-npm run typecheck                         # tsc --noEmit
+npm run dev -- feat start my-feature   # run without building
+npm run build                          # compile to dist/
+npm run test                           # vitest
+npm run lint                           # biome check
+npm run typecheck                      # tsc --noEmit
 ```
 
-## Convenções
+## Conventions
 
-- **ESM only** — `import`/`export`, nunca `require()`
-- **TypeScript strict** — sem `any` implícito, sem `!` desnecessário
-- **Biome** para lint e format — rodar antes de commitar
-- **Erros**: nunca `process.exit()` diretamente; usar o wrapper de erro em `src/core/error.ts`
-- **Testes**: um arquivo de teste por módulo (`*.test.ts` ao lado do arquivo)
-- **Sem comentários óbvios** — comentar apenas lógica não evidente
+- **en-US only** — all code, comments, docs, commit messages, and error messages in English
+- **ESM only** — `import`/`export`, never `require()`
+- **TypeScript strict** — no implicit `any`, no unnecessary `!`
+- **Biome** for lint and format — run before committing
+- **Errors** — never call `process.exit()` directly; use `MnemoError` from `src/core/error.ts`
+- **Tests** — one test file per module (`*.test.ts` next to the source file)
+- **No obvious comments** — comment only non-evident logic
 
-## Dados em runtime
+## Runtime data
 
 ```
 ~/.mnemo/
   config.json
   projects/
-    {project-id}/           # sha256(git remote)[0:16]
+    {project-id}/           # xxh3(git remote)[0:16]
       meta.json
       feats/
         {feat-name}/
           events.jsonl      # source of truth (append-only)
-          context.md        # gerado a partir de events.jsonl
+          context.md        # derived from events.jsonl
           meta.json
-      active_feat           # nome da feat ativa (plain text)
+      active_feat           # name of the active feat (plain text)
 ```
 
-## Documentação de referência
+## Reference docs
 
-| Doc                    | Quando ler                                                 |
-| ---------------------- | ---------------------------------------------------------- |
-| `docs/PRD.md`          | Para entender o problema e os usuários                     |
-| `docs/ARCHITECTURE.md` | Para entender as 3 camadas e decisões técnicas             |
-| `docs/DECISIONS.md`    | Para entender o _por quê_ de cada escolha (ADRs D001–D016) |
-| `docs/STACK.md`        | Para dependências, versões, e configuração do projeto      |
-| `docs/TASKS.md`        | Para saber o que implementar agora (Phase 1)               |
+| Doc                    | When to read                                                |
+| ---------------------- | ----------------------------------------------------------- |
+| `docs/PRD.md`          | To understand the problem and target users                  |
+| `docs/ARCHITECTURE.md` | To understand the 3 layers and technical design             |
+| `docs/DECISIONS.md`    | To understand the _why_ behind each choice (ADRs D001–D017) |
+| `docs/STACK.md`        | For dependencies, versions, and project configuration       |
+| `docs/TASKS.md`        | To find what to implement now (Phase 1)                     |
 
-## Regras para agentes
+## Rules for agents
 
-1. **Leia `docs/TASKS.md` antes de escrever qualquer código** — para saber o que está pendente e o que já foi feito
-2. **Phase 1 = somente FEAT cache** — não iniciar layers de embedding ou grafo
-3. **Antes de criar um arquivo novo**, verifique se já existe algo similar na estrutura acima
-4. **Ao completar uma task**, marque como done em `docs/TASKS.md`
-5. **Decisões arquiteturais** já tomadas estão em `docs/DECISIONS.md` — não reabrir sem motivo explícito
+1. **Read `docs/TASKS.md` before writing any code** — to know what is pending and what is done
+2. **Phase 1 = FEAT cache only** — do not start embedding or graph layers
+3. **Before creating a new file**, check if something similar already exists in the structure above
+4. **When completing a task**, mark it as done in `docs/TASKS.md`
+5. **Architectural decisions** are recorded in `docs/DECISIONS.md` — do not reopen without explicit reason

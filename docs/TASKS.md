@@ -1,59 +1,58 @@
 # Tasks — Phase 1: FEAT Context Cache
 
-**Objetivo do Phase 1:** CLI funcional para criar e manter contexto de features, com Skill para Claude Code.  
-**Critério de conclusão do Phase 1:** `mnemo init`, todos os `mnemo feat *`, e `mnemo install claude` funcionando end-to-end.
+**Goal:** Functional CLI to create and maintain feature context, with a Claude Code Skill.  
+**Done when:** `mnemo init`, all `mnemo feat *` commands, and `mnemo install claude` work end-to-end.
 
-Layers de embedding (Phase 2) e grafo estrutural (Phase 3) **não fazem parte deste phase**.
-
----
-
-## Como usar este arquivo
-
-- Marque tarefas como `[x]` ao concluir
-- Adicione notas de implementação sob cada tarefa se relevante
-- Não mude a ordem ou estrutura sem motivo — a sequência é intencional (dependências)
+Embedding layers (Phase 2) and structural graph (Phase 3) are **out of scope for this phase**.
 
 ---
 
-## Bloco 1 — Setup do projeto
+## How to use this file
 
-### T001 — Inicializar package.json e instalar dependências
+- Mark tasks as `[x]` when complete
+- Add implementation notes below a task if relevant
+- Do not reorder without reason — the sequence is intentional (dependencies)
 
-- [ ] Criar `package.json` conforme spec em `docs/STACK.md`
+---
+
+## Block 1 — Project setup
+
+### T001 — Initialize package.json and install dependencies
+
+- [ ] Create `package.json` per spec in `docs/STACK.md`
 - [ ] `npm install commander better-sqlite3 @node-rs/xxhash chokidar simple-git`
 - [ ] `npm install -D typescript vitest @biomejs/biome @types/better-sqlite3 @types/node`
-- [ ] Criar `tsconfig.json` conforme spec em `docs/STACK.md`
-- [ ] Criar `biome.json` conforme spec em `docs/STACK.md`
-- [ ] Criar `.gitignore` (`node_modules/`, `dist/`)
+- [ ] Create `tsconfig.json` per spec in `docs/STACK.md`
+- [ ] Create `biome.json` per spec in `docs/STACK.md`
+- [x] Create `.gitignore` — done
 
-**Done when:** `npm run typecheck` passa sem erros em projeto vazio.
-
----
-
-### T002 — Entry point e estrutura de comandos
-
-- [ ] Criar `src/cli.ts` com Program do Commander registrando os command groups
-- [ ] Criar `src/commands/feat.ts` com subcommands vazios (sem lógica ainda)
-- [ ] Criar `src/commands/init.ts` vazio
-- [ ] Criar `src/commands/install.ts` vazio
-- [ ] Criar `src/commands/config.ts` vazio
-- [ ] Criar `src/core/error.ts` com `MnemoError` e `handleError()`
-
-**Done when:** `mnemo --help` lista os comandos; `mnemo feat --help` lista subcommands.
+**Done when:** `npm run typecheck` passes with no errors on an empty project.
 
 ---
 
-## Bloco 2 — Core: paths e identidade do projeto
+### T002 — Entry point and command structure
 
-### T003 — Paths: estrutura de diretórios `~/.mnemo/`
+- [ ] Create `src/cli.ts` with Commander Program registering all command groups
+- [ ] Create `src/commands/feat.ts` with empty subcommands (no logic yet)
+- [ ] Create `src/commands/init.ts` empty
+- [ ] Create `src/commands/install.ts` empty
+- [ ] Create `src/commands/config.ts` empty
+- [ ] Create `src/core/error.ts` with `MnemoError` and `handleError()`
 
-- [ ] Criar `src/core/paths.ts`
-- [ ] Implementar `getPaths(projectId: string)` retornando todos os caminhos relevantes
-- [ ] Implementar `ensurePaths(projectId: string)` criando dirs se não existem
-- [ ] Escrever testes: `tests/core/paths.test.ts`
+**Done when:** `mnemo --help` lists commands; `mnemo feat --help` lists subcommands.
+
+---
+
+## Block 2 — Core: paths and project identity
+
+### T003 — Paths: `~/.mnemo/` directory structure
+
+- [ ] Create `src/core/paths.ts`
+- [ ] Implement `getPaths(projectId: string)` returning all relevant paths
+- [ ] Implement `ensurePaths(projectId: string)` creating dirs if they don't exist
+- [ ] Write tests: `tests/core/paths.test.ts`
 
 ```typescript
-// Interface esperada
 type MnemoPaths = {
 	root: string; // ~/.mnemo
 	projectRoot: string; // ~/.mnemo/projects/{id}
@@ -67,28 +66,28 @@ type MnemoPaths = {
 };
 ```
 
-**Done when:** testes passam; dirs são criados corretamente em `~/.mnemo/`.
+**Done when:** tests pass; dirs are created correctly under `~/.mnemo/`.
 
 ---
 
-### T004 — Identidade do projeto
+### T004 — Project identity
 
-- [ ] Criar `src/core/project.ts`
-- [ ] Implementar `resolveProjectId()`: tenta git remote URL, fallback para `cwd()`
-- [ ] Hash com XXH3 (64-bit, hex, primeiros 16 chars)
-- [ ] Implementar `resolveProjectName()`: nome do diretório ou campo `name` do package.json
-- [ ] Implementar `assertInitialized()`: verifica se `mnemo init` já foi rodado; lança `MnemoError` se não
-- [ ] Escrever testes: `tests/core/project.test.ts`
+- [ ] Create `src/core/project.ts`
+- [ ] Implement `resolveProjectId()`: tries git remote URL, falls back to `cwd()`
+- [ ] Hash with XXH3 (64-bit, hex, first 16 chars)
+- [ ] Implement `resolveProjectName()`: directory name or `name` field from package.json
+- [ ] Implement `assertInitialized()`: checks if `mnemo init` has been run; throws `MnemoError` if not
+- [ ] Write tests: `tests/core/project.test.ts`
 
-**Done when:** `resolveProjectId()` retorna hash estável para o mesmo projeto; testes passam.
+**Done when:** `resolveProjectId()` returns a stable hash for the same project; tests pass.
 
 ---
 
-## Bloco 3 — Core: FEAT store
+## Block 3 — Core: FEAT store
 
-### T005 — Tipos do FEAT cache
+### T005 — FEAT cache types
 
-- [ ] Criar `src/core/feat/types.ts` com todos os tipos:
+- [ ] Create `src/core/feat/types.ts` with all types:
 
 ```typescript
 type EventType = 'feat_created' | 'decision' | 'blocker' | 'blocker_resolved' | 'file_linked' | 'file_unlinked' | 'status' | 'note' | 'feat_done';
@@ -97,9 +96,9 @@ type FeatureEvent = {
 	ts: number; // unix timestamp ms
 	type: EventType;
 	text?: string;
-	path?: string; // para file_linked / file_unlinked
-	reason?: string; // para file_linked
-	author?: string; // 'user' | 'claude' | 'codex' | nome do agente
+	path?: string; // for file_linked / file_unlinked
+	reason?: string; // for file_linked
+	author?: string; // 'user' | 'claude' | 'codex' | agent name
 };
 
 type FeatureMeta = {
@@ -121,207 +120,207 @@ type FeatureContext = {
 };
 ```
 
-**Done when:** arquivo compila sem erros.
+**Done when:** file compiles without errors.
 
 ---
 
-### T006 — FeatStore: leitura e escrita de events.jsonl
+### T006 — FeatStore: events.jsonl read/write
 
-- [ ] Criar `src/core/feat/store.ts`
-- [ ] `appendEvent(projectId, featName, event)`: append ao events.jsonl + atualiza context.md
-- [ ] `readEvents(projectId, featName)`: lê e parseia events.jsonl
-- [ ] `buildContext(events)`: reduz eventos para `FeatureContext`
-- [ ] `listFeats(projectId)`: lista todas as features de um projeto
+- [ ] Create `src/core/feat/store.ts`
+- [ ] `appendEvent(projectId, featName, event)`: appends to events.jsonl + regenerates context.md
+- [ ] `readEvents(projectId, featName)`: reads and parses events.jsonl
+- [ ] `buildContext(events)`: reduces events into `FeatureContext`
+- [ ] `listFeats(projectId)`: lists all features for a project
 - [ ] `featExists(projectId, featName)`: boolean
-- [ ] Escrever testes: `tests/core/feat/store.test.ts`
+- [ ] Write tests: `tests/core/feat/store.test.ts`
 
-**Done when:** append e leitura funcionam; `buildContext` retorna estado correto para sequência de eventos de teste.
+**Done when:** append and read work; `buildContext` returns correct state for a test event sequence.
 
 ---
 
-### T007 — Renderer: gerar context.md
+### T007 — Renderer: generate context.md
 
-- [ ] Criar `src/core/feat/renderer.ts`
-- [ ] `renderContext(context: FeatureContext): string`: gera markdown formatado
-- [ ] Seções: header, Relevant Files, Decisions, Current Status, Blockers, Notes
-- [ ] Blockers resolvidos aparecem em seção separada "Resolved Blockers" (ou omitidos se nenhum)
-- [ ] Escrever testes: `tests/core/feat/renderer.test.ts` com snapshots
+- [ ] Create `src/core/feat/renderer.ts`
+- [ ] `renderContext(context: FeatureContext): string`: generates formatted markdown
+- [ ] Sections: header, Relevant Files, Decisions, Current Status, Blockers, Notes
+- [ ] Resolved blockers appear in a separate "Resolved Blockers" section (omit section if none)
+- [ ] Write tests: `tests/core/feat/renderer.test.ts` with snapshots
 
-**Done when:** `renderContext` gera markdown idêntico ao exemplo em `docs/ARCHITECTURE.md`.
+**Done when:** `renderContext` output matches the example in `docs/ARCHITECTURE.md`.
 
 ---
 
 ### T008 — Active feat tracking
 
-- [ ] Criar `src/core/feat/active.ts`
-- [ ] `getActiveFeat(projectId)`: lê `active_feat` file; retorna `null` se não existe
-- [ ] `setActiveFeat(projectId, featName)`: escreve `active_feat` file
-- [ ] `clearActiveFeat(projectId)`: remove `active_feat` file
-- [ ] Escrever testes: `tests/core/feat/active.test.ts`
+- [ ] Create `src/core/feat/active.ts`
+- [ ] `getActiveFeat(projectId)`: reads `active_feat` file; returns `null` if not present
+- [ ] `setActiveFeat(projectId, featName)`: writes `active_feat` file
+- [ ] `clearActiveFeat(projectId)`: removes `active_feat` file
+- [ ] Write tests: `tests/core/feat/active.test.ts`
 
-**Done when:** testes passam.
+**Done when:** tests pass.
 
 ---
 
-## Bloco 4 — Comandos CLI
+## Block 4 — CLI commands
 
 ### T009 — `mnemo init`
 
-- [ ] Implementar em `src/commands/init.ts`
-- [ ] Cria estrutura `~/.mnemo/projects/{id}/` via `ensurePaths()`
-- [ ] Escreve `meta.json` com nome e caminho do projeto
-- [ ] Instala git hook `post-commit` em `.git/hooks/`
-- [ ] Idempotente: não falha se já inicializado
-- [ ] Output: confirmação com project ID e caminho
+- [ ] Implement in `src/commands/init.ts`
+- [ ] Create `~/.mnemo/projects/{id}/` structure via `ensurePaths()`
+- [ ] Write `meta.json` with project name and path
+- [ ] Install `post-commit` git hook in `.git/hooks/`
+- [ ] Idempotent: does not fail if already initialized
+- [ ] Output: confirmation with project ID and path
 
-**Done when:** `mnemo init` roda sem erros; `.git/hooks/post-commit` criado; re-rodar é seguro.
+**Done when:** `mnemo init` runs without errors; `.git/hooks/post-commit` created; re-running is safe.
 
 ---
 
 ### T010 — `mnemo feat start <name>`
 
-- [ ] Validar que projeto está inicializado (`assertInitialized()`)
-- [ ] Criar diretório da feat via `ensurePaths()`
-- [ ] Escrever `meta.json` inicial
-- [ ] Appender evento `feat_created`
-- [ ] Setar como feat ativa via `setActiveFeat()`
-- [ ] Auto-detectar branch atual via `simple-git` e salvar em meta se disponível
-- [ ] Output: confirmação com nome da feat e branch
+- [ ] Validate project is initialized (`assertInitialized()`)
+- [ ] Create feat directory via `ensurePaths()`
+- [ ] Write initial `meta.json`
+- [ ] Append `feat_created` event
+- [ ] Set as active feat via `setActiveFeat()`
+- [ ] Auto-detect current branch via `simple-git` and save to meta if available
+- [ ] Output: confirmation with feat name and branch
 
-**Done when:** `mnemo feat start payment-flow` cria estrutura e seta como ativa.
+**Done when:** `mnemo feat start payment-flow` creates the structure and sets it as active.
 
 ---
 
 ### T011 — `mnemo feat list`
 
-- [ ] Listar todas as feats do projeto
-- [ ] Mostrar: nome, status, branch, última atualização
-- [ ] Destacar feat ativa com indicador visual (`→` ou `*`)
-- [ ] Output vazio com mensagem amigável se nenhuma feat existe
+- [ ] List all feats for the project
+- [ ] Show: name, status, branch, last updated
+- [ ] Highlight active feat with visual indicator (`→` or `*`)
+- [ ] Show friendly empty message if no feats exist
 
-**Done when:** lista feats com indicador correto da ativa.
+**Done when:** lists feats with correct active indicator.
 
 ---
 
 ### T012 — `mnemo feat switch <name>`
 
-- [ ] Validar que a feat existe
-- [ ] Atualizar `active_feat`
-- [ ] Output: confirmação
+- [ ] Validate feat exists
+- [ ] Update `active_feat`
+- [ ] Output: confirmation
 
-**Done when:** switch muda a feat ativa corretamente.
+**Done when:** switch correctly changes the active feat.
 
 ---
 
 ### T013 — `mnemo feat context [name]`
 
-- [ ] Sem argumento: usa feat ativa; erro se nenhuma ativa
-- [ ] Com argumento: usa feat especificada
-- [ ] Lê events.jsonl → `buildContext()` → `renderContext()` → stdout
-- [ ] Output é markdown puro (sem decoração extra) — para consumo por agentes via pipe
+- [ ] No argument: uses active feat; error if none active
+- [ ] With argument: uses specified feat
+- [ ] Reads events.jsonl → `buildContext()` → `renderContext()` → stdout
+- [ ] Output is pure markdown (no extra decoration) — for agent consumption via pipe
 
-**Done when:** `mnemo feat context | cat` imprime markdown limpo.
+**Done when:** `mnemo feat context | cat` prints clean markdown.
 
 ---
 
 ### T014 — `mnemo feat decision "<text>"`
 
-- [ ] Usa feat ativa ou `--feat <name>` opcional
-- [ ] Appender evento `decision` com timestamp e `author: 'user'`
-- [ ] Regenerar `context.md`
-- [ ] Output: confirmação com texto truncado
+- [ ] Uses active feat or optional `--feat <name>`
+- [ ] Appends `decision` event with timestamp and `author: 'user'`
+- [ ] Regenerates `context.md`
+- [ ] Output: confirmation with truncated text
 
-**Done when:** decisão aparece em `mnemo feat context`.
+**Done when:** decision appears in `mnemo feat context`.
 
 ---
 
 ### T015 — `mnemo feat blocker "<text>"`
 
-- [ ] Appender evento `blocker`
-- [ ] Regenerar `context.md`
-- [ ] Atualizar status da feat para `blocked` se estava `in-progress`
-- [ ] Output: confirmação
+- [ ] Appends `blocker` event
+- [ ] Regenerates `context.md`
+- [ ] Updates feat status to `blocked` if it was `in-progress`
+- [ ] Output: confirmation
 
-**Done when:** blocker aparece na seção Blockers em `mnemo feat context`.
+**Done when:** blocker appears in the Blockers section of `mnemo feat context`.
 
 ---
 
 ### T016 — `mnemo feat blocker resolve "<text>"`
 
-- [ ] Match por substring no texto dos blockers ativos
-- [ ] Appender evento `blocker_resolved`
-- [ ] Se não há mais blockers ativos, voltar status para `in-progress`
-- [ ] Regenerar `context.md`
-- [ ] Output: confirmação ou erro se nenhum blocker encontrado
+- [ ] Match by substring against active blocker text
+- [ ] Appends `blocker_resolved` event
+- [ ] If no more active blockers, reverts status to `in-progress`
+- [ ] Regenerates `context.md`
+- [ ] Output: confirmation or error if no matching blocker found
 
-**Done when:** blocker some da seção Blockers ativos após resolve.
+**Done when:** blocker disappears from active Blockers section after resolve.
 
 ---
 
 ### T017 — `mnemo feat link-file <path> [--reason "<text>"]`
 
-- [ ] Validar que o arquivo existe no projeto (relativo ao CWD)
-- [ ] Normalizar path para relativo à raiz do repo git
-- [ ] Appender evento `file_linked`
-- [ ] Regenerar `context.md`
-- [ ] Output: confirmação
+- [ ] Validate file exists in the project (relative to CWD)
+- [ ] Normalize path to be relative to git repo root
+- [ ] Appends `file_linked` event
+- [ ] Regenerates `context.md`
+- [ ] Output: confirmation
 
-**Done when:** arquivo aparece em Relevant Files em `mnemo feat context`.
+**Done when:** file appears in Relevant Files in `mnemo feat context`.
 
 ---
 
 ### T018 — `mnemo feat unlink-file <path>`
 
-- [ ] Appender evento `file_unlinked`
-- [ ] Regenerar `context.md`
-- [ ] Output: confirmação ou aviso se arquivo não estava linked
+- [ ] Appends `file_unlinked` event
+- [ ] Regenerates `context.md`
+- [ ] Output: confirmation or warning if file was not linked
 
-**Done when:** arquivo some de Relevant Files após unlink.
+**Done when:** file disappears from Relevant Files after unlink.
 
 ---
 
 ### T019 — `mnemo feat status "<text>"`
 
-- [ ] Appender evento `status`
-- [ ] Regenerar `context.md`
-- [ ] Output: confirmação
+- [ ] Appends `status` event
+- [ ] Regenerates `context.md`
+- [ ] Output: confirmation
 
-**Done when:** Current Status atualizado em `mnemo feat context`.
+**Done when:** Current Status updated in `mnemo feat context`.
 
 ---
 
 ### T020 — `mnemo feat note "<text>"`
 
-- [ ] Appender evento `note`
-- [ ] Regenerar `context.md`
-- [ ] Output: confirmação
+- [ ] Appends `note` event
+- [ ] Regenerates `context.md`
+- [ ] Output: confirmation
 
-**Done when:** nota aparece na seção Notes.
+**Done when:** note appears in the Notes section.
 
 ---
 
 ### T021 — `mnemo feat done`
 
-- [ ] Appender evento `feat_done`
-- [ ] Atualizar `meta.json` status para `done`
-- [ ] Limpar feat ativa se era a feat ativa
-- [ ] Regenerar `context.md`
-- [ ] Output: confirmação
+- [ ] Appends `feat_done` event
+- [ ] Updates `meta.json` status to `done`
+- [ ] Clears active feat if this was the active feat
+- [ ] Regenerates `context.md`
+- [ ] Output: confirmation
 
-**Done when:** feat aparece como `done` em `mnemo feat list`.
+**Done when:** feat shows as `done` in `mnemo feat list`.
 
 ---
 
-## Bloco 5 — Agent integration (Phase 1)
+## Block 5 — Agent integration
 
 ### T022 — Claude Code Skill
 
-- [ ] Criar `src/integrations/agents/claude.ts`
-- [ ] Gerar conteúdo do arquivo de skill `~/.claude/skills/mnemo.md`
-- [ ] Skill deve expor: `/mnemo-context`, `/mnemo-decision`, `/mnemo-blocker`, `/mnemo-note`
-- [ ] Cada comando da skill executa o CLI correspondente via shell e injeta output
+- [ ] Create `src/integrations/agents/claude.ts`
+- [ ] Generate skill file content for `~/.claude/skills/mnemo.md`
+- [ ] Skill exposes: `/mnemo-context`, `/mnemo-decision`, `/mnemo-blocker`, `/mnemo-note`
+- [ ] Each skill command runs the corresponding CLI command via shell and injects output
 
-**Conteúdo da skill:**
+**Skill content:**
 
 ```markdown
 # mnemo — codebase memory
@@ -343,19 +342,19 @@ Runs: mnemo feat blocker "<text>"
 Runs: mnemo feat note "<text>"
 ```
 
-**Done when:** arquivo de skill criado com conteúdo correto.
+**Done when:** skill file generated with correct content.
 
 ---
 
 ### T023 — `mnemo install claude`
 
-- [ ] Implementar em `src/commands/install.ts`
-- [ ] Copiar/instalar skill em `~/.claude/skills/mnemo.md`
-- [ ] Append bloco Mnemo em `CLAUDE.md` do projeto (criar se não existe)
-- [ ] Idempotente: não duplica se já instalado
-- [ ] Output: lista de arquivos criados/atualizados
+- [ ] Implement in `src/commands/install.ts`
+- [ ] Copy skill to `~/.claude/skills/mnemo.md`
+- [ ] Append Mnemo block to project's `CLAUDE.md` (create if not present)
+- [ ] Idempotent: does not duplicate if already installed
+- [ ] Output: list of created/updated files
 
-**Bloco a appendar no CLAUDE.md do projeto:**
+**Block appended to project CLAUDE.md:**
 
 ```markdown
 ## Mnemo — Codebase Memory
@@ -374,58 +373,58 @@ When hitting a blocker:
 `mnemo feat blocker "<description>"`
 ```
 
-**Done when:** `mnemo install claude` cria skill e atualiza CLAUDE.md; re-rodar é seguro.
+**Done when:** `mnemo install claude` creates skill and updates CLAUDE.md; re-running is safe.
 
 ---
 
-## Bloco 6 — Polish e testes de integração
+## Block 6 — Polish and integration tests
 
-### T024 — Testes de integração end-to-end
+### T024 — End-to-end integration tests
 
-- [ ] Criar `tests/e2e/feat-flow.test.ts`
-- [ ] Testar fluxo completo: init → feat start → decision → blocker → resolve → context
-- [ ] Usar diretório temporário para `~/.mnemo/` durante testes
-- [ ] Limpar após cada teste
+- [ ] Create `tests/e2e/feat-flow.test.ts`
+- [ ] Test full flow: init → feat start → decision → blocker → resolve → context
+- [ ] Use a temporary directory for `~/.mnemo/` during tests
+- [ ] Clean up after each test
 
-**Done when:** fluxo completo passa nos testes.
-
----
-
-### T025 — Error handling e UX
-
-- [ ] Mensagens de erro claras para todos os casos comuns:
-  - Projeto não inicializado
-  - Feat não encontrada
-  - Nenhuma feat ativa
-  - Arquivo não encontrado para link
-- [ ] `mnemo --version` retorna versão do package.json
-- [ ] Todos os comandos têm `--help` descritivo
-
-**Done when:** cada erro tem mensagem acionável ("Run `mnemo init` to initialize this project.").
+**Done when:** full flow passes in tests.
 
 ---
 
-## Resumo de progresso
+### T025 — Error handling and UX
+
+- [ ] Clear error messages for all common cases:
+  - Project not initialized
+  - Feat not found
+  - No active feat
+  - File not found for link
+- [ ] `mnemo --version` returns version from package.json
+- [ ] All commands have descriptive `--help`
+
+**Done when:** every error has an actionable message (e.g. "Run `mnemo init` to initialize this project.").
+
+---
+
+## Progress summary
 
 ```
-Bloco 1 — Setup:          T001 T002
-Bloco 2 — Core infra:     T003 T004
-Bloco 3 — FEAT store:     T005 T006 T007 T008
-Bloco 4 — Comandos CLI:   T009 T010 T011 T012 T013 T014 T015 T016 T017 T018 T019 T020 T021
-Bloco 5 — Integração:     T022 T023
-Bloco 6 — Polish:         T024 T025
+Block 1 — Setup:        T001 T002
+Block 2 — Core infra:   T003 T004
+Block 3 — FEAT store:   T005 T006 T007 T008
+Block 4 — CLI commands: T009 T010 T011 T012 T013 T014 T015 T016 T017 T018 T019 T020 T021
+Block 5 — Integration:  T022 T023
+Block 6 — Polish:       T024 T025
 ```
 
 **Total Phase 1: 25 tasks**
 
 ---
 
-## Backlog Phase 2+ (não implementar agora)
+## Phase 2+ backlog (do not implement now)
 
 - Semantic index: sqlite-vec + ONNX embeddings + `mnemo search`
-- Git hook auto-switch de feat por branch
+- Git hook auto-switch feat by branch name
 - `mnemo install codex` / `mnemo install copilot` / `mnemo install cursor`
 - `mnemo config get|set`
-- `mnemo status` (saúde dos índices)
+- `mnemo status` (index health)
 - Structural graph (Phase 3)
 - MCP server (Phase 3)
