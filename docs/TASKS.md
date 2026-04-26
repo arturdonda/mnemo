@@ -72,12 +72,12 @@ type MnemoPaths = {
 
 ### T004 — Project identity
 
-- [ ] Create `src/core/project.ts`
-- [ ] Implement `resolveProjectId()`: tries git remote URL, falls back to `cwd()`
-- [ ] Hash with XXH3 (64-bit, hex, first 16 chars)
-- [ ] Implement `resolveProjectName()`: directory name or `name` field from package.json
-- [ ] Implement `assertInitialized()`: checks if `mnemo init` has been run; throws `MnemoError` if not
-- [ ] Write tests: `tests/core/project.test.ts`
+- [x] Create `src/core/project.ts`
+- [x] Implement `resolveProjectId()`: tries git remote URL, falls back to `cwd()`
+- [x] Hash with XXH3 (64-bit, hex, first 16 chars)
+- [x] Implement `resolveProjectName()`: directory name or `name` field from package.json
+- [x] Implement `assertInitialized()`: checks if `mnemo init` has been run; throws `MnemoError` if not
+- [x] Write tests: `tests/core/project.test.ts`
 
 **Done when:** `resolveProjectId()` returns a stable hash for the same project; tests pass.
 
