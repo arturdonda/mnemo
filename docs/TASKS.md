@@ -485,13 +485,13 @@ type ScoredChunk = Chunk & { score: number }
 ## Block 9 — Embedding pipeline
 
 ### T029 — Embedding provider interface
-- [ ] Create `src/core/index/embedder.ts`
-- [ ] Define `Embedder` interface: `embed(texts: string[]): Promise<number[][]>`
-- [ ] Implement ONNX provider (`src/core/index/providers/onnx.ts`) using `onnxruntime-node` + bundled `all-MiniLM-L6-v2` model (384 dimensions)
-- [ ] Implement Ollama provider (`src/core/index/providers/ollama.ts`) — HTTP call to local Ollama instance
-- [ ] Implement OpenAI provider (`src/core/index/providers/openai.ts`) — opt-in, requires API key in config
-- [ ] Provider factory: `createEmbedder(config)` — returns correct provider based on `embedding.provider` config; auto-detects Ollama if installed
-- [ ] Write tests for ONNX provider
+- [x] Create `src/core/index/embedder.ts`
+- [x] Define `Embedder` interface: `embed(texts: string[]): Promise<number[][]>`
+- [x] Implement ONNX provider (`src/core/index/providers/onnx.ts`) using `onnxruntime-node` + bundled `all-MiniLM-L6-v2` model (384 dimensions)
+- [x] Implement Ollama provider (`src/core/index/providers/ollama.ts`) — HTTP call to local Ollama instance
+- [x] Implement OpenAI provider (`src/core/index/providers/openai.ts`) — opt-in, requires API key in config
+- [x] Provider factory: `createEmbedder(config)` — returns correct provider based on `embedding.provider` config; auto-detects Ollama if installed
+- [x] Write tests for ONNX provider
 
 **Done when:** `createEmbedder()` returns ONNX embedder by default; all three providers implement the interface.
 
