@@ -381,10 +381,10 @@ When hitting a blocker:
 
 ### T024 — End-to-end integration tests
 
-- [ ] Create `tests/e2e/feat-flow.test.ts`
-- [ ] Test full flow: init → feat start → decision → blocker → resolve → context
-- [ ] Use a temporary directory for `~/.mnemo/` during tests
-- [ ] Clean up after each test
+- [x] Create `tests/e2e/feat-flow.test.ts`
+- [x] Test full flow: init → feat start → decision → blocker → resolve → context
+- [x] Use a temporary directory for `~/.mnemo/` during tests
+- [x] Clean up after each test
 
 **Done when:** full flow passes in tests.
 
