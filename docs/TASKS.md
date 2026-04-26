@@ -152,11 +152,11 @@ type FeatureContext = {
 
 ### T008 — Active feat tracking
 
-- [ ] Create `src/core/feat/active.ts`
-- [ ] `getActiveFeat(projectId)`: reads `active_feat` file; returns `null` if not present
-- [ ] `setActiveFeat(projectId, featName)`: writes `active_feat` file
-- [ ] `clearActiveFeat(projectId)`: removes `active_feat` file
-- [ ] Write tests: `tests/core/feat/active.test.ts`
+- [x] Create `src/core/feat/active.ts`
+- [x] `getActiveFeat(projectId)`: reads `active_feat` file; returns `null` if not present
+- [x] `setActiveFeat(projectId, featName)`: writes `active_feat` file
+- [x] `clearActiveFeat(projectId)`: removes `active_feat` file
+- [x] Write tests: `tests/core/feat/active.test.ts`
 
 **Done when:** tests pass.
 
