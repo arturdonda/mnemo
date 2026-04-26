@@ -80,7 +80,13 @@ export async function downloadModel(name: string, url: string, dest: string): Pr
 	// move temp → final
 	await rm(dest, { force: true });
 	const { rename } = await import('node:fs/promises');
-	await rename(tempPath, dest);
+	try {
+		await rename(tempPath, dest);
+	} catch (err: unknown) {
+		// Another concurrent download already moved the file — that's fine
+		if ((err as NodeJS.ErrnoException).code === 'ENOENT' && existsSync(dest)) return;
+		throw err;
+	}
 
 	// record in manifest
 	await mkdir(MODELS_DIR, { recursive: true });
