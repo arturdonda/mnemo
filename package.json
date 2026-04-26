@@ -22,31 +22,6 @@
 		"lint:fix": "biome check --write .",
 		"typecheck": "tsc --noEmit"
 	},
-	"keywords": [
-		"ai",
-		"agents",
-		"context",
-		"memory",
-		"codebase",
-		"cli",
-		"claude",
-		"copilot",
-		"codex",
-		"cursor",
-		"mcp"
-	],
-	"engines": {
-		"node": ">=20"
-	},
-	"license": "MIT",
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/arturdonda/mnemo"
-	},
-	"homepage": "https://github.com/arturdonda/mnemo#readme",
-	"bugs": {
-		"url": "https://github.com/arturdonda/mnemo/issues"
-	},
 	"dependencies": {
 		"@node-rs/xxhash": "^1.7.6",
 		"better-sqlite3": "^12.9.0",
@@ -61,5 +36,30 @@
 		"ts-node": "^10.9.2",
 		"typescript": "^6.0.3",
 		"vitest": "^4.1.5"
-	}
+	},
+	"engines": {
+		"node": ">=20"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/arturdonda/mnemo"
+	},
+	"homepage": "https://github.com/arturdonda/mnemo#readme",
+	"bugs": {
+		"url": "https://github.com/arturdonda/mnemo/issues"
+	},
+	"keywords": [
+		"ai",
+		"agents",
+		"context",
+		"memory",
+		"codebase",
+		"cli",
+		"claude",
+		"copilot",
+		"codex",
+		"cursor",
+		"mcp"
+	]
 }

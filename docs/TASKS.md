@@ -32,12 +32,12 @@ Embedding layers (Phase 2) and structural graph (Phase 3) are **out of scope for
 
 ### T002 — Entry point and command structure
 
-- [ ] Create `src/cli.ts` with Commander Program registering all command groups
-- [ ] Create `src/commands/feat.ts` with empty subcommands (no logic yet)
-- [ ] Create `src/commands/init.ts` empty
-- [ ] Create `src/commands/install.ts` empty
-- [ ] Create `src/commands/config.ts` empty
-- [ ] Create `src/core/error.ts` with `MnemoError` and `handleError()`
+- [x] Create `src/cli.ts` with Commander Program registering all command groups
+- [x] Create `src/commands/feat.ts` with empty subcommands (no logic yet)
+- [x] Create `src/commands/init.ts` empty
+- [x] Create `src/commands/install.ts` empty
+- [x] Create `src/commands/config.ts` empty
+- [x] Create `src/core/error.ts` with `MnemoError` and `handleError()`
 
 **Done when:** `mnemo --help` lists commands; `mnemo feat --help` lists subcommands.
 
