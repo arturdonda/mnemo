@@ -419,12 +419,358 @@ Block 6 — Polish:       T024 T025
 
 ---
 
-## Phase 2+ backlog (do not implement now)
+---
 
-- Semantic index: sqlite-vec + ONNX embeddings + `mnemo search`
-- Git hook auto-switch feat by branch name
-- `mnemo install codex` / `mnemo install copilot` / `mnemo install cursor`
-- `mnemo config get|set`
-- `mnemo status` (index health)
-- Structural graph (Phase 3)
-- MCP server (Phase 3)
+---
+
+# Phase 2 — Semantic Index
+
+**Goal:** Natural language search across the codebase via local embeddings. Zero infrastructure, works offline.  
+**Done when:** `mnemo search "authentication logic"` returns ranked results in <500ms on a 100k LOC project.
+
+---
+
+## Block 7 — Config system
+
+### T026 — `mnemo config get|set`
+- [ ] Implement `src/commands/config.ts`
+- [ ] Read/write `~/.mnemo/config.json`
+- [ ] `mnemo config set <key> <value>` — supports dot notation (`embedding.provider`, `vector-store`)
+- [ ] `mnemo config get <key>` — prints current value or default
+- [ ] `mnemo config list` — prints all settings with defaults
+- [ ] Write tests: `tests/commands/config.test.ts`
+
+**Done when:** `mnemo config set embedding.provider ollama` persists and `mnemo config get embedding.provider` returns `ollama`.
+
+---
+
+## Block 8 — VectorStore abstraction
+
+### T027 — VectorStore interface and types
+- [ ] Create `src/core/index/vector-store.ts`
+- [ ] Define `VectorStore` interface per `docs/ARCHITECTURE.md`
+- [ ] Define `Chunk` and `ScoredChunk` types:
+
+```typescript
+type Chunk = {
+  id: string           // "{file_path}:{start_line}:{end_line}"
+  filePath: string
+  startLine: number
+  endLine: number
+  content: string
+  fileHash: string     // XXH3
+  indexedAt: number
+}
+
+type ScoredChunk = Chunk & { score: number }
+```
+
+**Done when:** interface compiles; types are exported from `src/types.ts`.
+
+---
+
+### T028 — sqlite-vec backend
+- [ ] Install `sqlite-vec` package
+- [ ] Create `src/core/index/backends/sqlite-vec.ts` implementing `VectorStore`
+- [ ] `upsert`: bulk insert chunks + vectors in a single transaction
+- [ ] `query`: ANN search via `vec_distance_cosine`, return top-k with scores
+- [ ] `delete`: remove all chunks for a given file path prefix
+- [ ] `close`: close DB connection
+- [ ] Write tests: `tests/core/index/backends/sqlite-vec.test.ts`
+
+**Done when:** upsert → query round-trip returns the inserted chunk as top result.
+
+---
+
+## Block 9 — Embedding pipeline
+
+### T029 — Embedding provider interface
+- [ ] Create `src/core/index/embedder.ts`
+- [ ] Define `Embedder` interface: `embed(texts: string[]): Promise<number[][]>`
+- [ ] Implement ONNX provider (`src/core/index/providers/onnx.ts`) using `onnxruntime-node` + bundled `all-MiniLM-L6-v2` model (384 dimensions)
+- [ ] Implement Ollama provider (`src/core/index/providers/ollama.ts`) — HTTP call to local Ollama instance
+- [ ] Implement OpenAI provider (`src/core/index/providers/openai.ts`) — opt-in, requires API key in config
+- [ ] Provider factory: `createEmbedder(config)` — returns correct provider based on `embedding.provider` config; auto-detects Ollama if installed
+- [ ] Write tests for ONNX provider
+
+**Done when:** `createEmbedder()` returns ONNX embedder by default; all three providers implement the interface.
+
+---
+
+### T030 — File chunker
+- [ ] Create `src/core/index/chunker.ts`
+- [ ] Primary: chunk by function/class boundaries using Tree-sitter (reuse parsers from Phase 3 if available, skip if not)
+- [ ] Fallback: fixed-token chunking (~200 tokens, 20-token overlap) when no parser available
+- [ ] Chunk ID format: `"{filePath}:{startLine}:{endLine}"`
+- [ ] Write tests with sample files
+
+**Done when:** chunker returns non-overlapping chunks covering the full file content.
+
+---
+
+### T031 — Indexing pipeline with worker_threads
+- [ ] Create `src/core/index/pipeline.ts`
+- [ ] `indexFiles(filePaths: string[], projectId: string): Promise<IndexStats>` — main entry point
+- [ ] Partition files across `worker_threads` (N workers = CPU count - 1, min 1)
+- [ ] Each worker: chunk files → embed chunks → return results to main thread via `transferList`
+- [ ] Main thread: accumulate all results in memory → single `VectorStore.upsert()` call at end
+- [ ] Compute and store XXH3 hash per file
+- [ ] `IndexStats`: `{ filesIndexed, chunksCreated, durationMs }`
+- [ ] Write tests: `tests/core/index/pipeline.test.ts`
+
+**Done when:** pipeline indexes a 10-file fixture in parallel; all chunks queryable after flush.
+
+---
+
+## Block 10 — Search command
+
+### T032 — `mnemo update`
+- [ ] Implement `src/commands/update.ts`
+- [ ] `mnemo update` — full re-index of entire project (respects `.gitignore`)
+- [ ] `mnemo update --since <commit>` — re-index only files changed since commit
+- [ ] `mnemo update --files-from-stdin` — re-index files piped via stdin (used by git hook)
+- [ ] Show progress: files found, files indexed, duration
+- [ ] Update git hook in `mnemo init` to call `mnemo update --files-from-stdin`
+
+**Done when:** `mnemo update` indexes a real project; incremental update works via git hook after a commit.
+
+---
+
+### T033 — Query-time freshness validation
+- [ ] In `VectorStore.query()`, after retrieving results, check `xxh3(file) == stored fileHash`
+- [ ] If stale: call `indexFiles([stalePath])` inline, then retry query
+- [ ] Stale re-index is transparent to the caller
+- [ ] Write tests: simulate a file change between index and query
+
+**Done when:** modifying an indexed file and querying returns updated results without manual re-index.
+
+---
+
+### T034 — `mnemo search <query>`
+- [ ] Implement `src/commands/search.ts`
+- [ ] `mnemo search <query>` — embeds query, calls `VectorStore.query()`, prints results
+- [ ] Default: top 10 results
+- [ ] `--limit <n>` flag
+- [ ] `--output json` flag for machine-readable output
+- [ ] Output format: `file:startLine-endLine (score)` + snippet (first 2 lines of chunk)
+- [ ] Error if project not indexed: "Run `mnemo update` to index this project first."
+
+**Done when:** `mnemo search "JWT authentication"` returns relevant files in <500ms on a 50k LOC project.
+
+---
+
+## Block 11 — mnemo status + agent integration update
+
+### T035 — `mnemo status`
+- [ ] Implement in `src/commands/status.ts`
+- [ ] Show: project ID, total files indexed, total chunks, last indexed timestamp, embedding provider, vector store backend
+- [ ] Warn if index is older than 24h without a commit
+
+**Done when:** `mnemo status` prints a readable health summary.
+
+---
+
+### T036 — Git hook auto-switch feat by branch
+- [ ] Update post-commit hook: after re-indexing, check if current branch matches any feat's `branch` field
+- [ ] If match found: auto-switch active feat to that feat
+- [ ] Print message if auto-switched: "Switched active feat to: {name}"
+
+**Done when:** checking out a branch with a matching feat auto-activates it.
+
+---
+
+### T037 — Update agent integrations for Phase 2
+- [ ] Update `mnemo install claude`: add `/mnemo-search` to skill; add search instructions to CLAUDE.md block
+- [ ] Update `mnemo install codex/copilot/cursor` (if already implemented): same search instructions
+- [ ] Add search to `src/integrations/agents/claude.ts` skill content
+
+**Done when:** skill includes `/mnemo-search <query>` that runs `mnemo search` and injects results.
+
+---
+
+---
+
+# Phase 3 — Structural Graph + MCP + Agent Installers
+
+**Goal:** File-level dependency graph, MCP server for non-CLI agents, and remaining agent installers.  
+**Done when:** `mnemo graph deps <file>` works, `mnemo mcp serve` exposes all tools, and all four agent installers are implemented.
+
+---
+
+## Block 12 — Structural Graph
+
+### T038 — Tree-sitter setup
+- [ ] Install `node-tree-sitter` and language grammars: `tree-sitter-typescript`, `tree-sitter-javascript`, `tree-sitter-python`, `tree-sitter-go`, `tree-sitter-rust`, `tree-sitter-java`
+- [ ] Create `src/core/graph/parser.ts` — `parseFile(filePath): ParsedFile`
+- [ ] Extract per file: imports, exports, top-level function names, top-level class names
+- [ ] Regex fallback for unsupported languages (import lines only)
+- [ ] Write tests with fixture files for each supported language
+
+**Done when:** `parseFile("src/commands/feat.ts")` returns correct imports and exported symbols.
+
+---
+
+### T039 — Graph storage
+- [ ] Create `src/core/graph/store.ts`
+- [ ] SQLite schema per `docs/ARCHITECTURE.md` (nodes + edges tables)
+- [ ] `upsertFile(file: ParsedFile)`: insert/update nodes and edges for a file
+- [ ] `deleteFile(filePath)`: remove all nodes and edges for a file
+- [ ] `getDeps(filePath)`: files this file imports
+- [ ] `getRefs(filePath)`: files that import this file
+- [ ] `getAffected(filePath, maxDepth=3)`: transitive dependents (BFS)
+- [ ] `getSymbols(filePath)`: top-level function/class names
+- [ ] Write tests: `tests/core/graph/store.test.ts`
+
+**Done when:** a chain A→B→C returns B and C as affected by A.
+
+---
+
+### T040 — Graph indexing pipeline
+- [ ] Create `src/core/graph/pipeline.ts`
+- [ ] `indexGraphFiles(filePaths, projectId)`: parse + upsert all files
+- [ ] Integrate with `mnemo update` — graph indexing runs alongside semantic indexing
+- [ ] Graph freshness: use same XXH3 hash stored in graph nodes
+
+**Done when:** `mnemo update` populates both vector and graph indexes.
+
+---
+
+### T041 — Graph CLI commands
+- [ ] Implement `src/commands/graph.ts`
+- [ ] `mnemo graph deps <file>` — list files this file imports
+- [ ] `mnemo graph refs <file>` — list files that import this file
+- [ ] `mnemo graph affected <file>` — transitive dependents (max depth 3)
+- [ ] `mnemo graph symbols <file>` — list top-level functions/classes
+
+**Done when:** all four commands return correct results on the mnemo project itself.
+
+---
+
+## Block 13 — Hybrid ranking
+
+### T042 — Combine semantic + graph + feat scores
+- [ ] Update `mnemo search` to apply hybrid scoring after vector retrieval:
+
+```
+score =
+  0.5 * semantic_similarity
++ 0.2 * graph_proximity      (inverse hop distance from feat-linked files)
++ 0.2 * feat_relevance       (file is in active feat's linked files)
++ 0.1 * recency              (recently modified files ranked higher)
+```
+
+- [ ] Graph proximity: for each result, BFS from feat-linked files; score = 1 / (hops + 1)
+- [ ] Feat relevance: binary 1.0 if file is in active feat, 0 otherwise
+- [ ] Recency: normalize `mtime` across results
+- [ ] `--no-hybrid` flag to disable and use pure semantic ranking
+- [ ] Write tests comparing rankings with and without hybrid scoring
+
+**Done when:** a file in the active feat ranks higher than an equally similar file outside the feat.
+
+---
+
+## Block 14 — MCP Server
+
+### T043 — MCP server setup
+- [ ] Install `@modelcontextprotocol/sdk`
+- [ ] Create `src/integrations/mcp/server.ts`
+- [ ] Implement `mnemo mcp serve` command in `src/commands/mcp.ts`
+- [ ] Support stdio transport (default) and `--port <n>` for HTTP/SSE
+
+**Done when:** `mnemo mcp serve` starts without errors and responds to MCP ping.
+
+---
+
+### T044 — MCP tools: FEAT cache
+- [ ] Expose as MCP tools: `get_feat_context`, `record_decision`, `record_blocker`, `resolve_blocker`, `link_file`
+- [ ] Each tool maps directly to the corresponding core function
+- [ ] Write integration test using MCP SDK client
+
+**Done when:** an MCP client can call `get_feat_context` and receive the current feat's context.md.
+
+---
+
+### T045 — MCP tools: search and graph
+- [ ] Expose: `search_codebase(query, limit?)`, `get_deps(file)`, `get_refs(file)`, `get_symbols(file)`
+- [ ] `search_codebase` returns `ScoredChunk[]` as JSON
+
+**Done when:** MCP client can call `search_codebase` and receive ranked results.
+
+---
+
+## Block 15 — Remaining agent installers
+
+### T046 — `mnemo install codex`
+- [ ] Create `src/integrations/agents/codex.ts`
+- [ ] Generate/update `AGENTS.md` in project root
+- [ ] Include: feat context instructions, search instructions, decision recording
+
+**Done when:** `AGENTS.md` created with correct Mnemo instructions; re-running is safe.
+
+---
+
+### T047 — `mnemo install copilot`
+- [ ] Create `src/integrations/agents/copilot.ts`
+- [ ] Generate/update `.github/copilot-instructions.md`
+- [ ] Same content pattern as AGENTS.md
+
+**Done when:** `.github/copilot-instructions.md` updated correctly; idempotent.
+
+---
+
+### T048 — `mnemo install cursor`
+- [ ] Create `src/integrations/agents/cursor.ts`
+- [ ] Generate/update `.cursorrules`
+- [ ] Same content pattern
+
+**Done when:** `.cursorrules` created correctly; idempotent.
+
+---
+
+## Block 16 — Polish Phase 3
+
+### T049 — Obsidian export
+- [ ] `mnemo export obsidian [--output <dir>]` — exports all feat contexts as an Obsidian vault
+- [ ] One markdown file per feat, with wiki-links between related feats
+- [ ] Default output: `.mnemo-obsidian/` in project root
+
+**Done when:** exported vault opens correctly in Obsidian with all feats visible.
+
+---
+
+### T050 — End-to-end tests Phase 2+3
+- [ ] `tests/e2e/search-flow.test.ts`: update → search → verify relevant results
+- [ ] `tests/e2e/graph-flow.test.ts`: update → graph deps/refs → verify correctness
+- [ ] `tests/e2e/mcp-flow.test.ts`: mcp serve → client calls → verify responses
+
+**Done when:** all e2e tests pass on the mnemo project itself as the test subject.
+
+---
+
+## Updated progress summary
+
+```
+Phase 1 — FEAT Cache (complete):
+  Block 1:  T001 T002
+  Block 2:  T003 T004
+  Block 3:  T005 T006 T007 T008
+  Block 4:  T009 T010 T011 T012 T013 T014 T015 T016 T017 T018 T019 T020 T021
+  Block 5:  T022 T023
+  Block 6:  T024 T025
+
+Phase 2 — Semantic Index:
+  Block 7:  T026
+  Block 8:  T027 T028
+  Block 9:  T029 T030 T031
+  Block 10: T032 T033 T034
+  Block 11: T035 T036 T037
+
+Phase 3 — Structural Graph + MCP:
+  Block 12: T038 T039 T040 T041
+  Block 13: T042
+  Block 14: T043 T044 T045
+  Block 15: T046 T047 T048
+  Block 16: T049 T050
+```
+
+**Total: 50 tasks (25 Phase 1 complete + 25 Phase 2+3)**
