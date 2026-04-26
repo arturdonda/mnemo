@@ -47,10 +47,10 @@ Embedding layers (Phase 2) and structural graph (Phase 3) are **out of scope for
 
 ### T003 — Paths: `~/.mnemo/` directory structure
 
-- [ ] Create `src/core/paths.ts`
-- [ ] Implement `getPaths(projectId: string)` returning all relevant paths
-- [ ] Implement `ensurePaths(projectId: string)` creating dirs if they don't exist
-- [ ] Write tests: `tests/core/paths.test.ts`
+- [x] Create `src/core/paths.ts`
+- [x] Implement `getPaths(projectId: string)` returning all relevant paths
+- [x] Implement `ensurePaths(projectId: string)` creating dirs if they don't exist
+- [x] Write tests: `tests/core/paths.test.ts`
 
 ```typescript
 type MnemoPaths = {
