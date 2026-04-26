@@ -45,7 +45,7 @@ export async function downloadModel(name: string, url: string, dest: string): Pr
 	if (isTTY) process.stderr.write(`${label}${total ? ` (${formatBytes(total)})` : ''}...\n`);
 	else process.stderr.write(`${label}...\n`);
 
-	const tempPath = `${dest}.tmp`;
+	const tempPath = `${dest}.tmp.${process.pid}.${Date.now()}`;
 	const fileStream = createWriteStream(tempPath);
 	const hash = createHash('sha256');
 
@@ -77,14 +77,14 @@ export async function downloadModel(name: string, url: string, dest: string): Pr
 	const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
 	process.stderr.write(`  Downloaded in ${elapsed}s  SHA256: ${sha256.slice(0, 16)}...\n`);
 
-	// move temp → final
-	await rm(dest, { force: true });
+	// move temp → final (atomic on Linux/macOS; overwrites dest if another worker finished first)
 	const { rename } = await import('node:fs/promises');
 	try {
 		await rename(tempPath, dest);
 	} catch (err: unknown) {
-		// Another concurrent download already moved the file — that's fine
-		if ((err as NodeJS.ErrnoException).code === 'ENOENT' && existsSync(dest)) return;
+		// Cleanup our unique temp file and swallow the error if dest now exists
+		await rm(tempPath, { force: true });
+		if (existsSync(dest)) return;
 		throw err;
 	}
 
