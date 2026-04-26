@@ -1,6 +1,5 @@
 import { cpus } from 'node:os';
 import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
-import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { chunkFile } from './chunker.js';
 import { createEmbedder } from './embedder.js';
@@ -62,7 +61,7 @@ export async function indexFiles(filePaths: string[], projectId: string): Promis
 	}
 
 	const embedder = await createEmbedder(config);
-	const dbPath = join(paths.projectRoot, 'index.db');
+	const dbPath = paths.indexDb;
 	const store = new SqliteVecStore(dbPath, embedder.dimensions);
 
 	await store.upsert(allChunks, allEmbeddings);

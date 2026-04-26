@@ -8,6 +8,8 @@ export type MnemoPaths = {
 	featsDir: string;
 	activeFeatFile: string;
 	projectMeta: string;
+	indexDb: string;
+	graphDb: string;
 	featDir: (name: string) => string;
 	eventsFile: (name: string) => string;
 	contextFile: (name: string) => string;
@@ -25,6 +27,8 @@ export function getPaths(projectId: string): MnemoPaths {
 		featsDir,
 		activeFeatFile: join(projectRoot, 'active_feat'),
 		projectMeta: join(projectRoot, 'meta.json'),
+		indexDb: join(projectRoot, 'index.db'),
+		graphDb: join(projectRoot, 'graph.db'),
 		featDir: (name) => join(featsDir, name),
 		eventsFile: (name) => join(featsDir, name, 'events.jsonl'),
 		contextFile: (name) => join(featsDir, name, 'context.md'),
