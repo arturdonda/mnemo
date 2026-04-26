@@ -1,16 +1,21 @@
 #!/usr/bin/env node
 import { Command } from 'commander';
+import { createReadStream } from 'node:fs';
+import { createRequire } from 'node:module';
 import { createFeatCommand } from './commands/feat.js';
 import { createInitCommand } from './commands/init.js';
 import { createInstallCommand } from './commands/install.js';
 import { createConfigCommand } from './commands/config.js';
+
+const require = createRequire(import.meta.url);
+const { version } = require('../package.json') as { version: string };
 
 const program = new Command();
 
 program
   .name('mnemo')
   .description('Your codebase, remembered — across every AI session.')
-  .version('0.1.0');
+  .version(version);
 
 program.addCommand(createInitCommand());
 program.addCommand(createFeatCommand());

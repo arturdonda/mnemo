@@ -392,13 +392,13 @@ When hitting a blocker:
 
 ### T025 — Error handling and UX
 
-- [ ] Clear error messages for all common cases:
+- [x] Clear error messages for all common cases:
   - Project not initialized
   - Feat not found
   - No active feat
   - File not found for link
-- [ ] `mnemo --version` returns version from package.json
-- [ ] All commands have descriptive `--help`
+- [x] `mnemo --version` returns version from package.json
+- [x] All commands have descriptive `--help`
 
 **Done when:** every error has an actionable message (e.g. "Run `mnemo init` to initialize this project.").
 
