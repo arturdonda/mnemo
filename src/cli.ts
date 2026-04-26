@@ -12,6 +12,7 @@ import { createStatusCommand } from './commands/status.js';
 import { createGraphCommand } from './commands/graph.js';
 import { createMcpCommand } from './commands/mcp.js';
 import { createExportCommand } from './commands/export.js';
+import { createModelsCommand } from './commands/models.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json') as { version: string };
@@ -33,5 +34,6 @@ program.addCommand(createStatusCommand());
 program.addCommand(createGraphCommand());
 program.addCommand(createMcpCommand());
 program.addCommand(createExportCommand());
+program.addCommand(createModelsCommand());
 
 program.parse();

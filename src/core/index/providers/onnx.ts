@@ -1,14 +1,12 @@
 import { join } from 'node:path';
-import { homedir } from 'node:os';
-import { existsSync } from 'node:fs';
-import { mkdir, writeFile, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import * as ort from 'onnxruntime-node';
 import type { Embedder } from '../embedder.js';
+import { MODELS_DIR, ensureModel } from '../../models/download.js';
 
-const MODEL_CACHE_DIR = join(homedir(), '.mnemo', 'models');
 const MODEL_NAME = 'all-MiniLM-L6-v2';
-const MODEL_URL = `https://huggingface.co/${MODEL_NAME}/resolve/main/onnx/model.onnx`;
-const VOCAB_URL = `https://huggingface.co/${MODEL_NAME}/resolve/main/tokenizer.json`;
+const MODEL_URL = `https://huggingface.co/sentence-transformers/${MODEL_NAME}/resolve/main/onnx/model.onnx`;
+const VOCAB_URL = `https://huggingface.co/sentence-transformers/${MODEL_NAME}/resolve/main/tokenizer.json`;
 
 export const ONNX_DIMENSIONS = 384;
 
@@ -24,13 +22,11 @@ export class OnnxEmbedder implements Embedder {
 
 	private async ensureLoaded(): Promise<void> {
 		if (this.session) return;
-		const modelPath = join(MODEL_CACHE_DIR, `${MODEL_NAME}.onnx`);
-		const vocabPath = join(MODEL_CACHE_DIR, `${MODEL_NAME}.tokenizer.json`);
+		const modelPath = join(MODELS_DIR, `${MODEL_NAME}.onnx`);
+		const vocabPath = join(MODELS_DIR, `${MODEL_NAME}.tokenizer.json`);
 
-		await mkdir(MODEL_CACHE_DIR, { recursive: true });
-
-		if (!existsSync(modelPath)) await downloadFile(MODEL_URL, modelPath);
-		if (!existsSync(vocabPath)) await downloadFile(VOCAB_URL, vocabPath);
+		await ensureModel(MODEL_NAME, MODEL_URL, modelPath);
+		await ensureModel(`${MODEL_NAME}.tokenizer`, VOCAB_URL, vocabPath);
 
 		this.session = await ort.InferenceSession.create(modelPath);
 		const vocabRaw = JSON.parse(await readFile(vocabPath, 'utf-8')) as {
@@ -109,9 +105,3 @@ function normalize(v: number[]): number[] {
 	return v.map((x) => x / norm);
 }
 
-async function downloadFile(url: string, dest: string): Promise<void> {
-	const res = await fetch(url);
-	if (!res.ok) throw new Error(`Failed to download ${url}: ${res.status}`);
-	const buf = await res.arrayBuffer();
-	await writeFile(dest, Buffer.from(buf));
-}
