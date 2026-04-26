@@ -140,11 +140,11 @@ type FeatureContext = {
 
 ### T007 — Renderer: generate context.md
 
-- [ ] Create `src/core/feat/renderer.ts`
-- [ ] `renderContext(context: FeatureContext): string`: generates formatted markdown
-- [ ] Sections: header, Relevant Files, Decisions, Current Status, Blockers, Notes
-- [ ] Resolved blockers appear in a separate "Resolved Blockers" section (omit section if none)
-- [ ] Write tests: `tests/core/feat/renderer.test.ts` with snapshots
+- [x] Create `src/core/feat/renderer.ts`
+- [x] `renderContext(context: FeatureContext): string`: generates formatted markdown
+- [x] Sections: header, Relevant Files, Decisions, Current Status, Blockers, Notes
+- [x] Resolved blockers appear in a separate "Resolved Blockers" section (omit section if none)
+- [x] Write tests: `tests/core/feat/renderer.test.ts` with snapshots
 
 **Done when:** `renderContext` output matches the example in `docs/ARCHITECTURE.md`.
 
