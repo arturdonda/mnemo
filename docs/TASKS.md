@@ -225,10 +225,10 @@ type FeatureContext = {
 
 ### T014 — `mnemo feat decision "<text>"`
 
-- [ ] Uses active feat or optional `--feat <name>`
-- [ ] Appends `decision` event with timestamp and `author: 'user'`
-- [ ] Regenerates `context.md`
-- [ ] Output: confirmation with truncated text
+- [x] Uses active feat or optional `--feat <name>`
+- [x] Appends `decision` event with timestamp and `author: 'user'`
+- [x] Regenerates `context.md`
+- [x] Output: confirmation with truncated text
 
 **Done when:** decision appears in `mnemo feat context`.
 
@@ -236,10 +236,10 @@ type FeatureContext = {
 
 ### T015 — `mnemo feat blocker "<text>"`
 
-- [ ] Appends `blocker` event
-- [ ] Regenerates `context.md`
-- [ ] Updates feat status to `blocked` if it was `in-progress`
-- [ ] Output: confirmation
+- [x] Appends `blocker` event
+- [x] Regenerates `context.md`
+- [x] Updates feat status to `blocked` if it was `in-progress`
+- [x] Output: confirmation
 
 **Done when:** blocker appears in the Blockers section of `mnemo feat context`.
 
@@ -247,11 +247,11 @@ type FeatureContext = {
 
 ### T016 — `mnemo feat blocker resolve "<text>"`
 
-- [ ] Match by substring against active blocker text
-- [ ] Appends `blocker_resolved` event
-- [ ] If no more active blockers, reverts status to `in-progress`
-- [ ] Regenerates `context.md`
-- [ ] Output: confirmation or error if no matching blocker found
+- [x] Match by substring against active blocker text
+- [x] Appends `blocker_resolved` event
+- [x] If no more active blockers, reverts status to `in-progress`
+- [x] Regenerates `context.md`
+- [x] Output: confirmation or error if no matching blocker found
 
 **Done when:** blocker disappears from active Blockers section after resolve.
 
