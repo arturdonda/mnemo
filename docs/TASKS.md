@@ -179,13 +179,13 @@ type FeatureContext = {
 
 ### T010 — `mnemo feat start <name>`
 
-- [ ] Validate project is initialized (`assertInitialized()`)
-- [ ] Create feat directory via `ensurePaths()`
-- [ ] Write initial `meta.json`
-- [ ] Append `feat_created` event
-- [ ] Set as active feat via `setActiveFeat()`
-- [ ] Auto-detect current branch via `simple-git` and save to meta if available
-- [ ] Output: confirmation with feat name and branch
+- [x] Validate project is initialized (`assertInitialized()`)
+- [x] Create feat directory via `ensurePaths()`
+- [x] Write initial `meta.json`
+- [x] Append `feat_created` event
+- [x] Set as active feat via `setActiveFeat()`
+- [x] Auto-detect current branch via `simple-git` and save to meta if available
+- [x] Output: confirmation with feat name and branch
 
 **Done when:** `mnemo feat start payment-flow` creates the structure and sets it as active.
 
@@ -193,10 +193,10 @@ type FeatureContext = {
 
 ### T011 — `mnemo feat list`
 
-- [ ] List all feats for the project
-- [ ] Show: name, status, branch, last updated
-- [ ] Highlight active feat with visual indicator (`→` or `*`)
-- [ ] Show friendly empty message if no feats exist
+- [x] List all feats for the project
+- [x] Show: name, status, branch, last updated
+- [x] Highlight active feat with visual indicator (`→` or `*`)
+- [x] Show friendly empty message if no feats exist
 
 **Done when:** lists feats with correct active indicator.
 
@@ -204,9 +204,9 @@ type FeatureContext = {
 
 ### T012 — `mnemo feat switch <name>`
 
-- [ ] Validate feat exists
-- [ ] Update `active_feat`
-- [ ] Output: confirmation
+- [x] Validate feat exists
+- [x] Update `active_feat`
+- [x] Output: confirmation
 
 **Done when:** switch correctly changes the active feat.
 
@@ -214,10 +214,10 @@ type FeatureContext = {
 
 ### T013 — `mnemo feat context [name]`
 
-- [ ] No argument: uses active feat; error if none active
-- [ ] With argument: uses specified feat
-- [ ] Reads events.jsonl → `buildContext()` → `renderContext()` → stdout
-- [ ] Output is pure markdown (no extra decoration) — for agent consumption via pipe
+- [x] No argument: uses active feat; error if none active
+- [x] With argument: uses specified feat
+- [x] Reads events.jsonl → `buildContext()` → `renderContext()` → stdout
+- [x] Output is pure markdown (no extra decoration) — for agent consumption via pipe
 
 **Done when:** `mnemo feat context | cat` prints clean markdown.
 
