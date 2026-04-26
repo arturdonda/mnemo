@@ -447,9 +447,9 @@ Block 6 — Polish:       T024 T025
 ## Block 8 — VectorStore abstraction
 
 ### T027 — VectorStore interface and types
-- [ ] Create `src/core/index/vector-store.ts`
-- [ ] Define `VectorStore` interface per `docs/ARCHITECTURE.md`
-- [ ] Define `Chunk` and `ScoredChunk` types:
+- [x] Create `src/core/index/vector-store.ts`
+- [x] Define `VectorStore` interface per `docs/ARCHITECTURE.md`
+- [x] Define `Chunk` and `ScoredChunk` types:
 
 ```typescript
 type Chunk = {
@@ -465,7 +465,7 @@ type Chunk = {
 type ScoredChunk = Chunk & { score: number }
 ```
 
-**Done when:** interface compiles; types are exported from `src/types.ts`.
+**Done when:** interface compiles; types are exported from `src/types.ts`. ✓
 
 ---
 
