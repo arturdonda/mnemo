@@ -10,6 +10,7 @@ import { createUpdateCommand } from './commands/update.js';
 import { createSearchCommand } from './commands/search.js';
 import { createStatusCommand } from './commands/status.js';
 import { createGraphCommand } from './commands/graph.js';
+import { createMcpCommand } from './commands/mcp.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json') as { version: string };
@@ -29,5 +30,6 @@ program.addCommand(createUpdateCommand());
 program.addCommand(createSearchCommand());
 program.addCommand(createStatusCommand());
 program.addCommand(createGraphCommand());
+program.addCommand(createMcpCommand());
 
 program.parse();
