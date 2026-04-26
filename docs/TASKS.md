@@ -126,13 +126,13 @@ type FeatureContext = {
 
 ### T006 — FeatStore: events.jsonl read/write
 
-- [ ] Create `src/core/feat/store.ts`
-- [ ] `appendEvent(projectId, featName, event)`: appends to events.jsonl + regenerates context.md
-- [ ] `readEvents(projectId, featName)`: reads and parses events.jsonl
-- [ ] `buildContext(events)`: reduces events into `FeatureContext`
-- [ ] `listFeats(projectId)`: lists all features for a project
-- [ ] `featExists(projectId, featName)`: boolean
-- [ ] Write tests: `tests/core/feat/store.test.ts`
+- [x] Create `src/core/feat/store.ts`
+- [x] `appendEvent(projectId, featName, event)`: appends to events.jsonl + regenerates context.md
+- [x] `readEvents(projectId, featName)`: reads and parses events.jsonl
+- [x] `buildContext(events)`: reduces events into `FeatureContext`
+- [x] `listFeats(projectId)`: lists all features for a project
+- [x] `featExists(projectId, featName)`: boolean
+- [x] Write tests: `tests/core/feat/store.test.ts`
 
 **Done when:** append and read work; `buildContext` returns correct state for a test event sequence.
 
