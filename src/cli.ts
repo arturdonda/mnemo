@@ -9,6 +9,7 @@ import { createConfigCommand } from './commands/config.js';
 import { createUpdateCommand } from './commands/update.js';
 import { createSearchCommand } from './commands/search.js';
 import { createStatusCommand } from './commands/status.js';
+import { createGraphCommand } from './commands/graph.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json') as { version: string };
@@ -27,5 +28,6 @@ program.addCommand(createConfigCommand());
 program.addCommand(createUpdateCommand());
 program.addCommand(createSearchCommand());
 program.addCommand(createStatusCommand());
+program.addCommand(createGraphCommand());
 
 program.parse();
