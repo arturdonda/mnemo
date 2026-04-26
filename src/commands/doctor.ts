@@ -51,16 +51,38 @@ export function createDoctorCommand(): Command {
 				checks.push({ label: 'Project initialized', ok: false, fix: 'Run `mnemo init` in a git repository' });
 			}
 
-			// 4. ONNX model downloaded
+			// 4. ONNX runtime loadable + model downloaded
 			const config = await readConfig();
 			if (config['embedding.provider'] === 'onnx') {
-				const modelPath = join(MODELS_DIR, 'all-MiniLM-L6-v2.onnx');
-				const modelExists = existsSync(modelPath);
-				checks.push({
-					label: 'ONNX model (all-MiniLM-L6-v2)',
-					ok: modelExists,
-					fix: modelExists ? undefined : 'Run `mnemo update` to download automatically',
-				});
+				// check native module loads correctly before checking the model file
+				let onnxLoadable = true;
+				try {
+					await import('onnxruntime-node');
+				} catch (err: unknown) {
+					onnxLoadable = false;
+					const msg = err instanceof Error ? err.message : String(err);
+					const isNativeError = msg.includes('self-register') || msg.includes('.node') || msg.includes('MODULE_NOT_FOUND');
+					checks.push({
+						label: 'ONNX runtime (onnxruntime-node)',
+						ok: false,
+						detail: msg.slice(0, 120),
+						fix: isNativeError
+							? 'onnxruntime-node native binary is incompatible with this OS/Node version.\n  Switch to Ollama: mnemo config set embedding.provider ollama\n  Then pull a model: ollama pull nomic-embed-text\n  Or use OpenAI:   mnemo config set embedding.provider openai'
+							: 'Reinstall dependencies: npm install -g mnemo-cli',
+					});
+				}
+
+				if (onnxLoadable) {
+					checks.push({ label: 'ONNX runtime (onnxruntime-node)', ok: true });
+
+					const modelPath = join(MODELS_DIR, 'all-MiniLM-L6-v2.onnx');
+					const modelExists = existsSync(modelPath);
+					checks.push({
+						label: 'ONNX model (all-MiniLM-L6-v2)',
+						ok: modelExists,
+						fix: modelExists ? undefined : 'Run `mnemo update` to download automatically',
+					});
+				}
 			} else if (config['embedding.provider'] === 'ollama') {
 				// check Ollama reachable
 				try {
