@@ -537,10 +537,10 @@ type ScoredChunk = Chunk & { score: number }
 ---
 
 ### T033 — Query-time freshness validation
-- [ ] In `VectorStore.query()`, after retrieving results, check `xxh3(file) == stored fileHash`
-- [ ] If stale: call `indexFiles([stalePath])` inline, then retry query
-- [ ] Stale re-index is transparent to the caller
-- [ ] Write tests: simulate a file change between index and query
+- [x] In `VectorStore.query()`, after retrieving results, check `xxh3(file) == stored fileHash`
+- [x] If stale: call `indexFiles([stalePath])` inline, then retry query
+- [x] Stale re-index is transparent to the caller
+- [x] Write tests: simulate a file change between index and query
 
 **Done when:** modifying an indexed file and querying returns updated results without manual re-index.
 
