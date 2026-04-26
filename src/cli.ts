@@ -11,6 +11,7 @@ import { createSearchCommand } from './commands/search.js';
 import { createStatusCommand } from './commands/status.js';
 import { createGraphCommand } from './commands/graph.js';
 import { createMcpCommand } from './commands/mcp.js';
+import { createExportCommand } from './commands/export.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json') as { version: string };
@@ -31,5 +32,6 @@ program.addCommand(createSearchCommand());
 program.addCommand(createStatusCommand());
 program.addCommand(createGraphCommand());
 program.addCommand(createMcpCommand());
+program.addCommand(createExportCommand());
 
 program.parse();
