@@ -600,47 +600,47 @@ type ScoredChunk = Chunk & { score: number }
 ## Block 12 — Structural Graph
 
 ### T038 — Tree-sitter setup
-- [ ] Install `node-tree-sitter` and language grammars: `tree-sitter-typescript`, `tree-sitter-javascript`, `tree-sitter-python`, `tree-sitter-go`, `tree-sitter-rust`, `tree-sitter-java`
-- [ ] Create `src/core/graph/parser.ts` — `parseFile(filePath): ParsedFile`
-- [ ] Extract per file: imports, exports, top-level function names, top-level class names
-- [ ] Regex fallback for unsupported languages (import lines only)
-- [ ] Write tests with fixture files for each supported language
+- [x] Install `node-tree-sitter` and language grammars: `tree-sitter-typescript`, `tree-sitter-javascript`, `tree-sitter-python`, `tree-sitter-go`, `tree-sitter-rust`, `tree-sitter-java`
+- [x] Create `src/core/graph/parser.ts` — `parseFile(filePath): ParsedFile`
+- [x] Extract per file: imports, exports, top-level function names, top-level class names
+- [x] Regex fallback for unsupported languages (import lines only)
+- [x] Write tests with fixture files for each supported language
 
 **Done when:** `parseFile("src/commands/feat.ts")` returns correct imports and exported symbols.
 
 ---
 
 ### T039 — Graph storage
-- [ ] Create `src/core/graph/store.ts`
-- [ ] SQLite schema per `docs/ARCHITECTURE.md` (nodes + edges tables)
-- [ ] `upsertFile(file: ParsedFile)`: insert/update nodes and edges for a file
-- [ ] `deleteFile(filePath)`: remove all nodes and edges for a file
-- [ ] `getDeps(filePath)`: files this file imports
-- [ ] `getRefs(filePath)`: files that import this file
-- [ ] `getAffected(filePath, maxDepth=3)`: transitive dependents (BFS)
-- [ ] `getSymbols(filePath)`: top-level function/class names
-- [ ] Write tests: `tests/core/graph/store.test.ts`
+- [x] Create `src/core/graph/store.ts`
+- [x] SQLite schema per `docs/ARCHITECTURE.md` (nodes + edges tables)
+- [x] `upsertFile(file: ParsedFile)`: insert/update nodes and edges for a file
+- [x] `deleteFile(filePath)`: remove all nodes and edges for a file
+- [x] `getDeps(filePath)`: files this file imports
+- [x] `getRefs(filePath)`: files that import this file
+- [x] `getAffected(filePath, maxDepth=3)`: transitive dependents (BFS)
+- [x] `getSymbols(filePath)`: top-level function/class names
+- [x] Write tests: `tests/core/graph/store.test.ts`
 
 **Done when:** a chain A→B→C returns B and C as affected by A.
 
 ---
 
 ### T040 — Graph indexing pipeline
-- [ ] Create `src/core/graph/pipeline.ts`
-- [ ] `indexGraphFiles(filePaths, projectId)`: parse + upsert all files
-- [ ] Integrate with `mnemo update` — graph indexing runs alongside semantic indexing
-- [ ] Graph freshness: use same XXH3 hash stored in graph nodes
+- [x] Create `src/core/graph/pipeline.ts`
+- [x] `indexGraphFiles(filePaths, projectId)`: parse + upsert all files
+- [x] Integrate with `mnemo update` — graph indexing runs alongside semantic indexing
+- [x] Graph freshness: use same XXH3 hash stored in graph nodes
 
 **Done when:** `mnemo update` populates both vector and graph indexes.
 
 ---
 
 ### T041 — Graph CLI commands
-- [ ] Implement `src/commands/graph.ts`
-- [ ] `mnemo graph deps <file>` — list files this file imports
-- [ ] `mnemo graph refs <file>` — list files that import this file
-- [ ] `mnemo graph affected <file>` — transitive dependents (max depth 3)
-- [ ] `mnemo graph symbols <file>` — list top-level functions/classes
+- [x] Implement `src/commands/graph.ts`
+- [x] `mnemo graph deps <file>` — list files this file imports
+- [x] `mnemo graph refs <file>` — list files that import this file
+- [x] `mnemo graph affected <file>` — transitive dependents (max depth 3)
+- [x] `mnemo graph symbols <file>` — list top-level functions/classes
 
 **Done when:** all four commands return correct results on the mnemo project itself.
 
@@ -649,7 +649,7 @@ type ScoredChunk = Chunk & { score: number }
 ## Block 13 — Hybrid ranking
 
 ### T042 — Combine semantic + graph + feat scores
-- [ ] Update `mnemo search` to apply hybrid scoring after vector retrieval:
+- [x] Update `mnemo search` to apply hybrid scoring after vector retrieval:
 
 ```
 score =
@@ -659,11 +659,11 @@ score =
 + 0.1 * recency              (recently modified files ranked higher)
 ```
 
-- [ ] Graph proximity: for each result, BFS from feat-linked files; score = 1 / (hops + 1)
-- [ ] Feat relevance: binary 1.0 if file is in active feat, 0 otherwise
-- [ ] Recency: normalize `mtime` across results
-- [ ] `--no-hybrid` flag to disable and use pure semantic ranking
-- [ ] Write tests comparing rankings with and without hybrid scoring
+- [x] Graph proximity: for each result, BFS from feat-linked files; score = 1 / (hops + 1)
+- [x] Feat relevance: binary 1.0 if file is in active feat, 0 otherwise
+- [x] Recency: normalize `mtime` across results
+- [x] `--no-hybrid` flag to disable and use pure semantic ranking
+- [x] Write tests comparing rankings with and without hybrid scoring
 
 **Done when:** a file in the active feat ranks higher than an equally similar file outside the feat.
 
@@ -672,27 +672,27 @@ score =
 ## Block 14 — MCP Server
 
 ### T043 — MCP server setup
-- [ ] Install `@modelcontextprotocol/sdk`
-- [ ] Create `src/integrations/mcp/server.ts`
-- [ ] Implement `mnemo mcp serve` command in `src/commands/mcp.ts`
-- [ ] Support stdio transport (default) and `--port <n>` for HTTP/SSE
+- [x] Install `@modelcontextprotocol/sdk`
+- [x] Create `src/integrations/mcp/server.ts`
+- [x] Implement `mnemo mcp serve` command in `src/commands/mcp.ts`
+- [x] Support stdio transport (default) and `--port <n>` for HTTP/SSE
 
 **Done when:** `mnemo mcp serve` starts without errors and responds to MCP ping.
 
 ---
 
 ### T044 — MCP tools: FEAT cache
-- [ ] Expose as MCP tools: `get_feat_context`, `record_decision`, `record_blocker`, `resolve_blocker`, `link_file`
-- [ ] Each tool maps directly to the corresponding core function
-- [ ] Write integration test using MCP SDK client
+- [x] Expose as MCP tools: `get_feat_context`, `record_decision`, `record_blocker`, `resolve_blocker`, `link_file`
+- [x] Each tool maps directly to the corresponding core function
+- [x] Write integration test using MCP SDK client
 
 **Done when:** an MCP client can call `get_feat_context` and receive the current feat's context.md.
 
 ---
 
 ### T045 — MCP tools: search and graph
-- [ ] Expose: `search_codebase(query, limit?)`, `get_deps(file)`, `get_refs(file)`, `get_symbols(file)`
-- [ ] `search_codebase` returns `ScoredChunk[]` as JSON
+- [x] Expose: `search_codebase(query, limit?)`, `get_deps(file)`, `get_refs(file)`, `get_symbols(file)`
+- [x] `search_codebase` returns `ScoredChunk[]` as JSON
 
 **Done when:** MCP client can call `search_codebase` and receive ranked results.
 
@@ -701,27 +701,27 @@ score =
 ## Block 15 — Remaining agent installers
 
 ### T046 — `mnemo install codex`
-- [ ] Create `src/integrations/agents/codex.ts`
-- [ ] Generate/update `AGENTS.md` in project root
-- [ ] Include: feat context instructions, search instructions, decision recording
+- [x] Create `src/integrations/agents/codex.ts`
+- [x] Generate/update `AGENTS.md` in project root
+- [x] Include: feat context instructions, search instructions, decision recording
 
 **Done when:** `AGENTS.md` created with correct Mnemo instructions; re-running is safe.
 
 ---
 
 ### T047 — `mnemo install copilot`
-- [ ] Create `src/integrations/agents/copilot.ts`
-- [ ] Generate/update `.github/copilot-instructions.md`
-- [ ] Same content pattern as AGENTS.md
+- [x] Create `src/integrations/agents/copilot.ts`
+- [x] Generate/update `.github/copilot-instructions.md`
+- [x] Same content pattern as AGENTS.md
 
 **Done when:** `.github/copilot-instructions.md` updated correctly; idempotent.
 
 ---
 
 ### T048 — `mnemo install cursor`
-- [ ] Create `src/integrations/agents/cursor.ts`
-- [ ] Generate/update `.cursorrules`
-- [ ] Same content pattern
+- [x] Create `src/integrations/agents/cursor.ts`
+- [x] Generate/update `.cursorrules`
+- [x] Same content pattern
 
 **Done when:** `.cursorrules` created correctly; idempotent.
 
@@ -730,18 +730,18 @@ score =
 ## Block 16 — Polish Phase 3
 
 ### T049 — Obsidian export
-- [ ] `mnemo export obsidian [--output <dir>]` — exports all feat contexts as an Obsidian vault
-- [ ] One markdown file per feat, with wiki-links between related feats
-- [ ] Default output: `.mnemo-obsidian/` in project root
+- [x] `mnemo export obsidian [--output <dir>]` — exports all feat contexts as an Obsidian vault
+- [x] One markdown file per feat, with wiki-links between related feats
+- [x] Default output: `.mnemo-obsidian/` in project root
 
 **Done when:** exported vault opens correctly in Obsidian with all feats visible.
 
 ---
 
 ### T050 — End-to-end tests Phase 2+3
-- [ ] `tests/e2e/search-flow.test.ts`: update → search → verify relevant results
-- [ ] `tests/e2e/graph-flow.test.ts`: update → graph deps/refs → verify correctness
-- [ ] `tests/e2e/mcp-flow.test.ts`: mcp serve → client calls → verify responses
+- [x] `tests/e2e/search-flow.test.ts`: update → search → verify relevant results
+- [x] `tests/e2e/graph-flow.test.ts`: update → graph deps/refs → verify correctness
+- [x] `tests/e2e/mcp-flow.test.ts`: mcp serve → client calls → verify responses
 
 **Done when:** all e2e tests pass on the mnemo project itself as the test subject.
 
@@ -773,4 +773,4 @@ Phase 3 — Structural Graph + MCP:
   Block 16: T049 T050
 ```
 
-**Total: 50 tasks (25 Phase 1 complete + 25 Phase 2+3)**
+**Total: 50 tasks — ALL COMPLETE**
