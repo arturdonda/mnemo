@@ -498,11 +498,11 @@ type ScoredChunk = Chunk & { score: number }
 ---
 
 ### T030 — File chunker
-- [ ] Create `src/core/index/chunker.ts`
-- [ ] Primary: chunk by function/class boundaries using Tree-sitter (reuse parsers from Phase 3 if available, skip if not)
-- [ ] Fallback: fixed-token chunking (~200 tokens, 20-token overlap) when no parser available
-- [ ] Chunk ID format: `"{filePath}:{startLine}:{endLine}"`
-- [ ] Write tests with sample files
+- [x] Create `src/core/index/chunker.ts`
+- [x] Primary: chunk by function/class boundaries using Tree-sitter (reuse parsers from Phase 3 if available, skip if not)
+- [x] Fallback: fixed-token chunking (~200 tokens, 20-token overlap) when no parser available
+- [x] Chunk ID format: `"{filePath}:{startLine}:{endLine}"`
+- [x] Write tests with sample files
 
 **Done when:** chunker returns non-overlapping chunks covering the full file content.
 
