@@ -1,5 +1,5 @@
 import { xxh3 } from '@node-rs/xxhash';
-import { readFile } from 'node:fs/promises';
+import { readFile, realpath } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { simpleGit } from 'simple-git';
 import { MnemoError } from './error.js';
@@ -28,7 +28,9 @@ async function getPackageName(cwd: string): Promise<string | null> {
 }
 
 export async function resolveProjectId(cwd: string = process.cwd()): Promise<string> {
-	const source = (await getGitRemote(cwd)) ?? cwd;
+	// resolve symlinks so macOS /var/folders → /private/var/folders doesn't produce different IDs
+	const resolvedCwd = await realpath(cwd).catch(() => cwd);
+	const source = (await getGitRemote(resolvedCwd)) ?? resolvedCwd;
 	const hash = xxh3.xxh64(source).toString(16).padStart(16, '0');
 	return hash.slice(0, 16);
 }
