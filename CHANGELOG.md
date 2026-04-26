@@ -8,13 +8,19 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ## [Unreleased]
 
+---
+
+## [1.0.0] — 2026-04-26
+
+First public release.
+
 ### Added
 - LanceDB backend as alternative vector store (`mnemo config set vector-store lancedb`)
 - `mnemo models list/download/remove` for managing embedding models
-- `mnemo doctor` for diagnosing setup issues
-- `mnemo export obsidian` for Obsidian vault export
-- `mnemo mcp serve` MCP server with FEAT cache and search tools
-- `mnemo graph deps/refs/affected/symbols` structural dependency graph
+- `mnemo doctor` for diagnosing setup issues with fix instructions
+- `mnemo export obsidian` for exporting all feats as an Obsidian vault
+- `mnemo mcp serve` MCP server (stdio + HTTP/SSE) with FEAT cache and search tools
+- `mnemo graph deps/refs/affected/symbols` structural dependency graph via Tree-sitter
 - `mnemo install codex/copilot/cursor` agent integrations
 - Hybrid search ranking (semantic + graph proximity + feat relevance + recency)
 - Model download with progress bar and SHA256 integrity verification
@@ -54,6 +60,7 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ---
 
-[Unreleased]: https://github.com/arturdonda/mnemo/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/arturdonda/mnemo/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/arturdonda/mnemo/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/arturdonda/mnemo/releases/tag/v0.1.0
