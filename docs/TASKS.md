@@ -470,13 +470,13 @@ type ScoredChunk = Chunk & { score: number }
 ---
 
 ### T028 — sqlite-vec backend
-- [ ] Install `sqlite-vec` package
-- [ ] Create `src/core/index/backends/sqlite-vec.ts` implementing `VectorStore`
-- [ ] `upsert`: bulk insert chunks + vectors in a single transaction
-- [ ] `query`: ANN search via `vec_distance_cosine`, return top-k with scores
-- [ ] `delete`: remove all chunks for a given file path prefix
-- [ ] `close`: close DB connection
-- [ ] Write tests: `tests/core/index/backends/sqlite-vec.test.ts`
+- [x] Install `sqlite-vec` package
+- [x] Create `src/core/index/backends/sqlite-vec.ts` implementing `VectorStore`
+- [x] `upsert`: bulk insert chunks + vectors in a single transaction
+- [x] `query`: ANN search via `vec_distance_cosine`, return top-k with scores
+- [x] `delete`: remove all chunks for a given file path prefix
+- [x] `close`: close DB connection
+- [x] Write tests: `tests/core/index/backends/sqlite-vec.test.ts`
 
 **Done when:** upsert → query round-trip returns the inserted chunk as top result.
 
