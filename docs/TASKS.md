@@ -166,12 +166,12 @@ type FeatureContext = {
 
 ### T009 — `mnemo init`
 
-- [ ] Implement in `src/commands/init.ts`
-- [ ] Create `~/.mnemo/projects/{id}/` structure via `ensurePaths()`
-- [ ] Write `meta.json` with project name and path
-- [ ] Install `post-commit` git hook in `.git/hooks/`
-- [ ] Idempotent: does not fail if already initialized
-- [ ] Output: confirmation with project ID and path
+- [x] Implement in `src/commands/init.ts`
+- [x] Create `~/.mnemo/projects/{id}/` structure via `ensurePaths()`
+- [x] Write `meta.json` with project name and path
+- [x] Install `post-commit` git hook in `.git/hooks/`
+- [x] Idempotent: does not fail if already initialized
+- [x] Output: confirmation with project ID and path
 
 **Done when:** `mnemo init` runs without errors; `.git/hooks/post-commit` created; re-running is safe.
 
