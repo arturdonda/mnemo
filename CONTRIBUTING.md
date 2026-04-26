@@ -1,16 +1,38 @@
 # Contributing to Mnemo
 
+Thank you for your interest in contributing. This document covers setup, architecture, conventions, and the PR process.
+
+---
+
+## Code of Conduct
+
+This project follows the [Contributor Covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct/) (v2.1). By participating, you agree to uphold it. Report violations to the maintainers via GitHub.
+
+---
+
+## Good First Issues
+
+Issues labeled [`good first issue`](https://github.com/arturdonda/mnemo/labels/good%20first%20issue) are explicitly scoped and well-defined — a good entry point if you are new to the codebase.
+
+Issues labeled [`help wanted`](https://github.com/arturdonda/mnemo/labels/help%20wanted) are higher-effort but welcome external contributions.
+
+If you want to work on something, leave a comment on the issue first so we can coordinate.
+
+---
+
 ## Architecture Overview
 
 Mnemo has three indexing layers:
 
-| Layer | Module | Storage |
-|---|---|---|
-| FEAT Cache | `src/core/feat/` | `~/.mnemo/projects/{id}/feats/` |
-| Semantic Index | `src/core/index/` | `~/.mnemo/projects/{id}/index.db` |
+| Layer            | Module            | Storage                           |
+| ---------------- | ----------------- | --------------------------------- |
+| FEAT Cache       | `src/core/feat/`  | `~/.mnemo/projects/{id}/feats/`   |
+| Semantic Index   | `src/core/index/` | `~/.mnemo/projects/{id}/index.db` |
 | Structural Graph | `src/core/graph/` | `~/.mnemo/projects/{id}/graph.db` |
 
-See `docs/ARCHITECTURE.md` for full design documentation and ADRs.
+See `docs/ARCHITECTURE.md` for full design documentation and `docs/DECISIONS.md` for architectural decision records (ADRs).
+
+---
 
 ## Setup
 
@@ -19,6 +41,8 @@ git clone https://github.com/arturdonda/mnemo
 cd mnemo
 npm install
 ```
+
+---
 
 ## Development
 
@@ -31,6 +55,8 @@ npm run lint:fix                       # biome check --write
 npm run test                           # vitest run (all tests)
 npm run bench                          # run performance benchmarks
 ```
+
+---
 
 ## Project Structure
 
@@ -64,15 +90,19 @@ docs/
   TASKS.md                # implementation task list
 ```
 
+---
+
 ## Conventions
 
-- **en-US only** — all code, comments, docs, commit messages
+- **en-US only** — all code, comments, docs, commit messages, and error messages
 - **ESM only** — `import`/`export`, never `require()`
 - **TypeScript strict** — no implicit `any`, no unnecessary `!`
-- **Biome** for lint and format
-- **Errors** — never `process.exit()` directly; use `MnemoError`
+- **Biome** for lint and format — run before committing
+- **Errors** — never `process.exit()` directly; use `MnemoError` from `src/core/error.ts`
 - **Tests** — one test file per module; co-located as `*.test.ts`
-- **No obvious comments** — only non-evident logic
+- **No obvious comments** — comment only non-evident logic
+
+---
 
 ## Commit Message Convention
 
@@ -83,13 +113,27 @@ chore: short description
 docs: short description
 ```
 
+The `T###` reference is optional for external contributors — use it if your change relates to a task in `docs/TASKS.md`.
+
+---
+
 ## PR Process
 
 1. Fork the repo and create a feature branch
 2. Implement with tests (`npm run test` must pass)
 3. Run `npm run typecheck` and `npm run lint`
-4. Open a PR — CI runs on all three OSes automatically
+4. Open a PR against `main` — CI runs automatically on Windows, macOS, and Linux
+
+Keep PRs focused: one thing per PR. If you want to refactor something unrelated to your fix, open a separate PR.
+
+---
 
 ## ADR Process
 
-Architectural decisions are recorded in `docs/DECISIONS.md` as ADRs (D001–D0xx). Do not reopen a closed ADR without explicit reason. For new decisions, append a new entry.
+Architectural decisions are recorded in `docs/DECISIONS.md` as ADRs (D001–D0xx). Do not reopen a closed ADR without explicit reason. For new decisions, append a new entry with the current date.
+
+---
+
+## Proposing Features
+
+Open a [GitHub Discussion](https://github.com/arturdonda/mnemo/discussions) before opening an issue for large features. This keeps the issue tracker focused on actionable work.

@@ -4,71 +4,180 @@
 
 [![CI](https://github.com/arturdonda/mnemo/actions/workflows/ci.yml/badge.svg)](https://github.com/arturdonda/mnemo/actions/workflows/ci.yml)
 [![npm](https://img.shields.io/npm/v/mnemo-cli)](https://www.npmjs.com/package/mnemo-cli)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-**Mnemo** is a CLI tool that gives AI coding agents (Claude Code, GitHub Copilot, Codex, Cursor, and others) persistent memory of your codebase. Agents stop re-discovering your project from scratch on every session and start where they left off.
-
----
-
-## The Problem
-
-Every time you start a new AI coding session, the agent starts blind. It spends the first exchanges mapping your project — reading directory trees, tracing imports, re-reading files it already read yesterday. On a medium-sized codebase, this costs 2,000–8,000 tokens before any real work begins.
-
-Worse: every feature conversation resets. Decisions made last session ("we chose Stripe Checkout because..."), files scoped in, blockers noted — all gone.
-
-## The Solution
-
-Mnemo maintains three complementary indexes, updated automatically via git hooks:
-
-| Layer | What it stores | Query |
-|---|---|---|
-| **FEAT Cache** | Per-feature decisions, files, blockers, notes | `mnemo feat context` |
-| **Semantic Index** | Local vector embeddings of every source file | `mnemo search "<query>"` |
-| **Structural Graph** | File-level dependency graph | `mnemo graph deps <file>` |
-
----
-
-## Installation
+**Mnemo** gives AI coding agents persistent memory of your codebase. Start every session exactly where you left off — decisions, context, and all.
 
 ```bash
 npm install -g mnemo-cli
 ```
 
-Requires Node.js ≥ 20.
+---
+
+## The Problem
+
+You spent an hour with your AI agent yesterday. You explained the architecture, scoped the files, decided to use Stripe Checkout over Payment Intents, and hit a blocker with webhook validation.
+
+Today you open a new session. The agent has no idea any of that happened.
+
+It re-reads your directory tree. Re-traces your imports. Asks what framework you're using. You explain everything again.
+
+This is not a token budget problem. It is a memory problem.
+
+---
+
+## What Mnemo Does
+
+Mnemo keeps three indexes, updated automatically on every git commit.
+
+### FEAT Cache — the differentiator
+
+Per-feature context that persists across sessions. At the start of every session, your agent reads:
+
+```
+$ mnemo feat context
+
+# FEAT: payment-integration
+
+**Branch:** feature/payment-integration
+**Status:** in-progress
+**Last updated:** 2026-04-25
+
+## Relevant Files
+- `src/routes/payments.ts` — main route handler
+- `src/services/stripe.ts`
+- `src/models/order.ts`
+
+## Decisions
+- 2026-04-20: Using Stripe Checkout, not Payment Intents — simpler for MVP scope
+- 2026-04-22: Orders stay in PENDING until webhook confirms payment
+
+## Current Status
+Webhook handler implemented, writing tests.
+
+## Blockers
+None active.
+```
+
+Your agent already knows what was decided, which files matter, and where you stopped.
+
+### Semantic Search
+
+```
+$ mnemo search "JWT authentication middleware"
+
+src/middleware/auth.ts   (lines 12–45)  score 0.94
+src/services/token.ts    (lines 1–28)   score 0.87
+src/routes/protected.ts  (lines 3–8)    score 0.71
+```
+
+Natural-language queries over your codebase, fully local. No API calls. No code leaves your machine.
+
+### Structural Graph
+
+```
+$ mnemo graph deps src/services/stripe.ts
+
+src/models/order.ts
+src/config/env.ts
+src/utils/logger.ts
+```
+
+File-level dependency graph via Tree-sitter. Know what breaks before you touch it.
 
 ---
 
 ## Quick Start
 
 ```bash
-# 1. Initialize Mnemo in your project
+# 1. Install
+npm install -g mnemo-cli
+
+# 2. Initialize in your project
 mnemo init
 
-# 2. Index the codebase (downloads ONNX model on first run, ~88MB)
+# 3. Index the codebase (downloads ONNX model on first run, ~88MB)
 mnemo update
 
-# 3. Start tracking a feature
+# 4. Start tracking a feature
 mnemo feat start payment-flow
 
-# 4. Wire up your AI agent
+# 5. Wire up your AI agent
 mnemo install claude     # Claude Code
 mnemo install codex      # OpenAI Codex / ChatGPT
 mnemo install copilot    # GitHub Copilot
 mnemo install cursor     # Cursor
 ```
 
+From this point, your agent automatically reads `mnemo feat context` at session start and records decisions as you work.
+
 ---
 
-## Command Reference
+## Recording Context
+
+```bash
+# Decisions are the most important thing to record
+mnemo feat decision "Using Stripe Checkout — simpler than Payment Intents for MVP"
+
+# Link files to the current feature
+mnemo feat link-file src/routes/payments.ts --reason "main route handler"
+
+# Track and resolve blockers
+mnemo feat blocker "Webhook signature validation failing in test env"
+mnemo feat blocker resolve "Webhook signature validation failing in test env"
+
+# Update status at the end of a session
+mnemo feat status "Webhook handler done, writing tests"
+```
+
+---
+
+## Agent Support
+
+| Agent          | Command                 | What gets installed               |
+| -------------- | ----------------------- | --------------------------------- |
+| Claude Code    | `mnemo install claude`  | Skill + CLAUDE.md instructions    |
+| OpenAI Codex   | `mnemo install codex`   | AGENTS.md                         |
+| GitHub Copilot | `mnemo install copilot` | `.github/copilot-instructions.md` |
+| Cursor         | `mnemo install cursor`  | `.cursorrules`                    |
+
+All agents receive instructions to load feature context at session start, use `mnemo search` before exploring unfamiliar code, and record decisions automatically.
+
+**MCP server** (for any MCP-compatible client):
+
+```bash
+mnemo mcp serve
+```
+
+Exposes: `get_feat_context`, `search_codebase`, `record_decision`, `record_blocker`, `resolve_blocker`, `link_file`, `get_deps`, `get_refs`.
+
+---
+
+## Privacy
+
+All indexes are stored locally in `~/.mnemo/`. The default embedding model (`all-MiniLM-L6-v2`) runs entirely on-device via ONNX Runtime. No code is ever sent to any server.
+
+To improve embedding quality, swap to Ollama or OpenAI:
+
+```bash
+mnemo config set embedding.provider ollama
+mnemo config set embedding.model nomic-embed-text
+```
+
+---
+
+## Full Command Reference
+
+<details>
+<summary>Show all commands</summary>
 
 ### Project
 
 ```
-mnemo init              Initialize Mnemo for this project
-mnemo update            Index or re-index the codebase
-  --since <commit>      Only re-index files changed since this commit
-  --files-from-stdin    Read file list from stdin (used by git hook)
-mnemo doctor            Diagnose setup issues with fix instructions
-mnemo status            Show index stats (files, chunks, last indexed)
+mnemo init                          Initialize Mnemo for this project
+mnemo update [--since <commit>]     Index or re-index the codebase
+mnemo doctor                        Diagnose setup issues with fix instructions
+mnemo status                        Show index stats (files, chunks, last indexed)
 ```
 
 ### Feature Context
@@ -88,46 +197,32 @@ mnemo feat unlink-file <path>        Unlink a file
 mnemo feat done                      Mark feature as done
 ```
 
-### Search
+### Search & Graph
 
 ```
-mnemo search "<query>"    Natural language search
-  --limit <n>             Number of results (default: 10)
-  --output json           JSON output
-  --no-hybrid             Pure semantic ranking (no graph/feat boost)
+mnemo search "<query>" [--limit n] [--output json] [--no-hybrid]
+mnemo graph deps <file>
+mnemo graph refs <file>
+mnemo graph affected <file>
+mnemo graph symbols <file>
 ```
 
-### Graph
+### Configuration
 
 ```
-mnemo graph deps <file>       Files this file imports
-mnemo graph refs <file>       Files that import this file
-mnemo graph affected <file>   Transitive dependents (max depth 3)
-mnemo graph symbols <file>    Top-level functions and classes
+mnemo config list
+mnemo config get <key>
+mnemo config set <key> <value>
 ```
 
-### Models
-
-```
-mnemo models list               Show installed embedding models
-mnemo models download <name>    Explicitly download a model
-mnemo models remove <name>      Remove a cached model
-```
-
-### Agent Integration
-
-```
-mnemo install claude     Write Claude Code skill + update CLAUDE.md
-mnemo install codex      Create/update AGENTS.md
-mnemo install copilot    Create/update .github/copilot-instructions.md
-mnemo install cursor     Create/update .cursorrules
-```
-
-### MCP Server
-
-```
-mnemo mcp serve    Start Mnemo as an MCP server (stdio transport)
-```
+| Key                   | Default                  | Options                    |
+| --------------------- | ------------------------ | -------------------------- |
+| `embedding.provider`  | `onnx`                   | `onnx`, `ollama`, `openai` |
+| `embedding.model`     | `all-MiniLM-L6-v2`       | any model name             |
+| `vector-store`        | `sqlite`                 | `sqlite`, `lancedb`        |
+| `embedding.ollamaUrl` | `http://localhost:11434` | any URL                    |
+| `embedding.openaiKey` | _(empty)_                | your OpenAI API key        |
+| `watch`               | `false`                  | `true`, `false`            |
 
 ### Export
 
@@ -135,88 +230,33 @@ mnemo mcp serve    Start Mnemo as an MCP server (stdio transport)
 mnemo export obsidian [--output <dir>]    Export all feats as Obsidian vault
 ```
 
----
-
-## Configuration
-
-```bash
-mnemo config list                  Show all settings
-mnemo config get <key>             Get a setting
-mnemo config set <key> <value>     Set a setting
-```
-
-| Key | Default | Options |
-|---|---|---|
-| `embedding.provider` | `onnx` | `onnx`, `ollama`, `openai` |
-| `embedding.model` | `all-MiniLM-L6-v2` | any model name |
-| `vector-store` | `sqlite` | `sqlite`, `lancedb` |
-| `embedding.ollamaUrl` | `http://localhost:11434` | any URL |
-| `embedding.openaiKey` | _(empty)_ | your OpenAI API key |
-| `watch` | `false` | `true`, `false` |
-
-### Using Ollama
-
-```bash
-mnemo config set embedding.provider ollama
-mnemo config set embedding.model nomic-embed-text
-mnemo update
-```
-
-### Using LanceDB
-
-```bash
-mnemo config set vector-store lancedb
-mnemo update
-```
-
----
-
-## Agent Integration Details
-
-### Claude Code
-
-`mnemo install claude` adds a skill to `~/.claude/skills/mnemo.md` and appends instructions to `CLAUDE.md`. Available slash commands in Claude Code sessions:
-
-- `/mnemo-context` — load current feature context
-- `/mnemo-search <query>` — search codebase
-- `/mnemo-decision <text>` — record a decision
-- `/mnemo-blocker <text>` — record a blocker
-
-### MCP Server
-
-For agents that support the Model Context Protocol:
-
-```bash
-mnemo mcp serve
-```
-
-Exposes tools: `get_feat_context`, `record_decision`, `record_blocker`, `resolve_blocker`, `link_file`, `search_codebase`, `get_deps`, `get_refs`, `get_symbols`.
+</details>
 
 ---
 
 ## FAQ
 
-**Q: Does Mnemo send my code anywhere?**  
-All indexes are stored locally in `~/.mnemo/`. The default embedding model runs entirely on-device via ONNX.
+**Q: Does Mnemo send my code anywhere?**
+No. All indexes are stored locally in `~/.mnemo/`. The default embedding model runs entirely on-device via ONNX Runtime.
 
-**Q: How much disk space does it use?**  
+**Q: How much disk space does it use?**
 The ONNX model is ~88MB. The vector index for a 100k LOC project is typically 20–50MB. The graph index and feature cache are negligible.
 
-**Q: Does it work on Windows?**  
+**Q: Does it work on Windows?**
 Yes. Mnemo is tested on Windows, macOS, and Linux via GitHub Actions CI.
 
-**Q: How do I reset the index?**  
-Delete `~/.mnemo/projects/<id>/index.db` (or `lancedb/`) and run `mnemo update`.
+**Q: How do I reset the index?**
+Delete `~/.mnemo/projects/<id>/index.db` and run `mnemo update`. Or run `mnemo doctor` for guided diagnostics.
 
-**Q: Can I use it without git?**  
-Yes, but the git hook (auto-reindex on commit) won't be installed. Run `mnemo update` manually after changes.
+**Q: Can I use it without git?**
+Yes, but the post-commit hook won't be installed. Run `mnemo update` manually after changes.
 
 ---
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for setup, architecture, and PR guidelines.
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 
-MIT
+[MIT](LICENSE)
