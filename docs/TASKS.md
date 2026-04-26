@@ -525,12 +525,12 @@ type ScoredChunk = Chunk & { score: number }
 ## Block 10 — Search command
 
 ### T032 — `mnemo update`
-- [ ] Implement `src/commands/update.ts`
-- [ ] `mnemo update` — full re-index of entire project (respects `.gitignore`)
-- [ ] `mnemo update --since <commit>` — re-index only files changed since commit
-- [ ] `mnemo update --files-from-stdin` — re-index files piped via stdin (used by git hook)
-- [ ] Show progress: files found, files indexed, duration
-- [ ] Update git hook in `mnemo init` to call `mnemo update --files-from-stdin`
+- [x] Implement `src/commands/update.ts`
+- [x] `mnemo update` — full re-index of entire project (respects `.gitignore`)
+- [x] `mnemo update --since <commit>` — re-index only files changed since commit
+- [x] `mnemo update --files-from-stdin` — re-index files piped via stdin (used by git hook)
+- [x] Show progress: files found, files indexed, duration
+- [x] Update git hook in `mnemo init` to call `mnemo update --files-from-stdin`
 
 **Done when:** `mnemo update` indexes a real project; incremental update works via git hook after a commit.
 

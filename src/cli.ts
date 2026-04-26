@@ -6,6 +6,7 @@ import { createFeatCommand } from './commands/feat.js';
 import { createInitCommand } from './commands/init.js';
 import { createInstallCommand } from './commands/install.js';
 import { createConfigCommand } from './commands/config.js';
+import { createUpdateCommand } from './commands/update.js';
 
 const require = createRequire(import.meta.url);
 const { version } = require('../package.json') as { version: string };
@@ -21,5 +22,6 @@ program.addCommand(createInitCommand());
 program.addCommand(createFeatCommand());
 program.addCommand(createInstallCommand());
 program.addCommand(createConfigCommand());
+program.addCommand(createUpdateCommand());
 
 program.parse();
