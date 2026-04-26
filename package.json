@@ -46,5 +46,20 @@
 	"homepage": "https://github.com/arturdonda/mnemo#readme",
 	"bugs": {
 		"url": "https://github.com/arturdonda/mnemo/issues"
+	},
+	"dependencies": {
+		"@node-rs/xxhash": "^1.7.6",
+		"better-sqlite3": "^12.9.0",
+		"chokidar": "^5.0.0",
+		"commander": "^14.0.3",
+		"simple-git": "^3.36.0"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.13",
+		"@types/better-sqlite3": "^7.6.13",
+		"@types/node": "^25.6.0",
+		"ts-node": "^10.9.2",
+		"typescript": "^6.0.3",
+		"vitest": "^4.1.5"
 	}
 }

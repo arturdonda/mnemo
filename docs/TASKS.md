@@ -19,11 +19,11 @@ Embedding layers (Phase 2) and structural graph (Phase 3) are **out of scope for
 
 ### T001 — Initialize package.json and install dependencies
 
-- [ ] Create `package.json` per spec in `docs/STACK.md`
-- [ ] `npm install commander better-sqlite3 @node-rs/xxhash chokidar simple-git`
-- [ ] `npm install -D typescript vitest @biomejs/biome @types/better-sqlite3 @types/node`
-- [ ] Create `tsconfig.json` per spec in `docs/STACK.md`
-- [ ] Create `biome.json` per spec in `docs/STACK.md`
+- [x] Create `package.json` per spec in `docs/STACK.md`
+- [x] `npm install commander better-sqlite3 @node-rs/xxhash chokidar simple-git`
+- [x] `npm install -D typescript vitest @biomejs/biome @types/better-sqlite3 @types/node`
+- [x] Create `tsconfig.json` per spec in `docs/STACK.md`
+- [x] Create `biome.json` per spec in `docs/STACK.md`
 - [x] Create `.gitignore` — done
 
 **Done when:** `npm run typecheck` passes with no errors on an empty project.
