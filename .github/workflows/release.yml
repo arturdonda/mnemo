@@ -10,6 +10,10 @@ jobs:
     name: Build, test, publish
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write  # create GitHub release
+      id-token: write  # OIDC token for npm Trusted Publishing
+
     steps:
       - uses: actions/checkout@v4
 
@@ -33,9 +37,7 @@ jobs:
         run: npm run test
 
       - name: Publish to npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npm publish --access public --provenance
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
