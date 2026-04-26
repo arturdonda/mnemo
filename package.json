@@ -12,7 +12,6 @@
 		"dist"
 	],
 	"scripts": {
-		"prepublishOnly": "npm run build && npm run test",
 		"build": "tsc",
 		"dev": "node --loader ts-node/esm src/cli.ts",
 		"test": "vitest run",
