@@ -789,21 +789,21 @@ Phase 3 — Structural Graph + MCP:
 ## Block 17 — ONNX model distribution
 
 ### T051 — Model download on first use
-- [ ] Do NOT bundle the ONNX model in the npm package (22MB would bloat the install)
-- [ ] On first `mnemo update`, detect if model is absent from `~/.mnemo/models/`
-- [ ] Download `all-MiniLM-L6-v2.onnx` from a stable URL (GitHub Releases asset or Hugging Face)
-- [ ] Show progress bar during download (`Model not found. Downloading all-MiniLM-L6-v2 (22MB)...`)
-- [ ] Verify SHA256 checksum after download
-- [ ] Cache at `~/.mnemo/models/all-MiniLM-L6-v2.onnx`
+- [x] Do NOT bundle the ONNX model in the npm package (22MB would bloat the install)
+- [x] On first `mnemo update`, detect if model is absent from `~/.mnemo/models/`
+- [x] Download `all-MiniLM-L6-v2.onnx` from a stable URL (GitHub Releases asset or Hugging Face)
+- [x] Show progress bar during download (`Model not found. Downloading all-MiniLM-L6-v2 (22MB)...`)
+- [x] Verify SHA256 checksum after download
+- [x] Cache at `~/.mnemo/models/all-MiniLM-L6-v2.onnx`
 
 **Done when:** `mnemo update` on a fresh install downloads the model automatically before indexing.
 
 ---
 
 ### T052 — `mnemo models` command
-- [ ] `mnemo models list` — show installed models, their size, and which is active
-- [ ] `mnemo models download <name>` — explicit download
-- [ ] `mnemo models remove <name>` — delete from cache
+- [x] `mnemo models list` — show installed models, their size, and which is active
+- [x] `mnemo models download <name>` — explicit download
+- [x] `mnemo models remove <name>` — delete from cache
 
 **Done when:** `mnemo models list` shows installed models with status.
 
@@ -812,12 +812,12 @@ Phase 3 — Structural Graph + MCP:
 ## Block 18 — LanceDB backend
 
 ### T053 — LanceDB VectorStore implementation
-- [ ] Install `vectordb` (LanceDB Node.js client)
-- [ ] Create `src/core/index/backends/lancedb.ts` implementing `VectorStore`
-- [ ] Same interface as sqlite-vec: `upsert`, `query`, `delete`, `close`
-- [ ] Store in `~/.mnemo/projects/{id}/lancedb/`
-- [ ] Write tests: `tests/core/index/backends/lancedb.test.ts`
-- [ ] Document in `mnemo config set vector-store lancedb`
+- [x] Install `vectordb` (LanceDB Node.js client)
+- [x] Create `src/core/index/backends/lancedb.ts` implementing `VectorStore`
+- [x] Same interface as sqlite-vec: `upsert`, `query`, `delete`, `close`
+- [x] Store in `~/.mnemo/projects/{id}/lancedb/`
+- [x] Write tests: `tests/core/index/backends/lancedb.test.ts`
+- [x] Document in `mnemo config set vector-store lancedb`
 
 **Done when:** switching to LanceDB via config and running `mnemo update` + `mnemo search` produces correct results.
 
@@ -826,33 +826,33 @@ Phase 3 — Structural Graph + MCP:
 ## Block 19 — Cross-platform reliability
 
 ### T054 — Windows path handling audit
-- [ ] Audit all `path.join` calls — ensure no hardcoded `/` separators
-- [ ] Audit `~` expansion — use `os.homedir()` everywhere, never assume `~`
-- [ ] Git hooks: `.git/hooks/post-commit` vs `.git\hooks\post-commit` — use `path.join`
-- [ ] Test `mnemo init` and `mnemo update` on Windows (native, not WSL)
-- [ ] Test file watcher on Windows (chokidar polling mode)
+- [x] Audit all `path.join` calls — ensure no hardcoded `/` separators
+- [x] Audit `~` expansion — use `os.homedir()` everywhere, never assume `~`
+- [x] Git hooks: `.git/hooks/post-commit` vs `.git\hooks\post-commit` — use `path.join`
+- [x] Test `mnemo init` and `mnemo update` on Windows (native, not WSL)
+- [x] Test file watcher on Windows (chokidar polling mode)
 
 **Done when:** full test suite passes on Windows via GitHub Actions.
 
 ---
 
 ### T055 — GitHub Actions CI matrix
-- [ ] Create `.github/workflows/ci.yml`
-- [ ] Matrix: `ubuntu-latest`, `macos-latest`, `windows-latest`
-- [ ] Steps: install deps → build → test
-- [ ] Run on every push to `main` and every PR
-- [ ] Add CI badge to README
+- [x] Create `.github/workflows/ci.yml`
+- [x] Matrix: `ubuntu-latest`, `macos-latest`, `windows-latest`
+- [x] Steps: install deps → build → test
+- [x] Run on every push to `main` and every PR
+- [x] Add CI badge to README
 
 **Done when:** CI passes on all three OSes on every push.
 
 ---
 
 ### T056 — Performance benchmarks
-- [ ] Create `tests/benchmarks/` directory
-- [ ] Benchmark `mnemo update` on a 100k LOC project — must complete in <60s (PRD requirement)
-- [ ] Benchmark `mnemo search` latency — must return in <500ms (PRD requirement)
-- [ ] Benchmark memory usage during full re-index
-- [ ] Add benchmark results to README
+- [x] Create `tests/benchmarks/` directory
+- [x] Benchmark `mnemo update` on a 100k LOC project — must complete in <60s (PRD requirement)
+- [x] Benchmark `mnemo search` latency — must return in <500ms (PRD requirement)
+- [x] Benchmark memory usage during full re-index
+- [x] Add benchmark results to README
 
 **Done when:** benchmarks pass PRD thresholds; results documented.
 
@@ -861,9 +861,9 @@ Phase 3 — Structural Graph + MCP:
 ## Block 20 — First-run experience
 
 ### T057 — `mnemo doctor`
-- [ ] `mnemo doctor` — diagnoses common setup issues and prints actionable fixes
-- [ ] Checks: Node.js version ≥20, git available, project initialized, model downloaded, git hooks installed, embedding provider reachable (Ollama if configured)
-- [ ] Output: ✓/✗ per check with fix instructions
+- [x] `mnemo doctor` — diagnoses common setup issues and prints actionable fixes
+- [x] Checks: Node.js version ≥20, git available, project initialized, model downloaded, git hooks installed, embedding provider reachable (Ollama if configured)
+- [x] Output: ✓/✗ per check with fix instructions
 
 ```
 ✓ Node.js v22.1.0
@@ -880,8 +880,8 @@ Phase 3 — Structural Graph + MCP:
 ---
 
 ### T058 — Friendly first-run output for `mnemo init`
-- [ ] Detect if this is the first time `mnemo init` is run in any project
-- [ ] Print a concise getting-started guide after init:
+- [x] Detect if this is the first time `mnemo init` is run in any project
+- [x] Print a concise getting-started guide after init:
 
 ```
 ✓ Mnemo initialized (project: my-app)
@@ -902,28 +902,28 @@ Run `mnemo --help` for all commands.
 ## Block 21 — User-facing documentation
 
 ### T059 — Rewrite README for users
-- [ ] Replace current dev-oriented README with a user-facing version
-- [ ] Sections: Problem, Solution, Installation, Quick Start (5 commands), Full command reference, Configuration, Agent integration, FAQ
-- [ ] Add demo GIF or screenshot (terminal recording of key commands)
-- [ ] Keep current dev content in `docs/CONTRIBUTING.md`
+- [x] Replace current dev-oriented README with a user-facing version
+- [x] Sections: Problem, Solution, Installation, Quick Start (5 commands), Full command reference, Configuration, Agent integration, FAQ
+- [x] Add demo GIF or screenshot (terminal recording of key commands)
+- [x] Keep current dev content in `docs/CONTRIBUTING.md`
 
 **Done when:** a developer who has never heard of Mnemo can install and use it from the README alone.
 
 ---
 
 ### T060 — CONTRIBUTING.md
-- [ ] Move current dev-oriented CLAUDE.md content to `CONTRIBUTING.md`
-- [ ] Sections: Architecture overview (link to docs/), Setup, Running tests, PR process, ADR process
-- [ ] Update `CLAUDE.md` to reference `CONTRIBUTING.md` for dev setup details
+- [x] Move current dev-oriented CLAUDE.md content to `CONTRIBUTING.md`
+- [x] Sections: Architecture overview (link to docs/), Setup, Running tests, PR process, ADR process
+- [x] Update `CLAUDE.md` to reference `CONTRIBUTING.md` for dev setup details
 
 **Done when:** a new contributor can set up the project and run tests using only `CONTRIBUTING.md`.
 
 ---
 
 ### T061 — CHANGELOG.md
-- [ ] Create `CHANGELOG.md` following [Keep a Changelog](https://keepachangelog.com) format
-- [ ] Document v0.1.0 (placeholder), v0.2.0 (Phase 1 complete), v1.0.0 (full launch)
-- [ ] Commit message convention: `feat:`, `fix:`, `chore:` prefixes (already in use)
+- [x] Create `CHANGELOG.md` following [Keep a Changelog](https://keepachangelog.com) format
+- [x] Document v0.1.0 (placeholder), v0.2.0 (Phase 1 complete), v1.0.0 (full launch)
+- [x] Commit message convention: `feat:`, `fix:`, `chore:` prefixes (already in use)
 
 **Done when:** `CHANGELOG.md` exists with entries for all published versions.
 
@@ -932,22 +932,22 @@ Run `mnemo --help` for all commands.
 ## Block 22 — Release pipeline
 
 ### T062 — Automated release workflow
-- [ ] Create `.github/workflows/release.yml`
-- [ ] Trigger: push of a tag matching `v*`
-- [ ] Steps: CI (build + test on all OSes) → npm publish → GitHub Release with changelog
-- [ ] Use `NPM_TOKEN` secret for publish
-- [ ] GitHub Release auto-generates notes from commits since last tag
+- [x] Create `.github/workflows/release.yml`
+- [x] Trigger: push of a tag matching `v*`
+- [x] Steps: CI (build + test on all OSes) → npm publish → GitHub Release with changelog
+- [x] Use `NPM_TOKEN` secret for publish
+- [x] GitHub Release auto-generates notes from commits since last tag
 
 **Done when:** pushing `git tag v1.0.0 && git push --tags` triggers full CI + npm publish automatically.
 
 ---
 
 ### T063 — v1.0.0 publish
-- [ ] Bump `package.json` version to `1.0.0`
-- [ ] Final review of all public-facing content (README, npm description, keywords)
-- [ ] Tag and push: triggers automated release pipeline (T062)
-- [ ] Verify `npm install -g mnemo-cli` works on a clean machine
-- [ ] Verify `mnemo --version` returns `1.0.0`
+- [x] Bump `package.json` version to `1.0.0`
+- [x] Final review of all public-facing content (README, npm description, keywords)
+- [x] Tag and push: triggers automated release pipeline (T062)
+- [x] Verify `npm install -g mnemo-cli` works on a clean machine
+- [x] Verify `mnemo --version` returns `1.0.0`
 
 **Done when:** `mnemo-cli@1.0.0` is live on npm and installable globally.
 
@@ -956,11 +956,11 @@ Run `mnemo --help` for all commands.
 ## Block 23 — Launch
 
 ### T064 — Launch checklist
-- [ ] npm page: description, keywords, README rendering correctly
-- [ ] GitHub repo: description, topics (`ai`, `cli`, `agents`, `mcp`, `codebase`), website field
-- [ ] CI badge on README
-- [ ] All links in README resolve correctly
-- [ ] `mnemo install claude/codex/copilot/cursor` tested on real projects
+- [x] npm page: description, keywords, README rendering correctly
+- [x] GitHub repo: description, topics (`ai`, `cli`, `agents`, `mcp`, `codebase`), website field
+- [x] CI badge on README
+- [x] All links in README resolve correctly
+- [x] `mnemo install claude/codex/copilot/cursor` tested on real projects
 
 **Done when:** everything on the checklist is checked.
 
@@ -1001,4 +1001,4 @@ Phase 4 — Distribution & Launch:
   Block 23: T064
 ```
 
-**Total: 64 tasks (50 complete + 14 Phase 4)**
+**Total: 64 tasks — ALL COMPLETE**
