@@ -1,7 +1,8 @@
 import { Command } from 'commander';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { existsSync } from 'node:fs';
+import { existsSync, readdirSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { resolveProjectId, resolveProjectName } from '../core/project.js';
 import { ensurePaths } from '../core/paths.js';
 import { handleError } from '../core/error.js';
@@ -31,25 +32,35 @@ export function createInitCommand(): Command {
 				const meta = { id: projectId, name: projectName, path: cwd, createdAt: Date.now() };
 				await writeFile(paths.projectMeta, JSON.stringify(meta, null, 2), 'utf-8');
 
-				await installGitHook(cwd);
+				const hookInstalled = await installGitHook(cwd);
+				const isFirstEver = isFirstTimeInit();
 
-				console.log(`Mnemo initialized for project: ${projectName}`);
-				console.log(`  Project ID: ${projectId}`);
-				console.log(`  Data dir:   ${paths.projectRoot}`);
+				console.log(`✓ Mnemo initialized (project: ${projectName})`);
+				if (hookInstalled) console.log('✓ Git hook installed');
+
+				if (isFirstEver) {
+					console.log(`
+Next steps:
+  mnemo update              — index this codebase
+  mnemo feat start <name>   — start tracking a feature
+  mnemo install claude      — wire up Claude Code
+
+Run \`mnemo --help\` for all commands.`);
+				}
 			} catch (e) {
 				handleError(e);
 			}
 		});
 }
 
-async function installGitHook(cwd: string): Promise<void> {
+async function installGitHook(cwd: string): Promise<boolean> {
 	const hooksDir = join(cwd, '.git', 'hooks');
-	if (!existsSync(hooksDir)) return;
+	if (!existsSync(hooksDir)) return false;
 
 	const hookPath = join(hooksDir, 'post-commit');
 	if (existsSync(hookPath)) {
 		const existing = await import('node:fs/promises').then((m) => m.readFile(hookPath, 'utf-8'));
-		if (existing.includes('mnemo')) return;
+		if (existing.includes('mnemo')) return false;
 		await import('node:fs/promises').then((m) =>
 			m.writeFile(hookPath, existing.trimEnd() + '\n' + POST_COMMIT_HOOK, 'utf-8'),
 		);
@@ -57,5 +68,14 @@ async function installGitHook(cwd: string): Promise<void> {
 		await writeFile(hookPath, POST_COMMIT_HOOK, { mode: 0o755 });
 	}
 
-	console.log(`  Git hook:   ${hookPath}`);
+	return true;
+}
+
+function isFirstTimeInit(): boolean {
+	const mnemoRoot = join(homedir(), '.mnemo', 'projects');
+	try {
+		return readdirSync(mnemoRoot).length <= 1;
+	} catch {
+		return true;
+	}
 }
