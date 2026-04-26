@@ -4,6 +4,7 @@ import { simpleGit } from 'simple-git';
 import fg from 'fast-glob';
 import { resolveProjectId, assertInitialized } from '../core/project.js';
 import { indexFiles } from '../core/index/pipeline.js';
+import { indexGraphFiles } from '../core/graph/pipeline.js';
 import { handleError } from '../core/error.js';
 
 const SOURCE_EXTENSIONS = ['ts', 'tsx', 'js', 'mjs', 'jsx', 'py', 'go', 'rs', 'java', 'cs', 'rb', 'php', 'swift', 'kt', 'md', 'json', 'yaml', 'yml'];
@@ -34,10 +35,14 @@ export function createUpdateCommand(): Command {
 					console.log(`Indexing ${filePaths.length} file(s)...`);
 				}
 
-				const stats = await indexFiles(filePaths, projectId);
+				const [stats, graphStats] = await Promise.all([
+					indexFiles(filePaths, projectId),
+					indexGraphFiles(filePaths, projectId),
+				]);
 
 				if (!opts.silent) {
 					console.log(`Done. ${stats.filesIndexed} files, ${stats.chunksCreated} chunks (${stats.durationMs}ms)`);
+					console.log(`Graph: ${graphStats.filesIndexed} files indexed (${graphStats.durationMs}ms)`);
 				}
 			} catch (e) {
 				handleError(e);
