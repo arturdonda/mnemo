@@ -547,13 +547,13 @@ type ScoredChunk = Chunk & { score: number }
 ---
 
 ### T034 — `mnemo search <query>`
-- [ ] Implement `src/commands/search.ts`
-- [ ] `mnemo search <query>` — embeds query, calls `VectorStore.query()`, prints results
-- [ ] Default: top 10 results
-- [ ] `--limit <n>` flag
-- [ ] `--output json` flag for machine-readable output
-- [ ] Output format: `file:startLine-endLine (score)` + snippet (first 2 lines of chunk)
-- [ ] Error if project not indexed: "Run `mnemo update` to index this project first."
+- [x] Implement `src/commands/search.ts`
+- [x] `mnemo search <query>` — embeds query, calls `VectorStore.query()`, prints results
+- [x] Default: top 10 results
+- [x] `--limit <n>` flag
+- [x] `--output json` flag for machine-readable output
+- [x] Output format: `file:startLine-endLine (score)` + snippet (first 2 lines of chunk)
+- [x] Error if project not indexed: "Run `mnemo update` to index this project first."
 
 **Done when:** `mnemo search "JWT authentication"` returns relevant files in <500ms on a 50k LOC project.
 
