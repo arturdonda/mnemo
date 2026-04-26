@@ -259,11 +259,11 @@ type FeatureContext = {
 
 ### T017 — `mnemo feat link-file <path> [--reason "<text>"]`
 
-- [ ] Validate file exists in the project (relative to CWD)
-- [ ] Normalize path to be relative to git repo root
-- [ ] Appends `file_linked` event
-- [ ] Regenerates `context.md`
-- [ ] Output: confirmation
+- [x] Validate file exists in the project (relative to CWD)
+- [x] Normalize path to be relative to git repo root
+- [x] Appends `file_linked` event
+- [x] Regenerates `context.md`
+- [x] Output: confirmation
 
 **Done when:** file appears in Relevant Files in `mnemo feat context`.
 
@@ -271,9 +271,9 @@ type FeatureContext = {
 
 ### T018 — `mnemo feat unlink-file <path>`
 
-- [ ] Appends `file_unlinked` event
-- [ ] Regenerates `context.md`
-- [ ] Output: confirmation or warning if file was not linked
+- [x] Appends `file_unlinked` event
+- [x] Regenerates `context.md`
+- [x] Output: confirmation or warning if file was not linked
 
 **Done when:** file disappears from Relevant Files after unlink.
 
@@ -281,9 +281,9 @@ type FeatureContext = {
 
 ### T019 — `mnemo feat status "<text>"`
 
-- [ ] Appends `status` event
-- [ ] Regenerates `context.md`
-- [ ] Output: confirmation
+- [x] Appends `status` event
+- [x] Regenerates `context.md`
+- [x] Output: confirmation
 
 **Done when:** Current Status updated in `mnemo feat context`.
 
@@ -291,9 +291,9 @@ type FeatureContext = {
 
 ### T020 — `mnemo feat note "<text>"`
 
-- [ ] Appends `note` event
-- [ ] Regenerates `context.md`
-- [ ] Output: confirmation
+- [x] Appends `note` event
+- [x] Regenerates `context.md`
+- [x] Output: confirmation
 
 **Done when:** note appears in the Notes section.
 
@@ -301,11 +301,11 @@ type FeatureContext = {
 
 ### T021 — `mnemo feat done`
 
-- [ ] Appends `feat_done` event
-- [ ] Updates `meta.json` status to `done`
-- [ ] Clears active feat if this was the active feat
-- [ ] Regenerates `context.md`
-- [ ] Output: confirmation
+- [x] Appends `feat_done` event
+- [x] Updates `meta.json` status to `done`
+- [x] Clears active feat if this was the active feat
+- [x] Regenerates `context.md`
+- [x] Output: confirmation
 
 **Done when:** feat shows as `done` in `mnemo feat list`.
 
