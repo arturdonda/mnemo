@@ -4,9 +4,11 @@ import { fileURLToPath } from 'node:url';
 import { chunkFile } from './chunker.js';
 import { createEmbedder } from './embedder.js';
 import { SqliteVecStore } from './backends/sqlite-vec.js';
+import { LanceDbStore } from './backends/lancedb.js';
 import { getPaths } from '../paths.js';
 import { readConfig } from '../config.js';
-import type { Chunk } from './vector-store.js';
+import type { Chunk, VectorStore } from './vector-store.js';
+import { join } from 'node:path';
 
 export type IndexStats = {
 	filesIndexed: number;
@@ -61,8 +63,7 @@ export async function indexFiles(filePaths: string[], projectId: string): Promis
 	}
 
 	const embedder = await createEmbedder(config);
-	const dbPath = paths.indexDb;
-	const store = new SqliteVecStore(dbPath, embedder.dimensions);
+	const store = createVectorStore(config['vector-store'], paths, embedder.dimensions);
 
 	await store.upsert(allChunks, allEmbeddings);
 	await store.close();
@@ -72,6 +73,17 @@ export async function indexFiles(filePaths: string[], projectId: string): Promis
 		chunksCreated: allChunks.length,
 		durationMs: Date.now() - start,
 	};
+}
+
+function createVectorStore(
+	backend: 'sqlite' | 'lancedb',
+	paths: ReturnType<typeof getPaths>,
+	dimensions: number,
+): VectorStore {
+	if (backend === 'lancedb') {
+		return new LanceDbStore(join(paths.projectRoot, 'lancedb'), dimensions);
+	}
+	return new SqliteVecStore(paths.indexDb, dimensions);
 }
 
 function runWorker(input: WorkerInput): Promise<WorkerResult> {

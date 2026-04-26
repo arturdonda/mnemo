@@ -23,6 +23,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
+		"@lancedb/lancedb": "^0.27.2",
 		"@modelcontextprotocol/sdk": "^1.29.0",
 		"@node-rs/xxhash": "^1.7.6",
 		"better-sqlite3": "^12.9.0",

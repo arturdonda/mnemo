@@ -6,7 +6,7 @@ import { existsSync } from 'node:fs';
 export type MnemoConfig = {
 	'embedding.provider': 'onnx' | 'ollama' | 'openai';
 	'embedding.model': string;
-	'vector-store': 'sqlite';
+	'vector-store': 'sqlite' | 'lancedb';
 	'embedding.ollamaUrl': string;
 	'embedding.openaiKey': string;
 	watch: boolean;
@@ -15,7 +15,7 @@ export type MnemoConfig = {
 const DEFAULTS: MnemoConfig = {
 	'embedding.provider': 'onnx',
 	'embedding.model': 'all-MiniLM-L6-v2',
-	'vector-store': 'sqlite',
+	'vector-store': 'sqlite' as const,
 	'embedding.ollamaUrl': 'http://localhost:11434',
 	'embedding.openaiKey': '',
 	watch: false,

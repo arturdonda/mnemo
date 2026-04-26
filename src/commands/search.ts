@@ -1,9 +1,11 @@
 import { Command } from 'commander';
 import { existsSync } from 'node:fs';
+import { join } from 'node:path';
 import { resolveProjectId, assertInitialized } from '../core/project.js';
 import { getPaths } from '../core/paths.js';
 import { createEmbedder } from '../core/index/embedder.js';
 import { SqliteVecStore } from '../core/index/backends/sqlite-vec.js';
+import { LanceDbStore } from '../core/index/backends/lancedb.js';
 import { queryWithFreshness } from '../core/index/freshness.js';
 import { applyHybridScoring } from '../core/index/hybrid.js';
 import { GraphStore } from '../core/graph/store.js';
@@ -29,13 +31,20 @@ export function createSearchCommand(): Command {
 
 				const paths = getPaths(projectId);
 
-				if (!existsSync(paths.indexDb)) {
+				const config = await readConfig();
+				const isLance = config['vector-store'] === 'lancedb';
+				const indexExists = isLance
+					? existsSync(join(paths.projectRoot, 'lancedb'))
+					: existsSync(paths.indexDb);
+
+				if (!indexExists) {
 					throw new MnemoError('Project not indexed. Run `mnemo update` to index this project first.');
 				}
 
-				const config = await readConfig();
 				const embedder = await createEmbedder(config);
-				const store = new SqliteVecStore(paths.indexDb, embedder.dimensions);
+				const store = isLance
+					? new LanceDbStore(join(paths.projectRoot, 'lancedb'), embedder.dimensions)
+					: new SqliteVecStore(paths.indexDb, embedder.dimensions);
 
 				try {
 					const [embedding] = await embedder.embed([query]);
