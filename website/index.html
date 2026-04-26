@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mnemo — Your codebase, remembered across every AI session</title>
+  <meta name="description" content="Persistent memory for AI coding agents. Mnemo gives Claude Code, Copilot, Cursor, and Codex a structured memory of your codebase — decisions, files, blockers — across every session." />
+  <meta property="og:title" content="Mnemo — Your codebase, remembered" />
+  <meta property="og:description" content="Persistent memory for AI coding agents. No more re-explaining your architecture every session." />
+  <meta property="og:url" content="https://arturdonda.github.io/mnemo" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <link rel="stylesheet" href="style.css" />
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml" />
+</head>
+<body>
+
+<!-- ── Nav ──────────────────────────────────────── -->
+<nav>
+  <a class="nav-logo" href="#">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="12" cy="12" r="10" stroke="#a78bfa" stroke-width="1.5"/>
+      <path d="M7 12c0-2.761 2.239-5 5-5s5 2.239 5 5-2.239 5-5 5" stroke="#a78bfa" stroke-width="1.5" stroke-linecap="round"/>
+      <circle cx="12" cy="12" r="2" fill="#a78bfa"/>
+    </svg>
+    mnemo
+  </a>
+  <div class="nav-links">
+    <a href="https://github.com/arturdonda/mnemo">GitHub</a>
+    <a href="https://github.com/arturdonda/mnemo/blob/main/docs/ARCHITECTURE.md">Docs</a>
+    <a href="https://github.com/arturdonda/mnemo/blob/main/CHANGELOG.md">Changelog</a>
+    <a href="https://www.npmjs.com/package/mnemo-cli" class="btn btn-primary">
+      npm v1.0.0
+    </a>
+  </div>
+</nav>
+
+<!-- ── Hero ─────────────────────────────────────── -->
+<div class="hero">
+  <div class="badge">
+    <span>●</span> v1.0.0 — now available on npm
+  </div>
+
+  <h1>Your codebase,<br><em>remembered.</em></h1>
+
+  <p class="hero-sub">
+    Mnemo gives AI coding agents persistent memory of your project — decisions made, files in scope, blockers resolved — across every session.
+  </p>
+
+  <div class="install-block">
+    <span class="prompt">$</span>
+    <span id="install-cmd">npm install -g mnemo-cli</span>
+    <button class="copy-btn" onclick="copyInstall()" title="Copy to clipboard">
+      <svg id="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div class="hero-actions">
+    <a href="https://github.com/arturdonda/mnemo" class="btn btn-outline">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+      View on GitHub
+    </a>
+    <a href="https://github.com/arturdonda/mnemo/blob/main/docs/ARCHITECTURE.md" class="btn btn-outline">
+      Read the docs
+    </a>
+  </div>
+
+  <!-- Demo -->
+  <div class="demo-container">
+    <div class="demo-bar">
+      <div class="demo-dot"></div>
+      <div class="demo-dot"></div>
+      <div class="demo-dot"></div>
+      <span class="demo-title">mnemo feat context</span>
+    </div>
+    <img src="assets/demo.gif" alt="mnemo feat context output showing feature decisions, files, and status" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'" />
+    <div class="demo-placeholder" style="display:none">demo.gif — run: vhs scripts/demo.tape</div>
+  </div>
+</div>
+
+<!-- ── Problem ───────────────────────────────────── -->
+<section id="problem">
+  <div class="section-label">The problem</div>
+  <h2>Agents start blind. Every session.</h2>
+  <p class="section-sub">
+    Every AI coding session starts the same way — the agent re-reads your files, re-traces your imports, re-asks what you're building. All the context from yesterday is gone.
+  </p>
+
+  <div class="problem-grid">
+    <div class="problem-card">
+      <h3>The cold-start tax</h3>
+      <p>On a medium-sized codebase, an AI agent spends 2,000–8,000 tokens just mapping the project before writing a single line of code. Every. Single. Session.</p>
+    </div>
+    <div class="problem-card">
+      <h3>Decisions don't persist</h3>
+      <p>You chose Stripe Checkout over Payment Intents. You scoped three files. You resolved a webhook blocker. None of that exists next session — you explain it again from scratch.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Features ──────────────────────────────────── -->
+<section id="features">
+  <div class="section-label">How it works</div>
+  <h2>Three layers of memory</h2>
+  <p class="section-sub">
+    Mnemo maintains three complementary indexes, updated automatically on every git commit.
+  </p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <span class="feature-icon">🧠</span>
+      <span class="feature-tag">The differentiator</span>
+      <h3>FEAT Context Cache</h3>
+      <p>Per-feature decisions, linked files, blockers, and status — persisted across sessions as structured events. Your agent reads this at session start and already knows where you left off.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🔍</span>
+      <span class="feature-tag">Layer 1</span>
+      <h3>Semantic Index</h3>
+      <p>Natural-language search over your entire codebase using local embeddings. No API keys, no internet, no code sent anywhere. Runs entirely on-device via ONNX Runtime.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🕸️</span>
+      <span class="feature-tag">Layer 2</span>
+      <h3>Structural Graph</h3>
+      <p>File-level dependency graph via Tree-sitter. Know which files import what, which are affected by a change, and what symbols live where — without reading a single file.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Quick Start ───────────────────────────────── -->
+<section id="quickstart">
+  <div class="section-label">Quick start</div>
+  <h2>Up and running in two minutes</h2>
+  <p class="section-sub">Four commands and your AI agent has persistent memory.</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-content">
+        <h3>Install</h3>
+        <pre><span class="cmd">npm install -g mnemo-cli</span></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-content">
+        <h3>Initialize and index your project</h3>
+        <pre><span class="cmd">mnemo init</span>    <span class="cmt"># installs git hook, creates ~/.mnemo/ config</span>
+<span class="cmd">mnemo update</span>  <span class="cmt"># indexes codebase (~88MB ONNX model on first run)</span></pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-content">
+        <h3>Start tracking a feature</h3>
+        <pre><span class="cmd">mnemo feat start</span> <span class="str">payment-flow</span>
+<span class="cmd">mnemo feat decision</span> <span class="str">"Using Stripe Checkout — simpler for MVP"</span>
+<span class="cmd">mnemo feat link-file</span> src/routes/payments.ts</pre>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-content">
+        <h3>Wire up your AI agent</h3>
+        <pre><span class="cmd">mnemo install claude</span>    <span class="cmt"># Claude Code</span>
+<span class="cmd">mnemo install codex</span>     <span class="cmt"># OpenAI Codex / ChatGPT</span>
+<span class="cmd">mnemo install copilot</span>   <span class="cmt"># GitHub Copilot</span>
+<span class="cmd">mnemo install cursor</span>    <span class="cmt"># Cursor</span></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── Agents ─────────────────────────────────────── -->
+<section id="agents">
+  <div class="section-label">Agent support</div>
+  <h2>Works with every major AI coding agent</h2>
+  <p class="section-sub">
+    One install command per agent. Mnemo generates the right config file for each one — and keeps it up to date.
+  </p>
+
+  <div class="agents-grid">
+    <div class="agent-card">
+      <div class="agent-name">Claude Code</div>
+      <code>mnemo install claude</code>
+      <p>Skill + CLAUDE.md instructions</p>
+    </div>
+    <div class="agent-card">
+      <div class="agent-name">GitHub Copilot</div>
+      <code>mnemo install copilot</code>
+      <p>copilot-instructions.md</p>
+    </div>
+    <div class="agent-card">
+      <div class="agent-name">OpenAI Codex</div>
+      <code>mnemo install codex</code>
+      <p>AGENTS.md</p>
+    </div>
+    <div class="agent-card">
+      <div class="agent-name">Cursor</div>
+      <code>mnemo install cursor</code>
+      <p>.cursorrules</p>
+    </div>
+  </div>
+
+  <div style="margin-top: 1.5rem;">
+    <p style="color: var(--muted); font-size: 0.9rem;">
+      Also available as an <strong style="color: var(--text)">MCP server</strong> for any MCP-compatible client:
+      <code style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent); background: var(--surface2); padding: 0.1rem 0.5rem; border-radius: 4px; margin-left: 0.4rem;">mnemo mcp serve</code>
+    </p>
+  </div>
+</section>
+
+<!-- ── Privacy ────────────────────────────────────── -->
+<section id="privacy">
+  <div class="privacy-box">
+    <div class="privacy-icon">🔒</div>
+    <div>
+      <h3>Everything stays on your machine</h3>
+      <p>All indexes are stored in <code style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent)">~/.mnemo/</code>. The default embedding model (<code style="font-family: var(--font-mono); font-size: 0.85rem; color: var(--accent)">all-MiniLM-L6-v2</code>) runs entirely on-device via ONNX Runtime. No code is ever sent to any server. Optionally use Ollama or OpenAI for better embedding quality.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Footer ─────────────────────────────────────── -->
+<footer>
+  <div class="footer-links">
+    <a href="https://github.com/arturdonda/mnemo">GitHub</a>
+    <a href="https://www.npmjs.com/package/mnemo-cli">npm</a>
+    <a href="https://github.com/arturdonda/mnemo/blob/main/docs/ARCHITECTURE.md">Architecture</a>
+    <a href="https://github.com/arturdonda/mnemo/blob/main/CHANGELOG.md">Changelog</a>
+    <a href="https://github.com/arturdonda/mnemo/blob/main/LICENSE">MIT License</a>
+    <a href="https://github.com/arturdonda/mnemo/issues">Issues</a>
+    <a href="https://github.com/arturdonda/mnemo/discussions">Discussions</a>
+  </div>
+  <p>Built by <a href="https://github.com/arturdonda">Artur Donda</a> · MIT License</p>
+</footer>
+
+<script>
+function copyInstall() {
+  navigator.clipboard.writeText('npm install -g mnemo-cli').then(() => {
+    const icon = document.getElementById('copy-icon');
+    icon.innerHTML = '<polyline points="20 6 9 17 4 12"></polyline>';
+    setTimeout(() => {
+      icon.innerHTML = '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>';
+    }, 2000);
+  });
+}
+</script>
+</body>
+</html>
