@@ -7,7 +7,7 @@ import { pipeline } from 'node:stream/promises';
 import { Readable } from 'node:stream';
 
 export const MODELS_DIR = join(homedir(), '.mnemo', 'models');
-const MANIFEST_PATH = join(MODELS_DIR, 'manifest.json');
+export const MANIFEST_PATH = join(MODELS_DIR, 'manifest.json');
 
 export type ModelEntry = {
 	name: string;

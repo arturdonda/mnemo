@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { rm } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { MODELS_DIR, readManifest, downloadModel } from '../core/models/download.js';
+import { MODELS_DIR, MANIFEST_PATH, readManifest, downloadModel } from '../core/models/download.js';
 import { handleError } from '../core/error.js';
 
 const KNOWN_MODELS: Record<string, { url: string; description: string }> = {
@@ -78,10 +78,7 @@ export function createModelsCommand(): Command {
 				if (existsSync(dest)) await rm(dest, { force: true });
 				delete manifest.models[name];
 				const { writeFile } = await import('node:fs/promises');
-				const { join: j } = await import('node:path');
-				const { homedir } = await import('node:os');
-				const manifestPath = j(homedir(), '.mnemo', 'models', 'manifest.json');
-				await writeFile(manifestPath, JSON.stringify(manifest, null, 2), 'utf-8');
+				await writeFile(MANIFEST_PATH, JSON.stringify(manifest, null, 2), 'utf-8');
 				console.log(`Removed: ${name}`);
 			} catch (e) {
 				handleError(e);
