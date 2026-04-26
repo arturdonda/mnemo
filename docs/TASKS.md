@@ -509,14 +509,14 @@ type ScoredChunk = Chunk & { score: number }
 ---
 
 ### T031 — Indexing pipeline with worker_threads
-- [ ] Create `src/core/index/pipeline.ts`
-- [ ] `indexFiles(filePaths: string[], projectId: string): Promise<IndexStats>` — main entry point
-- [ ] Partition files across `worker_threads` (N workers = CPU count - 1, min 1)
-- [ ] Each worker: chunk files → embed chunks → return results to main thread via `transferList`
-- [ ] Main thread: accumulate all results in memory → single `VectorStore.upsert()` call at end
-- [ ] Compute and store XXH3 hash per file
-- [ ] `IndexStats`: `{ filesIndexed, chunksCreated, durationMs }`
-- [ ] Write tests: `tests/core/index/pipeline.test.ts`
+- [x] Create `src/core/index/pipeline.ts`
+- [x] `indexFiles(filePaths: string[], projectId: string): Promise<IndexStats>` — main entry point
+- [x] Partition files across `worker_threads` (N workers = CPU count - 1, min 1)
+- [x] Each worker: chunk files → embed chunks → return results to main thread via `transferList`
+- [x] Main thread: accumulate all results in memory → single `VectorStore.upsert()` call at end
+- [x] Compute and store XXH3 hash per file
+- [x] `IndexStats`: `{ filesIndexed, chunksCreated, durationMs }`
+- [x] Write tests: `tests/core/index/pipeline.test.ts`
 
 **Done when:** pipeline indexes a 10-file fixture in parallel; all chunks queryable after flush.
 
