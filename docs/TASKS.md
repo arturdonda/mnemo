@@ -348,11 +348,11 @@ Runs: mnemo feat note "<text>"
 
 ### T023 — `mnemo install claude`
 
-- [ ] Implement in `src/commands/install.ts`
-- [ ] Copy skill to `~/.claude/skills/mnemo.md`
-- [ ] Append Mnemo block to project's `CLAUDE.md` (create if not present)
-- [ ] Idempotent: does not duplicate if already installed
-- [ ] Output: list of created/updated files
+- [x] Implement in `src/commands/install.ts`
+- [x] Copy skill to `~/.claude/skills/mnemo.md`
+- [x] Append Mnemo block to project's `CLAUDE.md` (create if not present)
+- [x] Idempotent: does not duplicate if already installed
+- [x] Output: list of created/updated files
 
 **Block appended to project CLAUDE.md:**
 
