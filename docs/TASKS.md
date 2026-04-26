@@ -433,12 +433,12 @@ Block 6 — Polish:       T024 T025
 ## Block 7 — Config system
 
 ### T026 — `mnemo config get|set`
-- [ ] Implement `src/commands/config.ts`
-- [ ] Read/write `~/.mnemo/config.json`
-- [ ] `mnemo config set <key> <value>` — supports dot notation (`embedding.provider`, `vector-store`)
-- [ ] `mnemo config get <key>` — prints current value or default
-- [ ] `mnemo config list` — prints all settings with defaults
-- [ ] Write tests: `tests/commands/config.test.ts`
+- [x] Implement `src/commands/config.ts`
+- [x] Read/write `~/.mnemo/config.json`
+- [x] `mnemo config set <key> <value>` — supports dot notation (`embedding.provider`, `vector-store`)
+- [x] `mnemo config get <key>` — prints current value or default
+- [x] `mnemo config list` — prints all settings with defaults
+- [x] Write tests: `tests/commands/config.test.ts`
 
 **Done when:** `mnemo config set embedding.provider ollama` persists and `mnemo config get embedding.provider` returns `ollama`.
 
