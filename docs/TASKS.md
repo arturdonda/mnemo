@@ -315,10 +315,10 @@ type FeatureContext = {
 
 ### T022 — Claude Code Skill
 
-- [ ] Create `src/integrations/agents/claude.ts`
-- [ ] Generate skill file content for `~/.claude/skills/mnemo.md`
-- [ ] Skill exposes: `/mnemo-context`, `/mnemo-decision`, `/mnemo-blocker`, `/mnemo-note`
-- [ ] Each skill command runs the corresponding CLI command via shell and injects output
+- [x] Create `src/integrations/agents/claude.ts`
+- [x] Generate skill file content for `~/.claude/skills/mnemo.md`
+- [x] Skill exposes: `/mnemo-context`, `/mnemo-decision`, `/mnemo-blocker`, `/mnemo-note`
+- [x] Each skill command runs the corresponding CLI command via shell and injects output
 
 **Skill content:**
 
