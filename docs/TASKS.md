@@ -562,9 +562,9 @@ type ScoredChunk = Chunk & { score: number }
 ## Block 11 — mnemo status + agent integration update
 
 ### T035 — `mnemo status`
-- [ ] Implement in `src/commands/status.ts`
-- [ ] Show: project ID, total files indexed, total chunks, last indexed timestamp, embedding provider, vector store backend
-- [ ] Warn if index is older than 24h without a commit
+- [x] Implement in `src/commands/status.ts`
+- [x] Show: project ID, total files indexed, total chunks, last indexed timestamp, embedding provider, vector store backend
+- [x] Warn if index is older than 24h without a commit
 
 **Done when:** `mnemo status` prints a readable health summary.
 
