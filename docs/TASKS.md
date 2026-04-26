@@ -87,7 +87,7 @@ type MnemoPaths = {
 
 ### T005 — FEAT cache types
 
-- [ ] Create `src/core/feat/types.ts` with all types:
+- [x] Create `src/core/feat/types.ts` with all types:
 
 ```typescript
 type EventType = 'feat_created' | 'decision' | 'blocker' | 'blocker_resolved' | 'file_linked' | 'file_unlinked' | 'status' | 'note' | 'feat_done';
