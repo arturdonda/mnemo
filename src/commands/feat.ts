@@ -110,6 +110,27 @@ export function createFeatCommand(): Command {
 			}
 		});
 
+	// T036 — feat switch-by-branch (used by git hook)
+	feat
+		.command('switch-by-branch <branch>')
+		.description('Auto-switch to feat matching this branch name (used by git hook)')
+		.option('--silent', 'Suppress output')
+		.action(async (branch: string, opts: { silent?: boolean }) => {
+			try {
+				const projectId = await getProjectId();
+				if (!existsSync(getPaths(projectId).projectMeta)) return;
+				const feats = await listFeats(projectId);
+				const match = feats.find((f) => f.branch === branch);
+				if (!match) return;
+				const active = await getActiveFeat(projectId);
+				if (active === match.name) return;
+				await setActiveFeat(projectId, match.name);
+				if (!opts.silent) console.log(`Switched active feat to: ${match.name}`);
+			} catch {
+				// silent failure in hook context
+			}
+		});
+
 	// T013 — feat context
 	feat
 		.command('context [name]')

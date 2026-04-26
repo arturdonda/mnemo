@@ -7,10 +7,14 @@ import { ensurePaths } from '../core/paths.js';
 import { handleError } from '../core/error.js';
 
 const POST_COMMIT_HOOK = `#!/bin/sh
-# mnemo: re-index changed files after each commit
+# mnemo: re-index changed files and auto-switch feat by branch
 changed=$(git diff --name-only HEAD~1 HEAD 2>/dev/null)
 if [ -n "$changed" ]; then
   echo "$changed" | mnemo update --files-from-stdin --silent 2>/dev/null || true
+fi
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [ -n "$branch" ]; then
+  mnemo feat switch-by-branch "$branch" --silent 2>/dev/null || true
 fi
 `;
 

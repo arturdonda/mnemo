@@ -7,6 +7,9 @@ Run \`mnemo feat context\` at the start of any session to load the current featu
 /mnemo-context — Load current feature context into this session
 Runs: mnemo feat context
 
+/mnemo-search <query> — Search the codebase with natural language
+Runs: mnemo search "<query>"
+
 /mnemo-decision <text> — Record an architectural decision
 Runs: mnemo feat decision "<text>"
 

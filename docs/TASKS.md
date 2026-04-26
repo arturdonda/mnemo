@@ -571,18 +571,18 @@ type ScoredChunk = Chunk & { score: number }
 ---
 
 ### T036 — Git hook auto-switch feat by branch
-- [ ] Update post-commit hook: after re-indexing, check if current branch matches any feat's `branch` field
-- [ ] If match found: auto-switch active feat to that feat
-- [ ] Print message if auto-switched: "Switched active feat to: {name}"
+- [x] Update post-commit hook: after re-indexing, check if current branch matches any feat's `branch` field
+- [x] If match found: auto-switch active feat to that feat
+- [x] Print message if auto-switched: "Switched active feat to: {name}"
 
 **Done when:** checking out a branch with a matching feat auto-activates it.
 
 ---
 
 ### T037 — Update agent integrations for Phase 2
-- [ ] Update `mnemo install claude`: add `/mnemo-search` to skill; add search instructions to CLAUDE.md block
-- [ ] Update `mnemo install codex/copilot/cursor` (if already implemented): same search instructions
-- [ ] Add search to `src/integrations/agents/claude.ts` skill content
+- [x] Update `mnemo install claude`: add `/mnemo-search` to skill; add search instructions to CLAUDE.md block
+- [x] Update `mnemo install codex/copilot/cursor` (if already implemented): same search instructions
+- [x] Add search to `src/integrations/agents/claude.ts` skill content
 
 **Done when:** skill includes `/mnemo-search <query>` that runs `mnemo search` and injects results.
 
