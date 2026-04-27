@@ -50,7 +50,7 @@
 		"type": "git",
 		"url": "git+https://github.com/arturdonda/mnemo.git"
 	},
-	"homepage": "https://github.com/arturdonda/mnemo#readme",
+	"homepage": "https://arturdonda.github.io/mnemo",
 	"bugs": {
 		"url": "https://github.com/arturdonda/mnemo/issues"
 	},

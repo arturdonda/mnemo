@@ -1,5 +1,9 @@
 <div align="center">
-  <img src="website/assets/mnemo-lockup-v.svg" alt="Mnemo" height="96" />
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="website/assets/mnemo-lockup-v-dark.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="website/assets/mnemo-lockup-v.svg" />
+    <img src="website/assets/mnemo-lockup-v.svg" alt="Mnemo" height="96" />
+  </picture>
   <br /><br />
   <strong>Persistent memory for AI coding agents.</strong>
   <br />
