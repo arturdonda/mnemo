@@ -2,7 +2,7 @@
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="website/assets/mnemo-lockup-v-dark.svg" />
     <source media="(prefers-color-scheme: light)" srcset="website/assets/mnemo-lockup-v.svg" />
-    <img src="website/assets/mnemo-lockup-v.svg" alt="Mnemo" height="96" />
+    <img src="website/assets/mnemo-lockup-v.svg" alt="Mnemo" height="200" />
   </picture>
   <br /><br />
   <strong>Persistent memory for AI coding agents.</strong>
@@ -137,12 +137,12 @@ mnemo feat status "Webhook handler done, writing tests"
 
 ## Agent support
 
-| Agent          | Command                 | What gets installed                       |
-| -------------- | ----------------------- | ----------------------------------------- |
-| Claude Code    | `mnemo install claude`  | Skill + CLAUDE.md instructions            |
-| GitHub Copilot | `mnemo install copilot` | `.github/copilot-instructions.md`         |
-| OpenAI Codex   | `mnemo install codex`   | `AGENTS.md`                               |
-| Cursor         | `mnemo install cursor`  | `.cursorrules`                            |
+| Agent          | Command                 | What gets installed               |
+| -------------- | ----------------------- | --------------------------------- |
+| Claude Code    | `mnemo install claude`  | Skill + CLAUDE.md instructions    |
+| GitHub Copilot | `mnemo install copilot` | `.github/copilot-instructions.md` |
+| OpenAI Codex   | `mnemo install codex`   | `AGENTS.md`                       |
+| Cursor         | `mnemo install cursor`  | `.cursorrules`                    |
 
 All agents receive instructions to load feature context at session start, call `mnemo search` before exploring unfamiliar code, and record decisions automatically.
 
