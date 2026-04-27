@@ -417,6 +417,20 @@
 				});
 			})();
 
+			// npm version — fetch from registry, fall back to hardcoded
+			(function () {
+				fetch('https://registry.npmjs.org/mnemo-cli/latest')
+					.then(function (r) { return r.json(); })
+					.then(function (d) {
+						if (d && d.version) {
+							document.querySelectorAll('.ver').forEach(function (el) {
+								el.textContent = 'v' + d.version;
+							});
+						}
+					})
+					.catch(function () {});
+			})();
+
 			// Terminal rows stagger animation
 			(function () {
 				if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
