@@ -1,0 +1,417 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Docs — Mnemo</title>
+		<meta name="description" content="Mnemo documentation — get started, CLI reference, architecture, and agent integration guides." />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+		<link rel="stylesheet" href="../style.css" />
+		<link rel="stylesheet" href="docs.css" />
+		<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
+		<script>
+			(function () {
+				var t = localStorage.getItem('mnemo-theme');
+				if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+			})();
+		</script>
+	</head>
+	<body>
+		<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+			<defs>
+				<symbol id="mnemo-mark" viewBox="0 0 96 96">
+					<rect class="bar-outer" x="18" y="18" width="14" height="60" />
+					<rect class="bar-mid" x="42" y="29.2" width="14" height="37.6" />
+					<rect class="bar-outer" x="66" y="18" width="14" height="60" />
+				</symbol>
+			</defs>
+		</svg>
+
+		<!-- ── Nav ──────────────────────────────────────── -->
+		<nav>
+			<a class="nav-logo" href="../index.html" aria-label="Mnemo">
+				<img class="lockup lockup-light" src="../assets/mnemo-lockup-h.svg" alt="">
+				<img class="lockup lockup-dark"  src="../assets/mnemo-lockup-h-dark.svg" alt="">
+			</a>
+			<div class="nav-links">
+				<a href="https://github.com/arturdonda/mnemo">GitHub</a>
+				<a href="index.html" style="color: var(--ink)">Docs</a>
+				<a href="https://github.com/arturdonda/mnemo/blob/main/CHANGELOG.md">Changelog</a>
+				<button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">auto</button>
+				<a href="https://www.npmjs.com/package/mnemo-cli" class="btn btn-amber"> npm <span class="ver">v1.0.0</span> </a>
+			</div>
+		</nav>
+
+		<!-- ── Docs layout ──────────────────────────────── -->
+		<div class="docs-layout">
+			<!-- Sidebar -->
+			<aside class="docs-sidebar">
+				<nav class="docs-nav">
+					<div class="docs-nav-group">
+						<div class="docs-nav-label">Getting started</div>
+						<a href="#installation" class="docs-nav-link">Installation</a>
+						<a href="#initialization" class="docs-nav-link">Initialize a project</a>
+						<a href="#agent-setup" class="docs-nav-link">Wire up your agent</a>
+					</div>
+					<div class="docs-nav-group">
+						<div class="docs-nav-label">Features</div>
+						<a href="#feat-cache" class="docs-nav-link">FEAT Context Cache</a>
+						<a href="#semantic-index" class="docs-nav-link">Semantic Index</a>
+						<a href="#structural-graph" class="docs-nav-link">Structural Graph</a>
+					</div>
+					<div class="docs-nav-group">
+						<div class="docs-nav-label">CLI Reference</div>
+						<a href="#cli-init" class="docs-nav-link">mnemo init</a>
+						<a href="#cli-feat" class="docs-nav-link">mnemo feat</a>
+						<a href="#cli-search" class="docs-nav-link">mnemo search</a>
+						<a href="#cli-install" class="docs-nav-link">mnemo install</a>
+						<a href="#cli-mcp" class="docs-nav-link">mnemo mcp</a>
+					</div>
+					<div class="docs-nav-group">
+						<div class="docs-nav-label">Architecture</div>
+						<a href="#data-model" class="docs-nav-link">Data model</a>
+						<a href="#storage" class="docs-nav-link">Local storage</a>
+						<a href="#privacy" class="docs-nav-link">Privacy</a>
+					</div>
+				</nav>
+			</aside>
+
+			<!-- Content -->
+			<main class="docs-content">
+				<div class="docs-header">
+					<div class="section-label">Documentation</div>
+					<h1 class="docs-title">Get started with Mnemo</h1>
+					<p class="docs-intro">
+						Mnemo gives AI coding agents persistent memory of your codebase — decisions, linked files, blockers, and status — across every session.
+					</p>
+				</div>
+
+				<!-- Installation -->
+				<section id="installation" class="docs-section">
+					<h2>Installation <a href="#installation" class="header-anchor" aria-label="Link to Installation">#</a></h2>
+					<p>Install Mnemo globally via npm. Node.js 20 or later is required.</p>
+					<pre><span class="cmd">npm install -g mnemo-cli</span></pre>
+					<p>Verify the installation:</p>
+					<pre><span class="cmd">mnemo --version</span></pre>
+				</section>
+
+				<!-- Initialization -->
+				<section id="initialization" class="docs-section">
+					<h2>Initialize a project <a href="#initialization" class="header-anchor" aria-label="Link to Initialize a project">#</a></h2>
+					<p>Run <code>mnemo init</code> inside any git repository. It installs a post-commit hook and creates the project config under <code>~/.mnemo/</code>.</p>
+					<pre><span class="cmd">cd</span> <span class="str">my-project</span>
+<span class="cmd">mnemo init</span></pre>
+					<p>
+						Mnemo identifies your project by hashing its git remote URL — the same remote always maps to the same project, so your context survives re-clones
+						and directory moves.
+					</p>
+
+					<div class="callout callout--info">
+						<strong>No git remote?</strong> Mnemo falls back to the absolute path of the repository root. You can always set a remote later with
+						<code>git remote add origin &lt;url&gt;</code> and re-run <code>mnemo init</code>.
+					</div>
+				</section>
+
+				<!-- Agent setup -->
+				<section id="agent-setup" class="docs-section">
+					<h2>Wire up your agent <a href="#agent-setup" class="header-anchor" aria-label="Link to Wire up your agent">#</a></h2>
+					<p>
+						Run <code>mnemo install &lt;agent&gt;</code> to generate the right config file for your AI coding agent. Mnemo keeps it up to date automatically
+						after every commit.
+					</p>
+					<pre><span class="cmd">mnemo install claude</span>    <span class="cmt"># writes CLAUDE.md + skill file</span>
+<span class="cmd">mnemo install copilot</span>   <span class="cmt"># writes .github/copilot-instructions.md</span>
+<span class="cmd">mnemo install codex</span>     <span class="cmt"># writes AGENTS.md</span>
+<span class="cmd">mnemo install cursor</span>    <span class="cmt"># writes .cursorrules</span></pre>
+
+					<table class="docs-table">
+						<thead>
+							<tr>
+								<th>Agent</th>
+								<th>Command</th>
+								<th>Generated file</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>Claude Code</td>
+								<td><code>mnemo install claude</code></td>
+								<td><code>CLAUDE.md</code> + skill</td>
+							</tr>
+							<tr>
+								<td>GitHub Copilot</td>
+								<td><code>mnemo install copilot</code></td>
+								<td><code>.github/copilot-instructions.md</code></td>
+							</tr>
+							<tr>
+								<td>OpenAI Codex</td>
+								<td><code>mnemo install codex</code></td>
+								<td><code>AGENTS.md</code></td>
+							</tr>
+							<tr>
+								<td>Cursor</td>
+								<td><code>mnemo install cursor</code></td>
+								<td><code>.cursorrules</code></td>
+							</tr>
+							<tr>
+								<td>Any MCP client</td>
+								<td><code>mnemo mcp serve</code></td>
+								<td>stdio MCP server</td>
+							</tr>
+						</tbody>
+					</table>
+				</section>
+
+				<!-- FEAT Cache -->
+				<section id="feat-cache" class="docs-section">
+					<h2>FEAT Context Cache <span class="layer-badge">Layer 3</span> <a href="#feat-cache" class="header-anchor" aria-label="Link to FEAT Context Cache">#</a></h2>
+					<p>
+						The FEAT cache is Mnemo's differentiator. While Layers 1 and 2 index the <em>code</em>, Layer 3 captures the <em>work in progress</em> — what you're
+						building, why you made certain choices, and where you left off.
+					</p>
+					<p>Each feature is an append-only event log (<code>events.jsonl</code>) rendered into a <code>context.md</code> your agent reads at session start.</p>
+
+					<h3 id="feat-workflow">Workflow <a href="#feat-workflow" class="header-anchor" aria-label="Link to Workflow">#</a></h3>
+					<pre><span class="cmt"># Start a feature</span>
+<span class="cmd">mnemo feat start</span> <span class="str">payment-flow</span>
+
+<span class="cmt"># Record decisions as you make them</span>
+<span class="cmd">mnemo feat decision</span> <span class="str">"Using Stripe Checkout — simpler for MVP"</span>
+
+<span class="cmt"># Link the files in scope</span>
+<span class="cmd">mnemo feat link-file</span> src/routes/payments.ts
+<span class="cmd">mnemo feat link-file</span> src/services/stripe.ts
+
+<span class="cmt"># Note blockers</span>
+<span class="cmd">mnemo feat blocker</span> <span class="str">"Webhook signature verification failing on localhost"</span>
+
+<span class="cmt"># Check the generated context your agent will see</span>
+<span class="cmd">mnemo feat context</span>
+
+<span class="cmt"># Finish and switch features</span>
+<span class="cmd">mnemo feat finish</span>
+<span class="cmd">mnemo feat start</span> <span class="str">auth-refresh</span></pre>
+
+					<div class="callout callout--tip">
+						<strong>Tip:</strong> Run <code>mnemo feat context</code> at the start of any AI session. Paste the output into your agent's first message, or let
+						<code>mnemo install</code> inject it automatically.
+					</div>
+				</section>
+
+				<!-- Semantic Index -->
+				<section id="semantic-index" class="docs-section">
+					<h2>Semantic Index <span class="layer-badge">Layer 1</span> <a href="#semantic-index" class="header-anchor" aria-label="Link to Semantic Index">#</a></h2>
+					<p>
+						Semantic search over your codebase using local embeddings. Uses <code>all-MiniLM-L6-v2</code> (~88 MB) via ONNX Runtime — no API keys, no network
+						calls, no code leaves your machine.
+					</p>
+					<pre><span class="cmd">mnemo search</span> <span class="str">"JWT authentication middleware"</span>
+<span class="cmd">mnemo search</span> <span class="str">"database connection pooling"</span> <span class="cmt">--top 5</span></pre>
+					<p>The index is updated automatically on every git commit via the post-commit hook installed by <code>mnemo init</code>.</p>
+					<p>To index immediately without committing:</p>
+					<pre><span class="cmd">mnemo update</span></pre>
+				</section>
+
+				<!-- Structural Graph -->
+				<section id="structural-graph" class="docs-section">
+					<h2>Structural Graph <span class="layer-badge">Layer 2</span> <a href="#structural-graph" class="header-anchor" aria-label="Link to Structural Graph">#</a></h2>
+					<p>
+						File-level dependency graph built with Tree-sitter. Tells your agent which files import what, which are affected by a change, and what symbols live
+						where — without reading file contents.
+					</p>
+					<pre><span class="cmt"># Find files that depend on a given module</span>
+<span class="cmd">mnemo graph deps</span> src/services/auth.ts
+
+<span class="cmt"># Show what a file imports</span>
+<span class="cmd">mnemo graph imports</span> src/routes/payments.ts</pre>
+				</section>
+
+				<!-- CLI: init -->
+				<section id="cli-init" class="docs-section">
+					<h2><code>mnemo init</code> <a href="#cli-init" class="header-anchor" aria-label="Link to mnemo init">#</a></h2>
+					<p>Initialize Mnemo for the current git repository.</p>
+					<pre><span class="cmd">mnemo init</span> [--force]</pre>
+					<p>Creates <code>~/.mnemo/projects/&lt;project-id&gt;/</code> and installs the post-commit hook at <code>.git/hooks/post-commit</code>.</p>
+					<table class="docs-table">
+						<thead>
+							<tr><th>Flag</th><th>Description</th></tr>
+						</thead>
+						<tbody>
+							<tr><td><code>--force</code></td><td>Overwrite existing config and hook</td></tr>
+						</tbody>
+					</table>
+				</section>
+
+				<!-- CLI: feat -->
+				<section id="cli-feat" class="docs-section">
+					<h2><code>mnemo feat</code> <a href="#cli-feat" class="header-anchor" aria-label="Link to mnemo feat">#</a></h2>
+					<p>Manage FEAT context cache entries.</p>
+					<table class="docs-table">
+						<thead>
+							<tr><th>Subcommand</th><th>Description</th></tr>
+						</thead>
+						<tbody>
+							<tr><td><code>feat start &lt;name&gt;</code></td><td>Create and activate a feature</td></tr>
+							<tr><td><code>feat finish</code></td><td>Mark the active feature done</td></tr>
+							<tr><td><code>feat context</code></td><td>Print the rendered context.md</td></tr>
+							<tr><td><code>feat list</code></td><td>List all features</td></tr>
+							<tr><td><code>feat switch &lt;name&gt;</code></td><td>Switch active feature</td></tr>
+							<tr><td><code>feat decision &lt;text&gt;</code></td><td>Record a decision</td></tr>
+							<tr><td><code>feat blocker &lt;text&gt;</code></td><td>Record a blocker</td></tr>
+							<tr><td><code>feat link-file &lt;path&gt;</code></td><td>Add a file to the active feature</td></tr>
+							<tr><td><code>feat unlink-file &lt;path&gt;</code></td><td>Remove a linked file</td></tr>
+							<tr><td><code>feat note &lt;text&gt;</code></td><td>Add a free-form note</td></tr>
+						</tbody>
+					</table>
+				</section>
+
+				<!-- CLI: search -->
+				<section id="cli-search" class="docs-section">
+					<h2><code>mnemo search</code> <a href="#cli-search" class="header-anchor" aria-label="Link to mnemo search">#</a></h2>
+					<pre><span class="cmd">mnemo search</span> <span class="str">"&lt;query&gt;"</span> [--top &lt;n&gt;] [--threshold &lt;score&gt;]</pre>
+					<table class="docs-table">
+						<thead>
+							<tr><th>Flag</th><th>Default</th><th>Description</th></tr>
+						</thead>
+						<tbody>
+							<tr><td><code>--top</code></td><td><code>10</code></td><td>Number of results to return</td></tr>
+							<tr><td><code>--threshold</code></td><td><code>0.3</code></td><td>Minimum similarity score (0–1)</td></tr>
+						</tbody>
+					</table>
+				</section>
+
+				<!-- CLI: install -->
+				<section id="cli-install" class="docs-section">
+					<h2><code>mnemo install</code> <a href="#cli-install" class="header-anchor" aria-label="Link to mnemo install">#</a></h2>
+					<pre><span class="cmd">mnemo install</span> <span class="str">claude|copilot|codex|cursor</span></pre>
+					<p>Generates the agent-specific config file and adds instructions for the agent to load Mnemo context at session start.</p>
+				</section>
+
+				<!-- CLI: mcp -->
+				<section id="cli-mcp" class="docs-section">
+					<h2><code>mnemo mcp serve</code> <a href="#cli-mcp" class="header-anchor" aria-label="Link to mnemo mcp serve">#</a></h2>
+					<pre><span class="cmd">mnemo mcp serve</span> [--port &lt;n&gt;]</pre>
+					<p>
+						Starts a stdio-based MCP server exposing Mnemo tools to any MCP-compatible client. Useful for custom agent setups or IDE extensions that speak the
+						Model Context Protocol.
+					</p>
+				</section>
+
+				<!-- Data model -->
+				<section id="data-model" class="docs-section">
+					<h2>Data model <a href="#data-model" class="header-anchor" aria-label="Link to Data model">#</a></h2>
+					<p>Each feature is an append-only event log. Events are never mutated — a snapshot is re-derived on every read.</p>
+					<pre><span class="cmt">// FeatureEvent (events.jsonl)</span>
+{
+  <span class="str">"id"</span>:        <span class="str">"evt_01j..."</span>,
+  <span class="str">"type"</span>:      <span class="str">"decision"</span> <span class="cmt">| "blocker" | "link-file" | "note" | ...</span>,
+  <span class="str">"payload"</span>:   <span class="str">"&lt;text or path&gt;"</span>,
+  <span class="str">"timestamp"</span>: <span class="str">"2026-04-25T14:32:00Z"</span>
+}</pre>
+					<p>The <code>context.md</code> file is derived from this log on every write — it is never the source of truth.</p>
+				</section>
+
+				<!-- Storage -->
+				<section id="storage" class="docs-section">
+					<h2>Local storage layout <a href="#storage" class="header-anchor" aria-label="Link to Local storage layout">#</a></h2>
+					<pre>~/.mnemo/
+  config.json
+  projects/
+    {project-id}/          <span class="cmt"># xxh3(git remote)[0:16]</span>
+      meta.json
+      feats/
+        {feat-name}/
+          events.jsonl     <span class="cmt"># source of truth (append-only)</span>
+          context.md       <span class="cmt"># derived — do not edit</span>
+          meta.json
+      active_feat          <span class="cmt"># name of active feature (plain text)</span></pre>
+					<p>All data lives under <code>~/.mnemo/</code>. Nothing is written to your repository except the git hook and the agent config file.</p>
+				</section>
+
+				<!-- Privacy -->
+				<section id="privacy" class="docs-section">
+					<h2>Privacy <a href="#privacy" class="header-anchor" aria-label="Link to Privacy">#</a></h2>
+					<p>
+						Mnemo is designed to run entirely offline by default. The semantic index uses <code>all-MiniLM-L6-v2</code> downloaded once from Hugging Face (~88
+						MB) and cached locally. No code or context is ever sent to any external server.
+					</p>
+					<p>Optionally, you can use Ollama (local) or OpenAI (cloud) for better embedding quality:</p>
+					<pre><span class="cmd">mnemo config set embeddings.provider</span> <span class="str">ollama</span>
+<span class="cmd">mnemo config set embeddings.provider</span> <span class="str">openai</span></pre>
+					<div class="callout callout--info">
+						When using OpenAI, only code chunks sent to the embedding API. Mnemo never sends your FEAT context, decisions, or blockers to any external service.
+					</div>
+				</section>
+			</main>
+		</div>
+
+		<!-- ── Footer ─────────────────────────────────────── -->
+		<footer>
+			<svg class="footer-mark" width="28" height="28" viewBox="0 0 96 96" aria-hidden="true">
+				<rect x="18" y="18" width="14" height="60" fill="currentColor"/>
+				<rect x="42" y="29.2" width="14" height="37.6" fill="currentColor"/>
+				<rect x="66" y="18" width="14" height="60" fill="currentColor"/>
+			</svg>
+			<div class="footer-links">
+				<a href="https://github.com/arturdonda/mnemo">GitHub</a>
+				<a href="https://www.npmjs.com/package/mnemo-cli">npm</a>
+				<a href="index.html">Docs</a>
+				<a href="https://github.com/arturdonda/mnemo/blob/main/CHANGELOG.md">Changelog</a>
+				<a href="https://github.com/arturdonda/mnemo/blob/main/LICENSE">MIT License</a>
+				<a href="https://github.com/arturdonda/mnemo/issues">Issues</a>
+			</div>
+			<p>Built by <a href="https://github.com/arturdonda">Artur Donda</a> · MIT License</p>
+		</footer>
+
+		<script>
+			(function () {
+				var btn = document.getElementById('themeToggle');
+				var html = document.documentElement;
+				var ICONS = {
+					light: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>',
+					dark:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+					auto:  '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>'
+				};
+
+				function currentMode() {
+					var stored = localStorage.getItem('mnemo-theme');
+					return stored === 'light' || stored === 'dark' ? stored : 'auto';
+				}
+				function applyMode(mode) {
+					if (mode === 'auto') html.removeAttribute('data-theme');
+					else html.setAttribute('data-theme', mode);
+					btn.innerHTML = ICONS[mode];
+					btn.setAttribute('aria-label', 'Toggle theme — ' + mode);
+				}
+				applyMode(currentMode());
+
+				btn.addEventListener('click', function () {
+					var modes = ['auto', 'light', 'dark'];
+					var next = modes[(modes.indexOf(currentMode()) + 1) % 3];
+					if (next === 'auto') localStorage.removeItem('mnemo-theme');
+					else localStorage.setItem('mnemo-theme', next);
+					applyMode(next);
+				});
+
+				// Highlight active nav link on scroll
+				var sections = document.querySelectorAll('.docs-section');
+				var navLinks = document.querySelectorAll('.docs-nav-link');
+				var observer = new IntersectionObserver(
+					function (entries) {
+						entries.forEach(function (entry) {
+							if (entry.isIntersecting) {
+								navLinks.forEach(function (l) { l.classList.remove('active'); });
+								var link = document.querySelector('.docs-nav-link[href="#' + entry.target.id + '"]');
+								if (link) link.classList.add('active');
+							}
+						});
+					},
+					{ rootMargin: '-20% 0px -70% 0px' }
+				);
+				sections.forEach(function (s) { observer.observe(s); });
+			})();
+		</script>
+	</body>
+</html>

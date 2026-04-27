@@ -20,9 +20,7 @@
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
 		"typecheck": "tsc --noEmit",
-		"bench": "vitest run tests/benchmarks/",
-		"predemo": "npm run build && npm link",
-		"demo": "vhs scripts/demo.tape && vhs scripts/demo-search.tape"
+		"bench": "vitest run tests/benchmarks/"
 	},
 	"dependencies": {
 		"@lancedb/lancedb": "^0.27.2",

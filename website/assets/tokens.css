@@ -1,0 +1,36 @@
+/* ───────────────────────────────────────────────
+   Mnemo · brand tokens
+   ─────────────────────────────────────────────── */
+:root {
+	/* Color */
+	--mnemo-ink: oklch(0.18 0.01 80); /* warm charcoal — text, mark on light */
+	--mnemo-paper: oklch(0.96 0.005 80); /* warm off-white — bg, mark on dark */
+	--mnemo-amber: oklch(0.68 0.13 70); /* sole accent — center bar, status, links */
+
+	/* Color · supportive (derived) */
+	--mnemo-sub: oklch(0.5 0.01 80); /* muted text */
+	--mnemo-paper-warm: oklch(0.93 0.008 80); /* slightly warmer paper for cards */
+
+	/* Type */
+	--mnemo-font-ui: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+	--mnemo-font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+	--mnemo-tracking-tight: -0.04em; /* wordmark + display headings */
+	--mnemo-tracking-snug: -0.02em; /* body headings */
+	--mnemo-tracking-wide: 0.14em; /* uppercase eyebrow/labels */
+
+	/* Shape */
+	--mnemo-radius-sm: 4px;
+	--mnemo-radius-md: 8px;
+	--mnemo-radius-lg: 14px;
+}
+
+/* Dark mode — flip ink/paper, accent unchanged */
+@media (prefers-color-scheme: dark) {
+	:root {
+		--mnemo-ink: oklch(0.96 0.005 80);
+		--mnemo-paper: oklch(0.14 0.01 80);
+		--mnemo-paper-warm: oklch(0.18 0.01 80);
+		--mnemo-sub: oklch(0.65 0.01 80);
+	}
+}
