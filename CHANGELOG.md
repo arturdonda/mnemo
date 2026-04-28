@@ -10,6 +10,20 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ---
 
+## [1.1.0] — 2026-04-28
+
+### Added
+- Windsurf agent support: `mnemo install windsurf` writes `.windsurfrules` + `.windsurf/skills/mnemo/SKILL.md`
+- Cross-agent `SKILL.md` standard: all agents now receive an invokable skill file alongside their always-on instructions (`.github/skills/`, `.cursor/skills/`, `.agents/skills/`, `.windsurf/skills/`)
+- Model download shows real-time animated progress bar in TTY (150ms throttle) and periodic log lines in non-TTY
+
+### Fixed
+- Model downloaded N times in parallel (once per worker thread) on first `mnemo update` — now downloaded once in the main thread before workers start
+- `mnemo graph` commands returned no results on Windows — `path.resolve()` returns backslashes but fast-glob stores forward slashes in the DB
+- Search results could show negative scores (`-12%`) when cosine distance > 1 — scores are now clamped to zero
+
+---
+
 ## [1.0.0] — 2026-04-26
 
 First public release.
@@ -60,7 +74,8 @@ First public release.
 
 ---
 
-[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/arturdonda/mnemo/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/arturdonda/mnemo/compare/v0.2.0...v1.0.0
 [0.2.0]: https://github.com/arturdonda/mnemo/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/arturdonda/mnemo/releases/tag/v0.1.0
