@@ -1,20 +1,17 @@
-export const MNEMO_BLOCK_MARKER = '## Mnemo — Codebase Memory';
+import { MNEMO_AGENT_BLOCK, SKILL_MD } from './shared.js';
 
-export const CURSOR_RULES_BLOCK = `## Mnemo — Codebase Memory
+export { MNEMO_BLOCK_MARKER } from './shared.js';
 
-This project uses Mnemo for persistent context across AI sessions.
+// .cursor/rules/mnemo.mdc — Cursor project rules (always applied)
+export const CURSOR_RULES_BLOCK = MNEMO_AGENT_BLOCK;
 
-At the start of each session:
+export const CURSOR_RULE_FILE = `---
+description: Mnemo codebase memory — persistent context across AI sessions
+globs:
+alwaysApply: true
+---
 
-1. Run \`mnemo feat context\` to load the current feature context
-2. Use \`mnemo search "<query>"\` before exploring unfamiliar code
+${MNEMO_AGENT_BLOCK}`;
 
-When making architectural decisions, run:
-\`mnemo feat decision "<your decision and rationale>"\`
-
-When hitting a blocker:
-\`mnemo feat blocker "<description>"\`
-
-When linking relevant files:
-\`mnemo feat link-file <path> --reason "<why>"\`
-`;
+// .cursor/skills/mnemo/SKILL.md — Cursor Agent Skills (invokable)
+export const CURSOR_SKILL_MD = SKILL_MD;

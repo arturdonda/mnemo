@@ -1,20 +1,8 @@
-export const MNEMO_BLOCK_MARKER = '## Mnemo — Codebase Memory';
+import { MNEMO_AGENT_BLOCK, SKILL_MD } from './shared.js';
 
-export const COPILOT_INSTRUCTIONS_BLOCK = `## Mnemo — Codebase Memory
+export { MNEMO_BLOCK_MARKER } from './shared.js';
 
-This project uses Mnemo for persistent context across AI sessions.
+export const COPILOT_INSTRUCTIONS_BLOCK = MNEMO_AGENT_BLOCK;
 
-At the start of each session:
-
-1. Run \`mnemo feat context\` to load the current feature context
-2. Use \`mnemo search "<query>"\` before exploring unfamiliar code
-
-When making architectural decisions, run:
-\`mnemo feat decision "<your decision and rationale>"\`
-
-When hitting a blocker:
-\`mnemo feat blocker "<description>"\`
-
-When linking relevant files:
-\`mnemo feat link-file <path> --reason "<why>"\`
-`;
+// .github/skills/mnemo/SKILL.md — GitHub Copilot Agent Skills (2025+)
+export const COPILOT_SKILL_MD = SKILL_MD;
