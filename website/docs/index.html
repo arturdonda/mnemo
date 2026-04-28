@@ -121,10 +121,11 @@
 						Run <code>mnemo install &lt;agent&gt;</code> to generate the right config file for your AI coding agent. Mnemo keeps it up to date automatically
 						after every commit.
 					</p>
-					<pre><span class="cmd">mnemo install claude</span>    <span class="cmt"># writes CLAUDE.md + skill file</span>
-<span class="cmd">mnemo install copilot</span>   <span class="cmt"># writes .github/copilot-instructions.md</span>
-<span class="cmd">mnemo install codex</span>     <span class="cmt"># writes AGENTS.md</span>
-<span class="cmd">mnemo install cursor</span>    <span class="cmt"># writes .cursorrules</span></pre>
+					<pre><span class="cmd">mnemo install claude</span>    <span class="cmt"># CLAUDE.md + .claude/skills/mnemo.md</span>
+<span class="cmd">mnemo install copilot</span>   <span class="cmt"># copilot-instructions.md + .github/skills/mnemo/SKILL.md</span>
+<span class="cmd">mnemo install codex</span>     <span class="cmt"># AGENTS.md + .agents/skills/mnemo/SKILL.md</span>
+<span class="cmd">mnemo install cursor</span>    <span class="cmt"># .cursor/rules/mnemo.mdc + .cursor/skills/mnemo/SKILL.md</span>
+<span class="cmd">mnemo install windsurf</span>  <span class="cmt"># .windsurfrules + .windsurf/skills/mnemo/SKILL.md</span></pre>
 
 					<table class="docs-table">
 						<thead>
@@ -138,22 +139,27 @@
 							<tr>
 								<td>Claude Code</td>
 								<td><code>mnemo install claude</code></td>
-								<td><code>CLAUDE.md</code> + skill</td>
+								<td><code>CLAUDE.md</code> + <code>.claude/skills/mnemo.md</code></td>
 							</tr>
 							<tr>
 								<td>GitHub Copilot</td>
 								<td><code>mnemo install copilot</code></td>
-								<td><code>.github/copilot-instructions.md</code></td>
+								<td><code>.github/copilot-instructions.md</code> + <code>.github/skills/mnemo/SKILL.md</code></td>
 							</tr>
 							<tr>
 								<td>OpenAI Codex</td>
 								<td><code>mnemo install codex</code></td>
-								<td><code>AGENTS.md</code></td>
+								<td><code>AGENTS.md</code> + <code>.agents/skills/mnemo/SKILL.md</code></td>
 							</tr>
 							<tr>
 								<td>Cursor</td>
 								<td><code>mnemo install cursor</code></td>
-								<td><code>.cursorrules</code></td>
+								<td><code>.cursor/rules/mnemo.mdc</code> + <code>.cursor/skills/mnemo/SKILL.md</code></td>
+							</tr>
+							<tr>
+								<td>Windsurf</td>
+								<td><code>mnemo install windsurf</code></td>
+								<td><code>.windsurfrules</code> + <code>.windsurf/skills/mnemo/SKILL.md</code></td>
 							</tr>
 							<tr>
 								<td>Any MCP client</td>
@@ -285,7 +291,7 @@
 				<!-- CLI: install -->
 				<section id="cli-install" class="docs-section">
 					<h2><code>mnemo install</code> <a href="#cli-install" class="header-anchor" aria-label="Link to mnemo install">#</a></h2>
-					<pre><span class="cmd">mnemo install</span> <span class="str">claude|copilot|codex|cursor</span></pre>
+					<pre><span class="cmd">mnemo install</span> <span class="str">claude|copilot|codex|cursor|windsurf</span></pre>
 					<p>Generates the agent-specific config file and adds instructions for the agent to load Mnemo context at session start.</p>
 				</section>
 

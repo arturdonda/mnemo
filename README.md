@@ -110,6 +110,7 @@ mnemo install claude     # Claude Code
 mnemo install codex      # OpenAI Codex / ChatGPT
 mnemo install copilot    # GitHub Copilot
 mnemo install cursor     # Cursor
+mnemo install windsurf   # Windsurf
 ```
 
 Your agent now reads `mnemo feat context` at the start of every session and records decisions as you work.
@@ -137,12 +138,13 @@ mnemo feat status "Webhook handler done, writing tests"
 
 ## Agent support
 
-| Agent          | Command                 | What gets installed               |
-| -------------- | ----------------------- | --------------------------------- |
-| Claude Code    | `mnemo install claude`  | Skill + CLAUDE.md instructions    |
-| GitHub Copilot | `mnemo install copilot` | `.github/copilot-instructions.md` |
-| OpenAI Codex   | `mnemo install codex`   | `AGENTS.md`                       |
-| Cursor         | `mnemo install cursor`  | `.cursorrules`                    |
+| Agent          | Command                   | What gets installed                                        |
+| -------------- | ------------------------- | ---------------------------------------------------------- |
+| Claude Code    | `mnemo install claude`    | `CLAUDE.md` + `.claude/skills/mnemo.md`                   |
+| GitHub Copilot | `mnemo install copilot`   | `.github/copilot-instructions.md` + `.github/skills/mnemo/SKILL.md` |
+| OpenAI Codex   | `mnemo install codex`     | `AGENTS.md` + `.agents/skills/mnemo/SKILL.md`             |
+| Cursor         | `mnemo install cursor`    | `.cursor/rules/mnemo.mdc` + `.cursor/skills/mnemo/SKILL.md` |
+| Windsurf       | `mnemo install windsurf`  | `.windsurfrules` + `.windsurf/skills/mnemo/SKILL.md`      |
 
 All agents receive instructions to load feature context at session start, call `mnemo search` before exploring unfamiliar code, and record decisions automatically.
 
