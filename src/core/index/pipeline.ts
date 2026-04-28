@@ -38,6 +38,13 @@ export async function indexFiles(filePaths: string[], projectId: string): Promis
 	const config = await readConfig();
 	const paths = getPaths(projectId);
 
+	// Ensure ONNX model is downloaded once in the main thread before workers start.
+	// Workers would otherwise race on existsSync() and trigger parallel downloads.
+	if ((config['embedding.provider'] ?? 'onnx') === 'onnx') {
+		const { ensureOnnxModels } = await import('./providers/onnx.js');
+		await ensureOnnxModels();
+	}
+
 	const numWorkers = Math.max(1, (cpus().length ?? 2) - 1);
 	const partitions = partition(filePaths, numWorkers);
 

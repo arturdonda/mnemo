@@ -10,6 +10,13 @@ const VOCAB_URL = `https://huggingface.co/sentence-transformers/${MODEL_NAME}/re
 
 export const ONNX_DIMENSIONS = 384;
 
+export async function ensureOnnxModels(): Promise<void> {
+	const modelPath = join(MODELS_DIR, `${MODEL_NAME}.onnx`);
+	const vocabPath = join(MODELS_DIR, `${MODEL_NAME}.tokenizer.json`);
+	await ensureModel(MODEL_NAME, MODEL_URL, modelPath);
+	await ensureModel(`${MODEL_NAME}.tokenizer`, VOCAB_URL, vocabPath);
+}
+
 export class OnnxEmbedder implements Embedder {
 	readonly dimensions = ONNX_DIMENSIONS;
 	private session: ort.InferenceSession | null = null;
