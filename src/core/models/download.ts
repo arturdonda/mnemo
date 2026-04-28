@@ -52,6 +52,11 @@ export async function downloadModel(name: string, url: string, dest: string): Pr
 	const body = res.body as ReadableStream<Uint8Array>;
 	const reader = body.getReader();
 
+	const THROTTLE_MS = 150;
+	let lastRenderAt = 0;
+	let lastReportedPct = -1;
+	let lastReportedMB = -1;
+
 	try {
 		while (true) {
 			const { done, value } = await reader.read();
@@ -61,17 +66,41 @@ export async function downloadModel(name: string, url: string, dest: string): Pr
 			fileStream.write(value);
 			received += value.length;
 
-			if (isTTY && total > 0) {
+			const now = Date.now();
+
+			if (total > 0) {
 				const pct = Math.floor((received / total) * 100);
-				const bar = '█'.repeat(Math.floor(pct / 5)) + '░'.repeat(20 - Math.floor(pct / 5));
-				process.stderr.write(`\r  [${bar}] ${pct}% ${formatBytes(received)}/${formatBytes(total)}`);
+				const filled = Math.floor(pct / 5);
+				const bar = '█'.repeat(filled) + '░'.repeat(20 - filled);
+				const line = `  [${bar}] ${String(pct).padStart(3)}% ${formatBytes(received)}/${formatBytes(total)}`;
+				if (isTTY) {
+					if (now - lastRenderAt >= THROTTLE_MS) {
+						lastRenderAt = now;
+						process.stderr.write(`\r${line}`);
+					}
+				} else if (pct >= lastReportedPct + 2) {
+					lastReportedPct = pct - (pct % 2);
+					process.stderr.write(`${line}\n`);
+				}
+			} else if (!isTTY) {
+				const mb = Math.floor(received / (1024 * 1024));
+				if (mb > lastReportedMB) {
+					lastReportedMB = mb;
+					process.stderr.write(`  ${formatBytes(received)} downloaded...\n`);
+				}
 			}
 		}
 	} finally {
 		await new Promise<void>((resolve, reject) => fileStream.end((err: unknown) => (err ? reject(err) : resolve())));
 	}
 
-	if (isTTY) process.stderr.write('\n');
+	// flush final bar state before the "Downloaded" line
+	if (isTTY && total > 0) {
+		const bar = '█'.repeat(20);
+		process.stderr.write(`\r  [${bar}] 100% ${formatBytes(received)}/${formatBytes(total)}\n`);
+	} else if (isTTY) {
+		process.stderr.write('\n');
+	}
 
 	const sha256 = hash.digest('hex');
 	const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
