@@ -1,6 +1,6 @@
 {
 	"name": "mnemo-cli",
-	"version": "1.0.2",
+	"version": "1.1.0",
 	"description": "Your codebase, remembered — across every AI session. Persistent context for AI coding agents.",
 	"type": "module",
 	"bin": {
