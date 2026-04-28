@@ -14,7 +14,9 @@ async function openStore(): Promise<{ store: GraphStore; cleanup: () => void }> 
 }
 
 function resolveFilePath(filePath: string): string {
-	return resolve(process.cwd(), filePath);
+	// Normalize to forward slashes so the lookup matches paths stored by fast-glob,
+	// which always uses '/' regardless of OS (critical on Windows).
+	return resolve(process.cwd(), filePath).replace(/\\/g, '/');
 }
 
 export function createGraphCommand(): Command {

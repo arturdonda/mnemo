@@ -67,7 +67,7 @@ async function getFilesSinceCommit(cwd: string, since: string): Promise<string[]
 	const ext = new Set(SOURCE_EXTENSIONS);
 	return relPaths
 		.filter((p) => ext.has(p.split('.').pop() ?? ''))
-		.map((p) => `${cwd}/${p}`);
+		.map((p) => `${cwd.replace(/\\/g, '/')}/${p}`);
 }
 
 async function readFilesFromStdin(cwd: string): Promise<string[]> {
@@ -78,7 +78,7 @@ async function readFilesFromStdin(cwd: string): Promise<string[]> {
 	for await (const line of rl) {
 		const trimmed = line.trim();
 		if (trimmed && ext.has(trimmed.split('.').pop() ?? '')) {
-			lines.push(`${cwd}/${trimmed}`);
+			lines.push(`${cwd.replace(/\\/g, '/')}/${trimmed}`);
 		}
 	}
 	return lines;
