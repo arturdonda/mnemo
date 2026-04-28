@@ -94,7 +94,7 @@ export class SqliteVecStore implements VectorStore {
 			content: r.content,
 			fileHash: r.file_hash,
 			indexedAt: r.indexed_at,
-			score: 1 - r.distance,
+			score: Math.max(0, 1 - r.distance),
 		}));
 	}
 
