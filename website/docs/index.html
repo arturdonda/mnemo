@@ -40,7 +40,7 @@
 				<a href="index.html" style="color: var(--ink)">Docs</a>
 				<a href="https://github.com/arturdonda/mnemo/blob/main/CHANGELOG.md">Changelog</a>
 				<button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">auto</button>
-				<a href="https://www.npmjs.com/package/mnemo-cli" class="btn btn-amber"> npm <span class="ver">v1.0.0</span> </a>
+				<a href="https://www.npmjs.com/package/mnemo-cli" class="btn btn-amber"> npm <span class="ver">v1.3.0</span> </a>
 			</div>
 		</nav>
 
@@ -121,11 +121,11 @@
 						Run <code>mnemo install &lt;agent&gt;</code> to generate the right config file for your AI coding agent. Mnemo keeps it up to date automatically
 						after every commit.
 					</p>
-					<pre><span class="cmd">mnemo install claude</span>    <span class="cmt"># CLAUDE.md + .claude/skills/mnemo.md</span>
-<span class="cmd">mnemo install copilot</span>   <span class="cmt"># copilot-instructions.md + .github/skills/mnemo/SKILL.md</span>
-<span class="cmd">mnemo install codex</span>     <span class="cmt"># AGENTS.md + .agents/skills/mnemo/SKILL.md</span>
-<span class="cmd">mnemo install cursor</span>    <span class="cmt"># .cursor/rules/mnemo.mdc + .cursor/skills/mnemo/SKILL.md</span>
-<span class="cmd">mnemo install windsurf</span>  <span class="cmt"># .windsurfrules + .windsurf/skills/mnemo/SKILL.md</span></pre>
+					<pre><span class="cmd">mnemo install claude</span>    <span class="cmt"># CLAUDE.md + skill file + MCP in ~/.claude/settings.json</span>
+<span class="cmd">mnemo install copilot</span>   <span class="cmt"># copilot-instructions.md + skill file + MCP in .vscode/mcp.json</span>
+<span class="cmd">mnemo install codex</span>     <span class="cmt"># AGENTS.md + skill file + MCP in ~/.codex/config.toml</span>
+<span class="cmd">mnemo install cursor</span>    <span class="cmt"># .cursor/rules/mnemo.mdc + skill file + MCP in .cursor/mcp.json</span>
+<span class="cmd">mnemo install windsurf</span>  <span class="cmt"># .windsurfrules + skill file + MCP in ~/.codeium/windsurf/mcp_config.json</span></pre>
 
 					<table class="docs-table">
 						<thead>
@@ -139,27 +139,27 @@
 							<tr>
 								<td>Claude Code</td>
 								<td><code>mnemo install claude</code></td>
-								<td><code>CLAUDE.md</code> + <code>.claude/skills/mnemo.md</code></td>
+								<td><code>CLAUDE.md</code> + <code>.claude/skills/mnemo.md</code> + MCP in <code>~/.claude/settings.json</code></td>
 							</tr>
 							<tr>
 								<td>GitHub Copilot</td>
 								<td><code>mnemo install copilot</code></td>
-								<td><code>.github/copilot-instructions.md</code> + <code>.github/skills/mnemo/SKILL.md</code></td>
+								<td><code>.github/copilot-instructions.md</code> + <code>.github/skills/mnemo/SKILL.md</code> + MCP in <code>.vscode/mcp.json</code></td>
 							</tr>
 							<tr>
 								<td>OpenAI Codex</td>
 								<td><code>mnemo install codex</code></td>
-								<td><code>AGENTS.md</code> + <code>.agents/skills/mnemo/SKILL.md</code></td>
+								<td><code>AGENTS.md</code> + <code>.agents/skills/mnemo/SKILL.md</code> + MCP in <code>~/.codex/config.toml</code></td>
 							</tr>
 							<tr>
 								<td>Cursor</td>
 								<td><code>mnemo install cursor</code></td>
-								<td><code>.cursor/rules/mnemo.mdc</code> + <code>.cursor/skills/mnemo/SKILL.md</code></td>
+								<td><code>.cursor/rules/mnemo.mdc</code> + <code>.cursor/skills/mnemo/SKILL.md</code> + MCP in <code>.cursor/mcp.json</code></td>
 							</tr>
 							<tr>
 								<td>Windsurf</td>
 								<td><code>mnemo install windsurf</code></td>
-								<td><code>.windsurfrules</code> + <code>.windsurf/skills/mnemo/SKILL.md</code></td>
+								<td><code>.windsurfrules</code> + <code>.windsurf/skills/mnemo/SKILL.md</code> + MCP in <code>~/.codeium/windsurf/mcp_config.json</code></td>
 							</tr>
 							<tr>
 								<td>Any MCP client</td>
@@ -168,6 +168,10 @@
 							</tr>
 						</tbody>
 					</table>
+
+					<div class="callout callout--tip">
+						<strong>All agents get MCP integration automatically.</strong> Each <code>mnemo install &lt;agent&gt;</code> registers the MCP server in the agent's native config. Agents call <code>get_feat_context</code>, <code>search_codebase</code>, <code>record_decision</code>, and other tools natively — no shell permissions needed. Restart your agent once after install.
+					</div>
 				</section>
 
 				<!-- FEAT Cache -->
@@ -197,7 +201,7 @@
 <span class="cmd">mnemo feat context</span>
 
 <span class="cmt"># Finish and switch features</span>
-<span class="cmd">mnemo feat finish</span>
+<span class="cmd">mnemo feat done</span>
 <span class="cmd">mnemo feat start</span> <span class="str">auth-refresh</span></pre>
 
 					<div class="callout callout--tip">
@@ -214,7 +218,8 @@
 						calls, no code leaves your machine.
 					</p>
 					<pre><span class="cmd">mnemo search</span> <span class="str">"JWT authentication middleware"</span>
-<span class="cmd">mnemo search</span> <span class="str">"database connection pooling"</span> <span class="cmt">--top 5</span></pre>
+<span class="cmd">mnemo search</span> <span class="str">"database connection pooling"</span> <span class="cmt">--limit 5</span>
+<span class="cmd">mnemo search</span> <span class="str">"auth guards"</span> <span class="cmt">--include-tests</span></pre>
 					<p>The index is updated automatically on every git commit via the post-commit hook installed by <code>mnemo init</code>.</p>
 					<p>To index immediately without committing:</p>
 					<pre><span class="cmd">mnemo update</span></pre>
@@ -227,11 +232,17 @@
 						File-level dependency graph built with Tree-sitter. Tells your agent which files import what, which are affected by a change, and what symbols live
 						where — without reading file contents.
 					</p>
-					<pre><span class="cmt"># Find files that depend on a given module</span>
+					<pre><span class="cmt"># Files this file imports</span>
 <span class="cmd">mnemo graph deps</span> src/services/auth.ts
 
-<span class="cmt"># Show what a file imports</span>
-<span class="cmd">mnemo graph imports</span> src/routes/payments.ts</pre>
+<span class="cmt"># Files that import this file</span>
+<span class="cmd">mnemo graph refs</span> src/routes/payments.ts
+
+<span class="cmt"># Transitive dependents (BFS, max depth 3)</span>
+<span class="cmd">mnemo graph affected</span> src/services/auth.ts
+
+<span class="cmt"># Top-level functions and classes in a file</span>
+<span class="cmd">mnemo graph symbols</span> src/services/auth.ts</pre>
 				</section>
 
 				<!-- CLI: init -->
@@ -260,8 +271,8 @@
 						</thead>
 						<tbody>
 							<tr><td><code>feat start &lt;name&gt;</code></td><td>Create and activate a feature</td></tr>
-							<tr><td><code>feat finish</code></td><td>Mark the active feature done</td></tr>
-							<tr><td><code>feat context</code></td><td>Print the rendered context.md</td></tr>
+							<tr><td><code>feat done</code></td><td>Mark the active feature done</td></tr>
+							<tr><td><code>feat context [--no-suggest]</code></td><td>Print the rendered context.md (suppress file suggestions with <code>--no-suggest</code>)</td></tr>
 							<tr><td><code>feat list</code></td><td>List all features</td></tr>
 							<tr><td><code>feat switch &lt;name&gt;</code></td><td>Switch active feature</td></tr>
 							<tr><td><code>feat decision &lt;text&gt;</code></td><td>Record a decision</td></tr>
@@ -269,6 +280,7 @@
 							<tr><td><code>feat link-file &lt;path&gt;</code></td><td>Add a file to the active feature</td></tr>
 							<tr><td><code>feat unlink-file &lt;path&gt;</code></td><td>Remove a linked file</td></tr>
 							<tr><td><code>feat note &lt;text&gt;</code></td><td>Add a free-form note</td></tr>
+							<tr><td><code>feat suggest-files [--limit n]</code></td><td>Suggest files to link based on current context</td></tr>
 						</tbody>
 					</table>
 				</section>
@@ -276,14 +288,17 @@
 				<!-- CLI: search -->
 				<section id="cli-search" class="docs-section">
 					<h2><code>mnemo search</code> <a href="#cli-search" class="header-anchor" aria-label="Link to mnemo search">#</a></h2>
-					<pre><span class="cmd">mnemo search</span> <span class="str">"&lt;query&gt;"</span> [--top &lt;n&gt;] [--threshold &lt;score&gt;]</pre>
+					<pre><span class="cmd">mnemo search</span> <span class="str">"&lt;query&gt;"</span> [--limit &lt;n&gt;] [--include-tests] [--output json] [--no-hybrid]</pre>
+					<p>Results are ranked by hybrid score (semantic similarity + graph proximity + feat relevance). Scores display as decimals (e.g. <code>0.87</code>). Snippets show 6 lines of context.</p>
 					<table class="docs-table">
 						<thead>
 							<tr><th>Flag</th><th>Default</th><th>Description</th></tr>
 						</thead>
 						<tbody>
-							<tr><td><code>--top</code></td><td><code>10</code></td><td>Number of results to return</td></tr>
-							<tr><td><code>--threshold</code></td><td><code>0.3</code></td><td>Minimum similarity score (0–1)</td></tr>
+							<tr><td><code>--limit</code></td><td><code>10</code></td><td>Number of results to return</td></tr>
+							<tr><td><code>--include-tests</code></td><td>off</td><td>Disable test/sample score penalty — show all results ranked by pure semantic similarity</td></tr>
+							<tr><td><code>--output json</code></td><td>—</td><td>Output results as JSON (useful for piping to other tools)</td></tr>
+							<tr><td><code>--no-hybrid</code></td><td>—</td><td>Disable hybrid ranking; use pure vector similarity only</td></tr>
 						</tbody>
 					</table>
 				</section>
@@ -327,6 +342,8 @@
   projects/
     {project-id}/          <span class="cmt"># xxh3(git remote)[0:16]</span>
       meta.json
+      index.db             <span class="cmt"># vector index (SQLite + sqlite-vec)</span>
+      graph.db             <span class="cmt"># structural dependency graph (SQLite)</span>
       feats/
         {feat-name}/
           events.jsonl     <span class="cmt"># source of truth (append-only)</span>
@@ -344,8 +361,8 @@
 						MB) and cached locally. No code or context is ever sent to any external server.
 					</p>
 					<p>Optionally, you can use Ollama (local) or OpenAI (cloud) for better embedding quality:</p>
-					<pre><span class="cmd">mnemo config set embeddings.provider</span> <span class="str">ollama</span>
-<span class="cmd">mnemo config set embeddings.provider</span> <span class="str">openai</span></pre>
+					<pre><span class="cmd">mnemo config set embedding.provider</span> <span class="str">ollama</span>
+<span class="cmd">mnemo config set embedding.provider</span> <span class="str">openai</span></pre>
 					<div class="callout callout--info">
 						When using OpenAI, only code chunks sent to the embedding API. Mnemo never sends your FEAT context, decisions, or blockers to any external service.
 					</div>

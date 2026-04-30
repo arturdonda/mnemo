@@ -140,13 +140,15 @@ mnemo feat status "Webhook handler done, writing tests"
 
 | Agent          | Command                   | What gets installed                                        |
 | -------------- | ------------------------- | ---------------------------------------------------------- |
-| Claude Code    | `mnemo install claude`    | `CLAUDE.md` + `.claude/skills/mnemo.md`                   |
-| GitHub Copilot | `mnemo install copilot`   | `.github/copilot-instructions.md` + `.github/skills/mnemo/SKILL.md` |
-| OpenAI Codex   | `mnemo install codex`     | `AGENTS.md` + `.agents/skills/mnemo/SKILL.md`             |
-| Cursor         | `mnemo install cursor`    | `.cursor/rules/mnemo.mdc` + `.cursor/skills/mnemo/SKILL.md` |
-| Windsurf       | `mnemo install windsurf`  | `.windsurfrules` + `.windsurf/skills/mnemo/SKILL.md`      |
+| Claude Code    | `mnemo install claude`    | `CLAUDE.md` + `.claude/skills/mnemo.md` + MCP server in `~/.claude/settings.json` |
+| GitHub Copilot | `mnemo install copilot`   | `.github/copilot-instructions.md` + `.github/skills/mnemo/SKILL.md` + MCP server in `.vscode/mcp.json` |
+| OpenAI Codex   | `mnemo install codex`     | `AGENTS.md` + `.agents/skills/mnemo/SKILL.md` + MCP server in `~/.codex/config.toml` |
+| Cursor         | `mnemo install cursor`    | `.cursor/rules/mnemo.mdc` + `.cursor/skills/mnemo/SKILL.md` + MCP server in `.cursor/mcp.json` |
+| Windsurf       | `mnemo install windsurf`  | `.windsurfrules` + `.windsurf/skills/mnemo/SKILL.md` + MCP server in `~/.codeium/windsurf/mcp_config.json` |
 
-All agents receive instructions to load feature context at session start, call `mnemo search` before exploring unfamiliar code, and record decisions automatically.
+All agents receive instructions to load feature context at session start, use MCP tools before CLI, and record decisions automatically.
+
+**All agents get MCP integration automatically.** Each `mnemo install <agent>` command registers the MCP server in the agent's native config file. Agents can then call `get_feat_context`, `search_codebase`, `record_decision`, and other tools natively — no shell permissions needed. Restart your agent once after install.
 
 **MCP server** (any MCP-compatible client):
 
@@ -154,7 +156,7 @@ All agents receive instructions to load feature context at session start, call `
 mnemo mcp serve
 ```
 
-Exposes: `get_feat_context`, `search_codebase`, `record_decision`, `record_blocker`, `resolve_blocker`, `link_file`, `get_deps`, `get_refs`.
+Exposes: `get_feat_context`, `search_codebase`, `record_decision`, `record_blocker`, `resolve_blocker`, `link_file`, `get_deps`, `get_refs`, `get_symbols`.
 
 ---
 
@@ -192,6 +194,8 @@ mnemo feat start <name>              Start a new feature context
 mnemo feat list                      List all features
 mnemo feat switch <name>             Switch active feature
 mnemo feat context [name]            Print current feature context (markdown)
+mnemo feat context [name] --no-suggest  Suppress file suggestions (for pipes)
+mnemo feat suggest-files             Suggest files to link based on current context
 mnemo feat decision "<text>"         Record an architectural decision
 mnemo feat blocker "<text>"          Record a blocker
 mnemo feat blocker resolve "<text>"  Resolve a blocker
@@ -205,7 +209,7 @@ mnemo feat done                      Mark feature as done
 ### Search & graph
 
 ```
-mnemo search "<query>" [--limit n] [--output json] [--no-hybrid]
+mnemo search "<query>" [--limit n] [--output json] [--no-hybrid] [--include-tests]
 mnemo graph deps <file>
 mnemo graph refs <file>
 mnemo graph affected <file>
