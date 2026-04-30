@@ -23,7 +23,8 @@ export function createSearchCommand(): Command {
 		.option('--limit <n>', 'Number of results', '10')
 		.option('--output <format>', 'Output format: text or json', 'text')
 		.option('--no-hybrid', 'Disable hybrid ranking; use pure semantic score')
-		.action(async (query: string, opts: { limit: string; output: string; hybrid: boolean }) => {
+		.option('--include-tests', 'Include test/sample files without score penalty')
+		.action(async (query: string, opts: { limit: string; output: string; hybrid: boolean; includeTests?: boolean }) => {
 			try {
 				const cwd = process.cwd();
 				const projectId = await resolveProjectId(cwd);
@@ -61,6 +62,11 @@ export function createSearchCommand(): Command {
 						}
 					}
 
+					// P1-C: apply score penalty for test/sample files (skip with --include-tests)
+					if (!opts.includeTests) {
+						results = applyFileCategoryPenalty(results);
+					}
+
 					if (opts.output === 'json') {
 						console.log(JSON.stringify(results, null, 2));
 					} else {
@@ -69,10 +75,10 @@ export function createSearchCommand(): Command {
 							return;
 						}
 						for (const r of results) {
-							const score = (r.score * 100).toFixed(1);
-							const snippet = r.content.split('\n').slice(0, 2).join(' ').slice(0, 120);
-							console.log(`${r.filePath}:${r.startLine}-${r.endLine} (${score}%)`);
-							console.log(`  ${snippet}`);
+							const score = r.score.toFixed(2);
+							const snippet = r.content.split('\n').slice(0, 6).join('\n').slice(0, 300);
+							console.log(`${r.filePath}:${r.startLine}-${r.endLine} (${score})`);
+							console.log(snippet.split('\n').map((l) => `  ${l}`).join('\n'));
 						}
 					}
 				} finally {
@@ -82,6 +88,28 @@ export function createSearchCommand(): Command {
 				handleError(e);
 			}
 		});
+}
+
+const CATEGORY_PENALTY: Record<string, number> = {
+	source: 1.0,
+	docs: 0.85,
+	test: 0.60,
+	sample: 0.50,
+};
+
+function categorizeFile(filePath: string): string {
+	const p = filePath.replace(/\\/g, '/');
+	if (/\/(test|tests|__tests__|spec|specs|integration|e2e)\//.test(p)) return 'test';
+	if (/\.(spec|test)\.[jt]sx?$/.test(p)) return 'test';
+	if (/\/samples?\//.test(p)) return 'sample';
+	if (/\.(md|mdx|txt|rst)$/.test(p)) return 'docs';
+	return 'source';
+}
+
+function applyFileCategoryPenalty<T extends { filePath: string; score: number }>(results: T[]): T[] {
+	return results
+		.map((r) => ({ ...r, score: r.score * (CATEGORY_PENALTY[categorizeFile(r.filePath)] ?? 1.0) }))
+		.sort((a, b) => b.score - a.score);
 }
 
 async function getFeatLinkedFiles(projectId: string, paths: ReturnType<typeof getPaths>): Promise<string[]> {
