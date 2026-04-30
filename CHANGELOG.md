@@ -10,6 +10,26 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ---
 
+## [1.3.2] — 2026-04-30
+
+### Fixed
+- `mnemo update` progress bar now advances at the real rate — workers previously emitted progress after chunking (fast) and then stalled during the embedding batch; now each file is embedded immediately after chunking so the bar reflects true chunk+embed cost per file
+- `mnemo update` no longer hangs silently after the bar reaches 100% — a `Saving N chunks...` message is shown while the vector store upsert runs
+- Graph indexing now has its own real-time progress bar instead of running silently to completion
+
+### Changed
+- Semantic indexing and graph indexing now run sequentially (was parallel) so each phase has its own labeled progress bar
+- First phase label changed from `Indexing` to `Semantic indexing` to distinguish it from graph indexing
+
+---
+
+## [1.3.1] — 2026-04-30
+
+### Fixed
+- Removed deprecated `boolean@3.2.0` transitive dependency by upgrading `onnxruntime-node` from `1.24.3` to `1.25.1` (which migrated `global-agent` to v4)
+
+---
+
 ## [1.3.0] — 2026-04-30
 
 ### Added
@@ -110,7 +130,9 @@ First public release.
 
 ---
 
-[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.3.2...HEAD
+[1.3.2]: https://github.com/arturdonda/mnemo/compare/v1.3.1...v1.3.2
+[1.3.1]: https://github.com/arturdonda/mnemo/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/arturdonda/mnemo/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/arturdonda/mnemo/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/arturdonda/mnemo/compare/v1.0.0...v1.1.0
