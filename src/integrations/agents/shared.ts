@@ -42,9 +42,25 @@ export const MNEMO_AGENT_BLOCK = `## Mnemo — Codebase Memory
 
 This project uses Mnemo for persistent context across AI sessions. **You MUST use mnemo at the start of every session and throughout development.**
 
+### MCP tools (preferred over CLI)
+
+Mnemo is registered as an MCP server. Use MCP tools when available — they require no shell permissions:
+
+| MCP tool            | CLI equivalent                              |
+|---------------------|---------------------------------------------|
+| \`get_feat_context\`  | \`mnemo feat context\`                        |
+| \`search_codebase\`   | \`mnemo search "<query>"\`                   |
+| \`record_decision\`   | \`mnemo feat decision "<text>"\`             |
+| \`record_blocker\`    | \`mnemo feat blocker "<text>"\`              |
+| \`resolve_blocker\`   | \`mnemo feat blocker resolve "<text>"\`      |
+| \`link_file\`         | \`mnemo feat link-file <path>\`              |
+| \`get_deps\`          | \`mnemo graph deps <file>\`                  |
+| \`get_refs\`          | \`mnemo graph refs <file>\`                  |
+| \`get_symbols\`       | \`mnemo graph symbols <file>\`               |
+
 ### Required: start of every session
 
-Run this FIRST before reading any files or making any changes:
+Call \`get_feat_context\` (MCP) or run this CLI command FIRST, before reading any files:
 
 \`\`\`
 mnemo feat context
@@ -58,6 +74,7 @@ Always search before reading files:
 mnemo search "<query>"
 mnemo graph deps <file>
 mnemo graph refs <file>
+mnemo graph affected <file>
 \`\`\`
 
 ### During development
@@ -76,6 +93,7 @@ mnemo feat link-file <path>
 
 \`\`\`
 mnemo feat context               — load active feature context (run at session start)
+mnemo feat suggest-files         — suggest files to link based on current context
 mnemo feat start <name>          — start tracking a new feature
 mnemo feat list                  — list all features
 mnemo feat switch <name>         — switch active feature
