@@ -20,7 +20,11 @@ async function detectProjectRoot(cwd: string): Promise<string> {
 	}
 }
 
-export async function indexGraphFiles(filePaths: string[], projectId: string): Promise<GraphIndexStats> {
+export async function indexGraphFiles(
+	filePaths: string[],
+	projectId: string,
+	onProgress?: (done: number, total: number) => void,
+): Promise<GraphIndexStats> {
 	const start = Date.now();
 	const paths = getPaths(projectId);
 	const store = new GraphStore(paths.graphDb);
@@ -38,6 +42,7 @@ export async function indexGraphFiles(filePaths: string[], projectId: string): P
 			} catch {
 				// skip unreadable files
 			}
+			onProgress?.(indexed, filePaths.length);
 		}
 		return { filesIndexed: indexed, durationMs: Date.now() - start };
 	} finally {

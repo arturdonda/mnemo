@@ -28,12 +28,22 @@ type WorkerInput = {
 	};
 };
 
+type WorkerMessage =
+	| { type: 'progress' }
+	| { type: 'result'; chunks: Chunk[]; embeddings: number[][]; dimensions: number };
+
 type WorkerResult = {
 	chunks: Chunk[];
 	embeddings: number[][];
+	dimensions: number;
 };
 
-export async function indexFiles(filePaths: string[], projectId: string, onProgress?: ProgressCallback): Promise<IndexStats> {
+export async function indexFiles(
+	filePaths: string[],
+	projectId: string,
+	onProgress?: ProgressCallback,
+	onSaving?: (chunks: number) => void,
+): Promise<IndexStats> {
 	const start = Date.now();
 	if (filePaths.length === 0) return { filesIndexed: 0, chunksCreated: 0, durationMs: 0 };
 
@@ -53,32 +63,35 @@ export async function indexFiles(filePaths: string[], projectId: string, onProgr
 
 	const workerResults = await Promise.all(
 		partitions.map((part) =>
-			runWorker({
-				filePaths: part,
-				embeddingConfig: {
-					'embedding.provider': config['embedding.provider'],
-					'embedding.model': config['embedding.model'],
-					'embedding.ollamaUrl': config['embedding.ollamaUrl'],
-					'embedding.openaiKey': config['embedding.openaiKey'],
+			runWorker(
+				{
+					filePaths: part,
+					embeddingConfig: {
+						'embedding.provider': config['embedding.provider'],
+						'embedding.model': config['embedding.model'],
+						'embedding.ollamaUrl': config['embedding.ollamaUrl'],
+						'embedding.openaiKey': config['embedding.openaiKey'],
+					},
 				},
-			}).then((result) => {
-				completed += part.length;
-				onProgress?.(completed, filePaths.length);
-				return result;
-			}),
+				() => {
+					completed++;
+					onProgress?.(completed, filePaths.length);
+				},
+			),
 		),
 	);
 
 	const allChunks: Chunk[] = [];
 	const allEmbeddings: number[][] = [];
+	let dimensions = 384; // fallback for empty results
 	for (const result of workerResults) {
 		allChunks.push(...result.chunks);
 		allEmbeddings.push(...result.embeddings);
+		if (result.dimensions) dimensions = result.dimensions;
 	}
 
-	const embedder = await createEmbedder(config);
-	const store = createVectorStore(config['vector-store'], paths, embedder.dimensions);
-
+	onSaving?.(allChunks.length);
+	const store = createVectorStore(config['vector-store'], paths, dimensions);
 	await store.upsert(allChunks, allEmbeddings);
 	await store.close();
 
@@ -100,7 +113,7 @@ function createVectorStore(
 	return new SqliteVecStore(paths.indexDb, dimensions);
 }
 
-function runWorker(input: WorkerInput): Promise<WorkerResult> {
+function runWorker(input: WorkerInput, onFileCompleted?: () => void): Promise<WorkerResult> {
 	return new Promise((resolve, reject) => {
 		const workerUrl = fileURLToPath(import.meta.url);
 		const execArgv = workerUrl.endsWith('.ts')
@@ -110,7 +123,13 @@ function runWorker(input: WorkerInput): Promise<WorkerResult> {
 			workerData: input,
 			execArgv,
 		});
-		worker.on('message', resolve);
+		worker.on('message', (msg: WorkerMessage) => {
+			if (msg.type === 'progress') {
+				onFileCompleted?.();
+			} else {
+				resolve(msg);
+			}
+		});
 		worker.on('error', reject);
 		worker.on('exit', (code) => {
 			if (code !== 0) reject(new Error(`Worker exited with code ${code}`));
@@ -133,21 +152,25 @@ if (!isMainThread && parentPort) {
 
 	(async () => {
 		const chunks: Chunk[] = [];
+		const embeddings: number[][] = [];
 		const embedder = await createEmbedder(input.embeddingConfig as Parameters<typeof createEmbedder>[0]);
 
 		for (const filePath of input.filePaths) {
+			let fileChunks: Chunk[] = [];
 			try {
-				const fileChunks = await chunkFile(filePath);
-				chunks.push(...fileChunks);
+				fileChunks = await chunkFile(filePath);
 			} catch {
 				// skip unreadable files
 			}
+			// Embed this file's chunks immediately so progress reflects chunk+embed together
+			const fileTexts = fileChunks.map((c) => c.content);
+			const fileEmbeddings = fileTexts.length > 0 ? await embedder.embed(fileTexts) : [];
+			chunks.push(...fileChunks);
+			embeddings.push(...fileEmbeddings);
+			parentPort!.postMessage({ type: 'progress' } satisfies WorkerMessage);
 		}
 
-		const texts = chunks.map((c) => c.content);
-		const embeddings = texts.length > 0 ? await embedder.embed(texts) : [];
-
-		parentPort!.postMessage({ chunks, embeddings } satisfies WorkerResult);
+		parentPort!.postMessage({ type: 'result', chunks, embeddings, dimensions: embedder.dimensions } satisfies WorkerMessage);
 	})().catch((err) => {
 		throw err;
 	});

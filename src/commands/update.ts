@@ -31,32 +31,31 @@ export function createUpdateCommand(): Command {
 					filePaths = await discoverFiles(cwd);
 				}
 
-				if (!opts.silent) {
-					process.stdout.write(`Indexing ${filePaths.length} file(s)...\n`);
-				}
-
-				let lastPct = -1;
-				const onProgress = (done: number, total: number): void => {
-					if (opts.silent || !process.stdout.isTTY) return;
-					const pct = Math.min(100, Math.floor((done / total) * 100));
-					if (pct !== lastPct) {
-						lastPct = pct;
-						const filled = Math.floor(pct / 5);
-						const bar = '='.repeat(filled).padEnd(20, ' ');
-						process.stdout.write(`\r[${bar}] ${pct}% (${done}/${total} files)`);
-					}
+				const isTTY = !opts.silent && process.stdout.isTTY;
+				const makeProgress = (): ((done: number, total: number) => void) => {
+					let lastPct = -1;
+					return (done: number, total: number): void => {
+						if (!isTTY) return;
+						const pct = Math.min(100, Math.floor((done / total) * 100));
+						if (pct !== lastPct) {
+							lastPct = pct;
+							const bar = '='.repeat(Math.floor(pct / 5)).padEnd(20, ' ');
+							process.stdout.write(`\r[${bar}] ${pct}% (${done}/${total} files)`);
+						}
+					};
 				};
 
-				const [stats, graphStats] = await Promise.all([
-					indexFiles(filePaths, projectId, onProgress),
-					indexGraphFiles(filePaths, projectId),
-				]);
+				if (!opts.silent) process.stdout.write(`Semantic indexing ${filePaths.length} file(s)...\n`);
+				const stats = await indexFiles(filePaths, projectId, makeProgress(), (chunks) => {
+					if (isTTY) process.stdout.write('\n');
+					if (!opts.silent) process.stdout.write(`Saving ${chunks} chunks...\n`);
+				});
+				if (!opts.silent) console.log(`Done. ${stats.filesIndexed} files, ${stats.chunksCreated} chunks (${stats.durationMs}ms)`);
 
-				if (!opts.silent) {
-					if (process.stdout.isTTY) process.stdout.write('\n');
-					console.log(`Done. ${stats.filesIndexed} files, ${stats.chunksCreated} chunks (${stats.durationMs}ms)`);
-					console.log(`Graph: ${graphStats.filesIndexed} files indexed (${graphStats.durationMs}ms)`);
-				}
+				if (!opts.silent) process.stdout.write(`\nIndexing graph (${filePaths.length} files)...\n`);
+				const graphStats = await indexGraphFiles(filePaths, projectId, makeProgress());
+				if (isTTY) process.stdout.write('\n');
+				if (!opts.silent) console.log(`Graph: ${graphStats.filesIndexed} files indexed (${graphStats.durationMs}ms)`);
 			} catch (e) {
 				handleError(e);
 			}
