@@ -10,6 +10,7 @@ import { getActiveFeat, setActiveFeat, clearActiveFeat } from '../core/feat/acti
 import { renderContext } from '../core/feat/renderer.js';
 import { MnemoError, handleError } from '../core/error.js';
 import type { FeatureMeta } from '../core/feat/types.js';
+import type { ScoredChunk } from '../core/index/vector-store.js';
 
 async function getProjectId(): Promise<string> {
 	return resolveProjectId(process.cwd());
@@ -135,22 +136,47 @@ export function createFeatCommand(): Command {
 	feat
 		.command('context [name]')
 		.description('Print the context for the active (or named) feature')
-		.action(async (name?: string) => {
+		.option('--no-suggest', 'Skip file suggestions at the end')
+		.action(async (name: string | undefined, opts: { suggest: boolean }) => {
 			try {
 				const projectId = await getProjectId();
 				await assertInitialized(projectId);
 				const featName = await resolveActiveFeat(projectId, name);
 				const paths = getPaths(projectId);
 				const { readFile } = await import('node:fs/promises');
+
+				let ctx: ReturnType<typeof buildContext> | undefined;
 				if (existsSync(paths.contextFile(featName))) {
 					process.stdout.write(await readFile(paths.contextFile(featName), 'utf-8'));
+					// Also build ctx for suggestions
+					if (opts.suggest) {
+						const events = await readEvents(projectId, featName);
+						const metaRaw = await readFile(paths.featMeta(featName), 'utf-8');
+						const meta = JSON.parse(metaRaw) as FeatureMeta;
+						ctx = buildContext(events, meta);
+					}
 				} else {
 					const events = await readEvents(projectId, featName);
-					const { readFile: rf } = await import('node:fs/promises');
-					const metaRaw = await rf(paths.featMeta(featName), 'utf-8');
+					const metaRaw = await readFile(paths.featMeta(featName), 'utf-8');
 					const meta = JSON.parse(metaRaw) as FeatureMeta;
-					const ctx = buildContext(events, meta);
+					ctx = buildContext(events, meta);
 					process.stdout.write(renderContext(ctx));
+				}
+
+				// P2-A: suggest relevant unlinked files based on current status
+				if (opts.suggest && ctx?.currentStatus && existsSync(paths.indexDb)) {
+					try {
+						const suggestions = await suggestFilesForContext(projectId, paths, ctx);
+						if (suggestions.length > 0) {
+							console.log('\n---\n## Suggested files (based on current status)\n');
+							for (const s of suggestions) {
+								console.log(`· ${s.filePath}  (${s.score.toFixed(2)})`);
+							}
+							console.log('\nLink with: mnemo feat link-file <path>');
+						}
+					} catch {
+						// suggestions are best-effort — never break feat context output
+					}
 				}
 			} catch (e) {
 				handleError(e);
@@ -310,6 +336,44 @@ export function createFeatCommand(): Command {
 			}
 		});
 
+	// P2-B — feat suggest-files
+	feat
+		.command('suggest-files')
+		.description('Suggest files to link based on the current feature context')
+		.option('--limit <n>', 'Max suggestions', '10')
+		.action(async (opts: { limit: string }) => {
+			try {
+				const projectId = await getProjectId();
+				await assertInitialized(projectId);
+				const featName = await resolveActiveFeat(projectId);
+				const paths = getPaths(projectId);
+
+				if (!existsSync(paths.indexDb)) {
+					throw new MnemoError('Project not indexed. Run `mnemo update` first.');
+				}
+
+				const events = await readEvents(projectId, featName);
+				const { readFile } = await import('node:fs/promises');
+				const metaRaw = await readFile(paths.featMeta(featName), 'utf-8');
+				const meta = JSON.parse(metaRaw) as FeatureMeta;
+				const ctx = buildContext(events, meta);
+
+				const suggestions = await suggestFilesForContext(projectId, paths, ctx, Number(opts.limit));
+				if (suggestions.length === 0) {
+					console.log('No additional files to suggest (all relevant files already linked, or no context to search from).');
+					return;
+				}
+
+				console.log(`## Suggested files for feat: ${featName}\n`);
+				for (const s of suggestions) {
+					console.log(`  ${s.score.toFixed(2)}  ${s.filePath}`);
+				}
+				console.log(`\nLink with: mnemo feat link-file <path>`);
+			} catch (e) {
+				handleError(e);
+			}
+		});
+
 	// T021 — feat done
 	feat
 		.command('done')
@@ -331,6 +395,52 @@ export function createFeatCommand(): Command {
 		});
 
 	return feat;
+}
+
+async function suggestFilesForContext(
+	projectId: string,
+	paths: ReturnType<typeof getPaths>,
+	ctx: ReturnType<typeof buildContext>,
+	limit = 5,
+): Promise<ScoredChunk[]> {
+	const queryParts = [
+		ctx.currentStatus,
+		...ctx.decisions.slice(-3).map((d) => d.text),
+		...ctx.notes.slice(-2).map((n) => n.text),
+	].filter(Boolean);
+
+	if (queryParts.length === 0) return [];
+
+	const query = queryParts.join('. ');
+	const linkedPaths = new Set(ctx.files.map((f) => f.path));
+
+	const { createEmbedder } = await import('../core/index/embedder.js');
+	const { SqliteVecStore } = await import('../core/index/backends/sqlite-vec.js');
+	const { readConfig } = await import('../core/config.js');
+	const config = await readConfig();
+	const embedder = await createEmbedder(config);
+	const store = new SqliteVecStore(paths.indexDb, embedder.dimensions);
+
+	try {
+		const [embedding] = await embedder.embed([query]);
+		const raw = await store.query(embedding, limit + linkedPaths.size + 20);
+		const PENALTY: Record<string, number> = { source: 1.0, docs: 0.85, test: 0.60, sample: 0.50 };
+		const categorize = (p: string): string => {
+			const f = p.replace(/\\/g, '/');
+			if (/\/(test|tests|__tests__|spec|specs|integration|e2e)\//.test(f)) return 'test';
+			if (/\.(spec|test)\.[jt]sx?$/.test(f)) return 'test';
+			if (/\/samples?\//.test(f)) return 'sample';
+			if (/\.(md|mdx|txt|rst)$/.test(f)) return 'docs';
+			return 'source';
+		};
+		return raw
+			.map((r) => ({ ...r, score: r.score * (PENALTY[categorize(r.filePath)] ?? 1.0) }))
+			.filter((r) => !linkedPaths.has(r.filePath))
+			.sort((a, b) => b.score - a.score)
+			.slice(0, limit);
+	} finally {
+		await store.close();
+	}
 }
 
 async function touchMeta(projectId: string, featName: string, status?: FeatureMeta['status']): Promise<void> {
