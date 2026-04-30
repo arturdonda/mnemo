@@ -4,6 +4,7 @@ import { join } from 'node:path';
 import { simpleGit } from 'simple-git';
 import { resolveProjectId } from '../core/project.js';
 import { getPaths } from '../core/paths.js';
+import { GraphStore } from '../core/graph/store.js';
 import { MODELS_DIR } from '../core/models/download.js';
 import { readConfig } from '../core/config.js';
 
@@ -97,7 +98,28 @@ export function createDoctorCommand(): Command {
 				}
 			}
 
-			// 5. Git hook installed
+			// 5. Graph index health
+			if (initialized && projectId) {
+				const graphPaths = getPaths(projectId);
+				if (existsSync(graphPaths.graphDb)) {
+					try {
+						const graphStore = new GraphStore(graphPaths.graphDb);
+						const edgeCount = graphStore.countEdges();
+						graphStore.close();
+						checks.push({
+							label: `Graph index (${edgeCount.toLocaleString('en-US')} edges)`,
+							ok: edgeCount > 0,
+							fix: edgeCount === 0 ? 'Run `mnemo update` to populate the dependency graph.' : undefined,
+						});
+					} catch {
+						checks.push({ label: 'Graph index', ok: false, fix: 'Run `mnemo update` to rebuild the graph.' });
+					}
+				} else {
+					checks.push({ label: 'Graph index', ok: false, fix: 'Run `mnemo update` to build the dependency graph.' });
+				}
+			}
+
+			// 6. Git hook installed
 			const cwd = process.cwd();
 			const hookPath = join(cwd, '.git', 'hooks', 'post-commit');
 			const hookInstalled = existsSync(hookPath);
