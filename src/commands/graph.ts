@@ -1,5 +1,6 @@
 import { Command } from 'commander';
-import { resolve } from 'node:path';
+import { resolve, relative } from 'node:path';
+import { simpleGit } from 'simple-git';
 import { resolveProjectId, assertInitialized } from '../core/project.js';
 import { getPaths } from '../core/paths.js';
 import { GraphStore } from '../core/graph/store.js';
@@ -13,10 +14,21 @@ async function openStore(): Promise<{ store: GraphStore; cleanup: () => void }> 
 	return { store, cleanup: () => store.close() };
 }
 
-function resolveFilePath(filePath: string): string {
-	// Normalize to forward slashes so the lookup matches paths stored by fast-glob,
-	// which always uses '/' regardless of OS (critical on Windows).
-	return resolve(process.cwd(), filePath).replace(/\\/g, '/');
+async function getProjectRoot(): Promise<string> {
+	try {
+		const git = simpleGit(process.cwd());
+		const root = await git.revparse(['--show-toplevel']);
+		return root.trim();
+	} catch {
+		return process.cwd();
+	}
+}
+
+async function resolveFilePath(filePath: string): Promise<string> {
+	// Convert to project-root-relative forward-slash path — matches what the graph store writes.
+	const abs = resolve(process.cwd(), filePath);
+	const root = await getProjectRoot();
+	return relative(root, abs).replace(/\\/g, '/');
 }
 
 export function createGraphCommand(): Command {
@@ -29,7 +41,7 @@ export function createGraphCommand(): Command {
 			try {
 				const { store, cleanup } = await openStore();
 				try {
-					const deps = store.getDeps(resolveFilePath(file));
+					const deps = store.getDeps(await resolveFilePath(file));
 					if (deps.length === 0) {
 						console.log('No dependencies found.');
 					} else {
@@ -50,7 +62,7 @@ export function createGraphCommand(): Command {
 			try {
 				const { store, cleanup } = await openStore();
 				try {
-					const refs = store.getRefs(resolveFilePath(file));
+					const refs = store.getRefs(await resolveFilePath(file));
 					if (refs.length === 0) {
 						console.log('No references found.');
 					} else {
@@ -72,7 +84,7 @@ export function createGraphCommand(): Command {
 			try {
 				const { store, cleanup } = await openStore();
 				try {
-					const affected = store.getAffected(resolveFilePath(file), Number(opts.depth));
+					const affected = store.getAffected(await resolveFilePath(file), Number(opts.depth));
 					if (affected.length === 0) {
 						console.log('No affected files found.');
 					} else {
@@ -93,7 +105,7 @@ export function createGraphCommand(): Command {
 			try {
 				const { store, cleanup } = await openStore();
 				try {
-					const symbols = store.getSymbols(resolveFilePath(file));
+					const symbols = store.getSymbols(await resolveFilePath(file));
 					if (symbols.length === 0) {
 						console.log('No symbols found.');
 					} else {

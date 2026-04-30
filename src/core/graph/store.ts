@@ -1,4 +1,6 @@
 import Database from 'better-sqlite3';
+import { dirname, resolve } from 'node:path';
+import { existsSync } from 'node:fs';
 import type { ParsedFile } from './parser.js';
 
 export type GraphNode = {
@@ -48,11 +50,15 @@ export class GraphStore {
 		this.db.exec(SCHEMA);
 	}
 
-	upsertFile(file: ParsedFile, fileHash = ''): void {
-		const fileId = file.filePath;
+	upsertFile(file: ParsedFile, fileHash = '', projectRoot = ''): void {
+		// When projectRoot is known, store project-relative paths so getDeps/getRefs/getAffected
+		// can be queried with the same relative format used by resolveImport().
+		const root = projectRoot.replace(/\\/g, '/').replace(/\/$/, '');
+		const absFilePath = file.filePath.replace(/\\/g, '/');
+		const fileId = root && absFilePath.startsWith(root + '/') ? absFilePath.slice(root.length + 1) : file.filePath;
 
 		this.db.transaction(() => {
-			this.db.prepare(`DELETE FROM edges WHERE from_id = ? OR to_id LIKE ?`).run(fileId, `${fileId}::%`);
+			this.db.prepare(`DELETE FROM edges WHERE from_id = ?`).run(fileId);
 			this.db.prepare(`DELETE FROM nodes WHERE file_path = ?`).run(fileId);
 
 			this.db
@@ -83,13 +89,41 @@ export class GraphStore {
 			}
 
 			for (const imp of file.imports) {
-				this.db.prepare(`INSERT OR IGNORE INTO edges (from_id, to_id, type) VALUES (?, ?, 'imports')`).run(fileId, imp);
+				// When projectRoot is provided, resolve to project-relative paths (enables cross-file refs).
+				// When omitted (tests / legacy callers), store raw import strings as before.
+				const toId = projectRoot ? this.resolveImport(imp, fileId, projectRoot) : imp;
+				if (toId) {
+					this.db.prepare(`INSERT OR IGNORE INTO edges (from_id, to_id, type) VALUES (?, ?, 'imports')`).run(fileId, toId);
+				}
 			}
 
 			for (const exp of file.exports) {
 				this.db.prepare(`INSERT OR IGNORE INTO edges (from_id, to_id, type) VALUES (?, ?, 'exports')`).run(fileId, exp);
 			}
 		})();
+	}
+
+	private resolveImport(rawImport: string, fromFile: string, projectRoot: string): string | null {
+		// External packages (node_modules) — not resolvable to project files
+		if (!rawImport.startsWith('.') && !rawImport.startsWith('/')) return null;
+		if (!projectRoot) return null;
+
+		const fromDir = dirname(fromFile);
+		const base = resolve(fromDir, rawImport).replace(/\\/g, '/');
+		const root = projectRoot.replace(/\\/g, '/').replace(/\/$/, '');
+
+		// Try candidate paths in order: exact, then common source extensions
+		const candidates = [base, `${base}.ts`, `${base}.tsx`, `${base}.js`, `${base}.mjs`, `${base}/index.ts`, `${base}/index.js`];
+		for (const candidate of candidates) {
+			if (candidate.startsWith(root + '/') && existsSync(candidate)) {
+				return candidate.slice(root.length + 1);
+			}
+		}
+		// If file doesn't exist yet (during indexing of new files), store normalized path anyway
+		if (base.startsWith(root + '/')) {
+			return base.slice(root.length + 1);
+		}
+		return null;
 	}
 
 	deleteFile(filePath: string): void {
@@ -111,6 +145,11 @@ export class GraphStore {
 			.prepare(`SELECT from_id FROM edges WHERE to_id = ? AND type = 'imports'`)
 			.all(filePath) as { from_id: string }[];
 		return rows.map((r) => r.from_id);
+	}
+
+	countEdges(): number {
+		const row = this.db.prepare(`SELECT COUNT(*) as n FROM edges`).get() as { n: number };
+		return row.n;
 	}
 
 	getAffected(filePath: string, maxDepth = 3): string[] {
