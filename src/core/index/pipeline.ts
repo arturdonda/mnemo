@@ -16,6 +16,8 @@ export type IndexStats = {
 	durationMs: number;
 };
 
+export type ProgressCallback = (filesIndexed: number, total: number) => void;
+
 type WorkerInput = {
 	filePaths: string[];
 	embeddingConfig: {
@@ -31,7 +33,7 @@ type WorkerResult = {
 	embeddings: number[][];
 };
 
-export async function indexFiles(filePaths: string[], projectId: string): Promise<IndexStats> {
+export async function indexFiles(filePaths: string[], projectId: string, onProgress?: ProgressCallback): Promise<IndexStats> {
 	const start = Date.now();
 	if (filePaths.length === 0) return { filesIndexed: 0, chunksCreated: 0, durationMs: 0 };
 
@@ -47,6 +49,7 @@ export async function indexFiles(filePaths: string[], projectId: string): Promis
 
 	const numWorkers = Math.max(1, (cpus().length ?? 2) - 1);
 	const partitions = partition(filePaths, numWorkers);
+	let completed = 0;
 
 	const workerResults = await Promise.all(
 		partitions.map((part) =>
@@ -58,6 +61,10 @@ export async function indexFiles(filePaths: string[], projectId: string): Promis
 					'embedding.ollamaUrl': config['embedding.ollamaUrl'],
 					'embedding.openaiKey': config['embedding.openaiKey'],
 				},
+			}).then((result) => {
+				completed += part.length;
+				onProgress?.(completed, filePaths.length);
+				return result;
 			}),
 		),
 	);

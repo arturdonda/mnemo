@@ -32,15 +32,28 @@ export function createUpdateCommand(): Command {
 				}
 
 				if (!opts.silent) {
-					console.log(`Indexing ${filePaths.length} file(s)...`);
+					process.stdout.write(`Indexing ${filePaths.length} file(s)...\n`);
 				}
 
+				let lastPct = -1;
+				const onProgress = (done: number, total: number): void => {
+					if (opts.silent || !process.stdout.isTTY) return;
+					const pct = Math.min(100, Math.floor((done / total) * 100));
+					if (pct !== lastPct) {
+						lastPct = pct;
+						const filled = Math.floor(pct / 5);
+						const bar = '='.repeat(filled).padEnd(20, ' ');
+						process.stdout.write(`\r[${bar}] ${pct}% (${done}/${total} files)`);
+					}
+				};
+
 				const [stats, graphStats] = await Promise.all([
-					indexFiles(filePaths, projectId),
+					indexFiles(filePaths, projectId, onProgress),
 					indexGraphFiles(filePaths, projectId),
 				]);
 
 				if (!opts.silent) {
+					if (process.stdout.isTTY) process.stdout.write('\n');
 					console.log(`Done. ${stats.filesIndexed} files, ${stats.chunksCreated} chunks (${stats.durationMs}ms)`);
 					console.log(`Graph: ${graphStats.filesIndexed} files indexed (${graphStats.durationMs}ms)`);
 				}
