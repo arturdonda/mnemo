@@ -2,23 +2,26 @@ import { Command } from 'commander';
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { existsSync } from 'node:fs';
-import { SKILL_CONTENT, CLAUDE_MD_BLOCK, MNEMO_BLOCK_MARKER as CLAUDE_MARKER } from '../integrations/agents/claude.js';
-import { AGENTS_MD_BLOCK, CODEX_SKILL_MD, MNEMO_BLOCK_MARKER as CODEX_MARKER } from '../integrations/agents/codex.js';
+import { SKILL_CONTENT, CLAUDE_MD_BLOCK, MNEMO_BLOCK_MARKER as CLAUDE_MARKER, configureClaudeCodeMcp } from '../integrations/agents/claude.js';
+import { AGENTS_MD_BLOCK, CODEX_SKILL_MD, MNEMO_BLOCK_MARKER as CODEX_MARKER, configureCodexMcp } from '../integrations/agents/codex.js';
 import {
 	COPILOT_INSTRUCTIONS_BLOCK,
 	COPILOT_SKILL_MD,
 	MNEMO_BLOCK_MARKER as COPILOT_MARKER,
+	configureCopilotMcp,
 } from '../integrations/agents/copilot.js';
 import {
 	CURSOR_RULES_BLOCK,
 	CURSOR_RULE_FILE,
 	CURSOR_SKILL_MD,
 	MNEMO_BLOCK_MARKER as CURSOR_MARKER,
+	configureCursorMcp,
 } from '../integrations/agents/cursor.js';
 import {
 	WINDSURF_RULES_BLOCK,
 	WINDSURF_SKILL_MD,
 	MNEMO_BLOCK_MARKER as WINDSURF_MARKER,
+	configureWindsurfMcp,
 } from '../integrations/agents/windsurf.js';
 import { MnemoError, handleError } from '../core/error.js';
 
@@ -65,6 +68,13 @@ async function installClaude(): Promise<void> {
 	console.log(`${skillExists ? 'Updated' : 'Created'}: ${skillPath}`);
 
 	await appendToFile(join(process.cwd(), 'CLAUDE.md'), CLAUDE_MD_BLOCK, CLAUDE_MARKER);
+
+	// ~/.claude/settings.json — register MCP server so agents can use mnemo without shell permissions
+	const mcp = await configureClaudeCodeMcp();
+	if (mcp.configured) {
+		console.log(`Configured: ${mcp.path} (MCP server registered)`);
+		console.log('\nRestart Claude Code for MCP changes to take effect.');
+	}
 }
 
 async function installCodex(): Promise<void> {
@@ -73,6 +83,12 @@ async function installCodex(): Promise<void> {
 
 	// .agents/skills/mnemo/SKILL.md — cross-agent open standard
 	await writeSkillFile(join(process.cwd(), '.agents', 'skills', 'mnemo'), CODEX_SKILL_MD);
+
+	// ~/.codex/config.toml — register MCP server
+	const mcp = await configureCodexMcp();
+	if (mcp.configured) {
+		console.log(`Configured: ${mcp.path} (MCP server registered)`);
+	}
 }
 
 async function installCopilot(): Promise<void> {
@@ -83,6 +99,12 @@ async function installCopilot(): Promise<void> {
 
 	// .github/skills/mnemo/SKILL.md — GitHub Copilot Agent Skills
 	await writeSkillFile(join(githubDir, 'skills', 'mnemo'), COPILOT_SKILL_MD);
+
+	// .vscode/mcp.json — register MCP server for VS Code Copilot Agent mode
+	const mcp = await configureCopilotMcp();
+	if (mcp.configured) {
+		console.log(`Configured: ${mcp.path} (MCP server registered)`);
+	}
 }
 
 async function installCursor(): Promise<void> {
@@ -96,6 +118,12 @@ async function installCursor(): Promise<void> {
 
 	// .cursorrules — legacy fallback (still read by older Cursor versions)
 	await appendToFile(join(process.cwd(), '.cursorrules'), CURSOR_RULES_BLOCK, CURSOR_MARKER);
+
+	// .cursor/mcp.json — register MCP server
+	const mcp = await configureCursorMcp();
+	if (mcp.configured) {
+		console.log(`Configured: ${mcp.path} (MCP server registered)`);
+	}
 }
 
 async function installWindsurf(): Promise<void> {
@@ -104,6 +132,12 @@ async function installWindsurf(): Promise<void> {
 
 	// .windsurf/skills/mnemo/SKILL.md — Windsurf Cascade Skills (invokable)
 	await writeSkillFile(join(process.cwd(), '.windsurf', 'skills', 'mnemo'), WINDSURF_SKILL_MD);
+
+	// ~/.codeium/windsurf/mcp_config.json — register MCP server
+	const mcp = await configureWindsurfMcp();
+	if (mcp.configured) {
+		console.log(`Configured: ${mcp.path} (MCP server registered)`);
+	}
 }
 
 async function writeSkillFile(skillDir: string, content: string): Promise<void> {
