@@ -1,6 +1,10 @@
 import { cpus } from 'node:os';
 import { Worker, isMainThread, parentPort, workerData } from 'node:worker_threads';
 import { fileURLToPath } from 'node:url';
+import { readFile } from 'node:fs/promises';
+import { existsSync } from 'node:fs';
+import Database from 'better-sqlite3';
+import { xxh3 } from '@node-rs/xxhash';
 import { chunkFile } from './chunker.js';
 import { createEmbedder } from './embedder.js';
 import { SqliteVecStore } from './backends/sqlite-vec.js';
@@ -17,6 +21,70 @@ export type IndexStats = {
 };
 
 export type ProgressCallback = (filesIndexed: number, total: number) => void;
+
+export type DiffResult = {
+	toIndex: string[];
+	toDelete: string[];
+	unchanged: number;
+};
+
+export async function computeIndexDiff(filePaths: string[], projectId: string): Promise<DiffResult> {
+	const config = await readConfig();
+	const paths = getPaths(projectId);
+
+	// LanceDB has no cheap hash lookup — fall back to full re-index
+	if (config['vector-store'] === 'lancedb') {
+		return { toIndex: filePaths, toDelete: [], unchanged: 0 };
+	}
+
+	const indexedHashes = readIndexedHashesSqlite(paths.indexDb);
+	const filePathSet = new Set(filePaths);
+	const toDelete = [...indexedHashes.keys()].filter((p) => !filePathSet.has(p));
+
+	const toIndex: string[] = [];
+	let unchanged = 0;
+
+	await Promise.all(
+		filePaths.map(async (filePath) => {
+			try {
+				const content = await readFile(filePath, 'utf-8');
+				const hash = xxh3.xxh64(content).toString(16).padStart(16, '0');
+				if (indexedHashes.get(filePath) === hash) {
+					unchanged++;
+				} else {
+					toIndex.push(filePath);
+				}
+			} catch {
+				toIndex.push(filePath);
+			}
+		}),
+	);
+
+	return { toIndex, toDelete, unchanged };
+}
+
+export async function deleteFilesFromIndex(filePaths: string[], projectId: string): Promise<void> {
+	if (filePaths.length === 0) return;
+	const config = await readConfig();
+	const paths = getPaths(projectId);
+	// Dimensions don't matter for deletion — existing schema is preserved by CREATE TABLE IF NOT EXISTS
+	const store = createVectorStore(config['vector-store'], paths, 384);
+	for (const filePath of filePaths) {
+		await store.delete(filePath);
+	}
+	await store.close();
+}
+
+function readIndexedHashesSqlite(indexDbPath: string): Map<string, string> {
+	if (!existsSync(indexDbPath)) return new Map();
+	const db = new Database(indexDbPath, { readonly: true });
+	try {
+		const rows = db.prepare('SELECT DISTINCT file_path, file_hash FROM chunks').all() as { file_path: string; file_hash: string }[];
+		return new Map(rows.map((r) => [r.file_path, r.file_hash]));
+	} finally {
+		db.close();
+	}
+}
 
 type WorkerInput = {
 	filePaths: string[];
