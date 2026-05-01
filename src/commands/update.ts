@@ -4,7 +4,7 @@ import { simpleGit } from 'simple-git';
 import fg from 'fast-glob';
 import { resolveProjectId, assertInitialized } from '../core/project.js';
 import { indexFiles, computeIndexDiff, deleteFilesFromIndex } from '../core/index/pipeline.js';
-import { indexGraphFiles } from '../core/graph/pipeline.js';
+import { indexGraphFiles, detectProjectRoot } from '../core/graph/pipeline.js';
 import { handleError } from '../core/error.js';
 
 const SOURCE_EXTENSIONS = ['ts', 'tsx', 'js', 'mjs', 'jsx', 'py', 'go', 'rs', 'java', 'cs', 'rb', 'php', 'swift', 'kt', 'md', 'json', 'yaml', 'yml'];
@@ -18,7 +18,10 @@ export function createUpdateCommand(): Command {
 		.action(async (opts: { since?: string; filesFromStdin?: boolean; silent?: boolean }) => {
 			try {
 				const cwd = process.cwd();
-				const projectId = await resolveProjectId(cwd);
+				const [projectId, projectRoot] = await Promise.all([
+					resolveProjectId(cwd),
+					detectProjectRoot(cwd),
+				]);
 				await assertInitialized(projectId);
 
 				let filePaths: string[];
@@ -78,7 +81,7 @@ export function createUpdateCommand(): Command {
 				}
 
 				if (!opts.silent) process.stdout.write(`\nGraph indexing ${filePaths.length} file(s)...\n`);
-				const graphStats = await indexGraphFiles(filePaths, projectId, makeProgress());
+				const graphStats = await indexGraphFiles(filePaths, projectId, makeProgress(), projectRoot);
 				if (isTTY) process.stdout.write('\n');
 				if (!opts.silent) {
 					if (graphStats.unchanged === filePaths.length) {

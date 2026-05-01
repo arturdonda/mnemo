@@ -10,6 +10,13 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ---
 
+## [1.4.1] — 2026-04-30
+
+### Fixed
+- `mnemo update` no longer stalls ~30s before graph progress bar appears — `detectProjectRoot` (git subprocess) is now called once at startup and shared with both phases instead of being re-invoked inside `indexGraphFiles`
+
+---
+
 ## [1.4.0] — 2026-04-30
 
 ### Added
@@ -145,7 +152,8 @@ First public release.
 
 ---
 
-[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/arturdonda/mnemo/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/arturdonda/mnemo/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/arturdonda/mnemo/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/arturdonda/mnemo/compare/v1.3.0...v1.3.1

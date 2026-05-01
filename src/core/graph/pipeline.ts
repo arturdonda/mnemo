@@ -11,7 +11,7 @@ export type GraphIndexStats = {
 	durationMs: number;
 };
 
-async function detectProjectRoot(cwd: string): Promise<string> {
+export async function detectProjectRoot(cwd: string): Promise<string> {
 	try {
 		const git = simpleGit(cwd);
 		const root = await git.revparse(['--show-toplevel']);
@@ -25,19 +25,20 @@ export async function indexGraphFiles(
 	filePaths: string[],
 	projectId: string,
 	onProgress?: (done: number, total: number) => void,
+	projectRoot?: string,
 ): Promise<GraphIndexStats> {
 	const start = Date.now();
 	const paths = getPaths(projectId);
 	const store = new GraphStore(paths.graphDb);
-	const projectRoot = await detectProjectRoot(process.cwd());
+	const root = projectRoot ?? (await detectProjectRoot(process.cwd()));
 
 	try {
 		// Project-relative paths of all files currently on disk
 		const currentRelPaths = new Set(
 			filePaths
 				.map((p) => p.replace(/\\/g, '/'))
-				.filter((p) => p.startsWith(projectRoot + '/'))
-				.map((p) => p.slice(projectRoot.length + 1)),
+				.filter((p) => p.startsWith(root + '/'))
+				.map((p) => p.slice(root.length + 1)),
 		);
 
 		// Remove graph nodes for files deleted from disk
@@ -53,7 +54,7 @@ export async function indexGraphFiles(
 
 		for (const filePath of filePaths) {
 			const absPath = filePath.replace(/\\/g, '/');
-			const relPath = absPath.startsWith(projectRoot + '/') ? absPath.slice(projectRoot.length + 1) : absPath;
+			const relPath = absPath.startsWith(root + '/') ? absPath.slice(root.length + 1) : absPath;
 
 			try {
 				const content = await readFile(filePath, 'utf-8');
@@ -63,7 +64,7 @@ export async function indexGraphFiles(
 					unchanged++;
 				} else {
 					const parsed = await parseFile(filePath);
-					store.upsertFile(parsed, hash, projectRoot);
+					store.upsertFile(parsed, hash, root);
 					indexed++;
 				}
 			} catch {
