@@ -10,6 +10,33 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ---
 
+## [1.5.1] — 2026-05-01
+
+### Added
+- MCP graph tools now accept any path format (absolute, relative, or project-relative) — mirrors CLI `resolveFilePath()` behavior, no longer requires exact indexed path
+- `get_affected` MCP tool — was missing entirely; exposes `mnemo graph affected` (BFS transitive dependents) via MCP
+
+### Changed
+- Graph MCP tools (`get_deps`, `get_refs`, `get_symbols`, `get_affected`) extracted from `tools/search.ts` into dedicated `tools/graph.ts` module
+
+---
+
+## [1.5.0] — 2026-05-01
+
+### Added
+- **Project Memory** — persistent memory scoped to the current project, surviving across features (`~/.mnemo/projects/{id}/memory.jsonl`)
+- **User Memory** — cross-project, cross-agent persistent memory (`~/.mnemo/memory.jsonl`); the memory layer that follows the developer across Claude, Copilot, Cursor, Windsurf, and any other agent using mnemo
+- `mnemo memory add --project "<insight>"` / `--user "<insight>"` — add a memory entry to project or user scope
+- `mnemo memory list [--project] [--user]` — list memory entries (both scopes if no flag given)
+- `mnemo memory search "<query>" [--project] [--user]` — keyword search across memories
+- `mnemo memory remove <id> [--project|--user]` — remove a memory entry by ID
+- MCP tools: `add_project_memory`, `add_user_memory`, `search_project_memory`, `search_user_memory`, `list_memories`
+- `mnemo feat context` now prepends user memory and project memory sections before the feat context
+- `mnemo feat done` prints the full feature summary and a distillation prompt — instructs the agent to promote reusable insights via `mnemo memory add`
+- SKILL.md updated with distillation workflow: agent reviews `feat done` output and classifies insights as project-level or user-level
+
+---
+
 ## [1.4.1] — 2026-04-30
 
 ### Fixed
@@ -152,7 +179,9 @@ First public release.
 
 ---
 
-[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.5.1...HEAD
+[1.5.1]: https://github.com/arturdonda/mnemo/compare/v1.5.0...v1.5.1
+[1.5.0]: https://github.com/arturdonda/mnemo/compare/v1.4.1...v1.5.0
 [1.4.1]: https://github.com/arturdonda/mnemo/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/arturdonda/mnemo/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/arturdonda/mnemo/compare/v1.3.1...v1.3.2
