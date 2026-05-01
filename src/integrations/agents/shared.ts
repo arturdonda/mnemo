@@ -9,7 +9,7 @@ description: Load Mnemo codebase memory context. Invoke at the start of every se
 
 Run \`mnemo feat context\` to load the active feature context into this session.
 
-The output contains: active feature name, relevant files, architectural decisions, blockers, and current status. Use this context to guide your work throughout the session.
+The output contains: user memory (cross-agent), project memory (architectural decisions), active feature name, relevant files, decisions, blockers, and current status. Use this context to guide your work throughout the session.
 
 ## Use mnemo throughout the session
 
@@ -36,27 +36,46 @@ To record notes or link relevant files:
 mnemo feat note "<note>"
 mnemo feat link-file <path>
 \`\`\`
+
+## When finishing a feature
+
+Run \`mnemo feat done\` and review the printed feature summary.
+Promote any reusable insights to permanent memory before closing the session:
+\`\`\`
+# Architectural decisions, patterns, or conventions for this project:
+mnemo memory add --project "<insight>"
+
+# Personal preferences or patterns you apply across all projects and agents:
+mnemo memory add --user "<insight>"
+\`\`\`
+
+Project memory persists across features. User memory persists across projects AND agents.
 `;
 
 export const MNEMO_AGENT_BLOCK = `## Mnemo — Codebase Memory
 
-This project uses Mnemo for persistent context across AI sessions. **You MUST use mnemo at the start of every session and throughout development.**
+This project uses Mnemo for persistent context across AI sessions and agents. **You MUST use mnemo at the start of every session and throughout development.**
 
 ### MCP tools (preferred over CLI)
 
 Mnemo is registered as an MCP server. Use MCP tools when available — they require no shell permissions:
 
-| MCP tool            | CLI equivalent                              |
-|---------------------|---------------------------------------------|
-| \`get_feat_context\`  | \`mnemo feat context\`                        |
-| \`search_codebase\`   | \`mnemo search "<query>"\`                   |
-| \`record_decision\`   | \`mnemo feat decision "<text>"\`             |
-| \`record_blocker\`    | \`mnemo feat blocker "<text>"\`              |
-| \`resolve_blocker\`   | \`mnemo feat blocker resolve "<text>"\`      |
-| \`link_file\`         | \`mnemo feat link-file <path>\`              |
-| \`get_deps\`          | \`mnemo graph deps <file>\`                  |
-| \`get_refs\`          | \`mnemo graph refs <file>\`                  |
-| \`get_symbols\`       | \`mnemo graph symbols <file>\`               |
+| MCP tool                | CLI equivalent                                    |
+|-------------------------|---------------------------------------------------|
+| \`get_feat_context\`      | \`mnemo feat context\`                              |
+| \`search_codebase\`       | \`mnemo search "<query>"\`                         |
+| \`record_decision\`       | \`mnemo feat decision "<text>"\`                   |
+| \`record_blocker\`        | \`mnemo feat blocker "<text>"\`                    |
+| \`resolve_blocker\`       | \`mnemo feat blocker resolve "<text>"\`            |
+| \`link_file\`             | \`mnemo feat link-file <path>\`                    |
+| \`get_deps\`              | \`mnemo graph deps <file>\`                        |
+| \`get_refs\`              | \`mnemo graph refs <file>\`                        |
+| \`get_symbols\`           | \`mnemo graph symbols <file>\`                     |
+| \`add_project_memory\`    | \`mnemo memory add --project "<insight>"\`         |
+| \`add_user_memory\`       | \`mnemo memory add --user "<insight>"\`            |
+| \`search_project_memory\` | \`mnemo memory search --project "<query>"\`        |
+| \`search_user_memory\`    | \`mnemo memory search --user "<query>"\`           |
+| \`list_memories\`         | \`mnemo memory list\`                              |
 
 ### Required: start of every session
 
@@ -65,6 +84,8 @@ Call \`get_feat_context\` (MCP) or run this CLI command FIRST, before reading an
 \`\`\`
 mnemo feat context
 \`\`\`
+
+The output includes **user memory** (your personal patterns, cross-agent), **project memory** (architectural decisions for this project), and the active feature context.
 
 ### Before exploring unfamiliar code
 
@@ -89,6 +110,21 @@ mnemo feat note "<note>"
 mnemo feat link-file <path>
 \`\`\`
 
+### When finishing a feature
+
+Run \`mnemo feat done\` and review the printed feature summary.
+Promote any reusable insights to permanent memory:
+
+\`\`\`
+# Architectural decisions or patterns specific to this project:
+mnemo memory add --project "<insight>"
+
+# Personal preferences or patterns you apply across all projects and agents:
+mnemo memory add --user "<insight>"
+\`\`\`
+
+User memory is **cross-agent** — it is visible to Claude, Copilot, Cursor, Windsurf, and any other agent using mnemo.
+
 ### Full command reference
 
 \`\`\`
@@ -103,7 +139,13 @@ mnemo feat blocker resolve "<text>" — resolve a blocker
 mnemo feat note "<text>"         — record a note
 mnemo feat status "<text>"       — update feature status
 mnemo feat link-file <path>      — link a file to the current feature
-mnemo feat done                  — mark feature as complete
+mnemo feat done                  — mark feature as complete (prints summary for distillation)
+
+mnemo memory add --project "<text>"  — save architectural insight to project memory
+mnemo memory add --user "<text>"     — save personal pattern to user memory (cross-agent)
+mnemo memory list                    — list all memories (project + user)
+mnemo memory search "<query>"        — keyword search across memories
+mnemo memory remove <id>             — remove a memory entry
 
 mnemo search "<query>"           — semantic search (use before exploring unknown code)
 mnemo graph deps <file>          — files this file imports
