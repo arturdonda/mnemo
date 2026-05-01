@@ -147,6 +147,13 @@ export class GraphStore {
 		return rows.map((r) => r.from_id);
 	}
 
+	getIndexedHashes(): Map<string, string> {
+		const rows = this.db
+			.prepare(`SELECT file_path, file_hash FROM nodes WHERE type = 'file'`)
+			.all() as { file_path: string; file_hash: string }[];
+		return new Map(rows.map((r) => [r.file_path, r.file_hash]));
+	}
+
 	countEdges(): number {
 		const row = this.db.prepare(`SELECT COUNT(*) as n FROM edges`).get() as { n: number };
 		return row.n;

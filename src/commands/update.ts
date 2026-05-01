@@ -3,7 +3,7 @@ import { createInterface } from 'node:readline';
 import { simpleGit } from 'simple-git';
 import fg from 'fast-glob';
 import { resolveProjectId, assertInitialized } from '../core/project.js';
-import { indexFiles } from '../core/index/pipeline.js';
+import { indexFiles, computeIndexDiff, deleteFilesFromIndex } from '../core/index/pipeline.js';
 import { indexGraphFiles } from '../core/graph/pipeline.js';
 import { handleError } from '../core/error.js';
 
@@ -45,17 +45,49 @@ export function createUpdateCommand(): Command {
 					};
 				};
 
-				if (!opts.silent) process.stdout.write(`Semantic indexing ${filePaths.length} file(s)...\n`);
-				const stats = await indexFiles(filePaths, projectId, makeProgress(), (chunks) => {
-					if (isTTY) process.stdout.write('\n');
-					if (!opts.silent) process.stdout.write(`Saving ${chunks} chunks...\n`);
-				});
-				if (!opts.silent) console.log(`Done. ${stats.filesIndexed} files, ${stats.chunksCreated} chunks (${stats.durationMs}ms)`);
+				// Incremental diff: only when doing a full scan (not --since / --files-from-stdin)
+				const useIncremental = !opts.since && !opts.filesFromStdin;
+				let filesToIndex = filePaths;
 
-				if (!opts.silent) process.stdout.write(`\nIndexing graph (${filePaths.length} files)...\n`);
+				if (useIncremental) {
+					if (!opts.silent) process.stdout.write(`Checking ${filePaths.length} files...\n`);
+					const diff = await computeIndexDiff(filePaths, projectId);
+
+					if (diff.toDelete.length > 0) {
+						await deleteFilesFromIndex(diff.toDelete, projectId);
+						if (!opts.silent) console.log(`Removed ${diff.toDelete.length} deleted file(s) from index.`);
+					}
+
+					if (diff.toIndex.length === 0) {
+						if (!opts.silent) console.log(`Semantic index is up to date (${diff.unchanged} files unchanged).`);
+					} else {
+						const deletedNote = diff.toDelete.length > 0 ? `, ${diff.toDelete.length} deleted` : '';
+						if (!opts.silent) console.log(`${diff.toIndex.length} changed, ${diff.unchanged} unchanged${deletedNote}`);
+					}
+
+					filesToIndex = diff.toIndex;
+				}
+
+				if (filesToIndex.length > 0) {
+					if (!opts.silent) process.stdout.write(`\nSemantic indexing ${filesToIndex.length} file(s)...\n`);
+					const stats = await indexFiles(filesToIndex, projectId, makeProgress(), (chunks) => {
+						if (isTTY) process.stdout.write('\n');
+						if (!opts.silent) process.stdout.write(`Saving ${chunks} chunks...\n`);
+					});
+					if (!opts.silent) console.log(`Done. ${stats.filesIndexed} files, ${stats.chunksCreated} chunks (${stats.durationMs}ms)`);
+				}
+
+				if (!opts.silent) process.stdout.write(`\nGraph indexing ${filePaths.length} file(s)...\n`);
 				const graphStats = await indexGraphFiles(filePaths, projectId, makeProgress());
 				if (isTTY) process.stdout.write('\n');
-				if (!opts.silent) console.log(`Graph: ${graphStats.filesIndexed} files indexed (${graphStats.durationMs}ms)`);
+				if (!opts.silent) {
+					if (graphStats.unchanged === filePaths.length) {
+						console.log(`Graph index is up to date (${graphStats.unchanged} files unchanged).`);
+					} else {
+						const unchangedNote = graphStats.unchanged > 0 ? `, ${graphStats.unchanged} unchanged` : '';
+						console.log(`Graph: ${graphStats.filesIndexed} indexed${unchangedNote} (${graphStats.durationMs}ms)`);
+					}
+				}
 			} catch (e) {
 				handleError(e);
 			}

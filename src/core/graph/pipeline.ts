@@ -7,6 +7,7 @@ import { getPaths } from '../paths.js';
 
 export type GraphIndexStats = {
 	filesIndexed: number;
+	unchanged: number;
 	durationMs: number;
 };
 
@@ -31,20 +32,47 @@ export async function indexGraphFiles(
 	const projectRoot = await detectProjectRoot(process.cwd());
 
 	try {
+		// Project-relative paths of all files currently on disk
+		const currentRelPaths = new Set(
+			filePaths
+				.map((p) => p.replace(/\\/g, '/'))
+				.filter((p) => p.startsWith(projectRoot + '/'))
+				.map((p) => p.slice(projectRoot.length + 1)),
+		);
+
+		// Remove graph nodes for files deleted from disk
+		const indexedHashes = store.getIndexedHashes();
+		for (const relPath of indexedHashes.keys()) {
+			if (!currentRelPaths.has(relPath)) {
+				store.deleteFile(relPath);
+			}
+		}
+
 		let indexed = 0;
+		let unchanged = 0;
+
 		for (const filePath of filePaths) {
+			const absPath = filePath.replace(/\\/g, '/');
+			const relPath = absPath.startsWith(projectRoot + '/') ? absPath.slice(projectRoot.length + 1) : absPath;
+
 			try {
 				const content = await readFile(filePath, 'utf-8');
 				const hash = xxh3.xxh64(content).toString(16);
-				const parsed = await parseFile(filePath);
-				store.upsertFile(parsed, hash, projectRoot);
-				indexed++;
+
+				if (indexedHashes.get(relPath) === hash) {
+					unchanged++;
+				} else {
+					const parsed = await parseFile(filePath);
+					store.upsertFile(parsed, hash, projectRoot);
+					indexed++;
+				}
 			} catch {
 				// skip unreadable files
 			}
-			onProgress?.(indexed, filePaths.length);
+			onProgress?.(indexed + unchanged, filePaths.length);
 		}
-		return { filesIndexed: indexed, durationMs: Date.now() - start };
+
+		return { filesIndexed: indexed, unchanged, durationMs: Date.now() - start };
 	} finally {
 		store.close();
 	}

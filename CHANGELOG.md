@@ -10,6 +10,21 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ---
 
+## [1.4.0] — 2026-04-30
+
+### Added
+- `mnemo update` now performs incremental indexing by default for both semantic and graph phases — hashes all files with xxh3, skips unchanged files, and prunes deleted files automatically. A full re-index of NestJS (2002 files, ~7 min) now completes in seconds when few files changed.
+- Semantic index shows diff summary before indexing: `45 changed, 1957 unchanged` or `Semantic index is up to date (N unchanged)`
+- Graph index also shows: `Graph: 45 indexed, 1957 unchanged` or `Graph index is up to date (N unchanged)`
+- Deleted files are automatically pruned from both indexes
+
+### Changed
+- `--since <commit>` and `--files-from-stdin` skip the hash diff (caller already provides the filtered list)
+- LanceDB users fall back to full re-index for the semantic phase (no cheap hash lookup available in LanceDB)
+- Phase labels renamed: `Indexing graph` → `Graph indexing` (consistent with `Semantic indexing`)
+
+---
+
 ## [1.3.2] — 2026-04-30
 
 ### Fixed
@@ -130,7 +145,8 @@ First public release.
 
 ---
 
-[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.3.2...HEAD
+[Unreleased]: https://github.com/arturdonda/mnemo/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/arturdonda/mnemo/compare/v1.3.2...v1.4.0
 [1.3.2]: https://github.com/arturdonda/mnemo/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/arturdonda/mnemo/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/arturdonda/mnemo/compare/v1.2.0...v1.3.0
