@@ -40,7 +40,7 @@
 				<a href="index.html" style="color: var(--ink)">Docs</a>
 				<a href="https://github.com/arturdonda/mnemo/blob/main/CHANGELOG.md">Changelog</a>
 				<button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">auto</button>
-				<a href="https://www.npmjs.com/package/mnemo-cli" class="btn btn-amber"> npm <span class="ver">v1.3.0</span> </a>
+				<a href="https://www.npmjs.com/package/mnemo-cli" class="btn btn-amber"> npm <span class="ver">v1.4.1</span></a>
 			</div>
 		</nav>
 
@@ -223,6 +223,7 @@
 					<p>The index is updated automatically on every git commit via the post-commit hook installed by <code>mnemo init</code>.</p>
 					<p>To index immediately without committing:</p>
 					<pre><span class="cmd">mnemo update</span></pre>
+					<p><code>mnemo update</code> performs <strong>incremental indexing</strong> by default — it hashes every file and only re-indexes files that changed, skipping unchanged ones. A full re-index of a large project (2 000+ files) completes in seconds on subsequent runs.</p>
 				</section>
 
 				<!-- Structural Graph -->

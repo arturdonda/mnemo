@@ -182,7 +182,7 @@ mnemo config set embedding.model nomic-embed-text
 
 ```
 mnemo init                          Initialize Mnemo for this project
-mnemo update [--since <commit>]     Index or re-index the codebase
+mnemo update [--since <commit>]     Incrementally index the codebase (skips unchanged files)
 mnemo doctor                        Diagnose setup issues with fix instructions
 mnemo status                        Show index stats (files, chunks, last indexed)
 ```
