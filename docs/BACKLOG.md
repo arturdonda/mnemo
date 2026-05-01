@@ -76,6 +76,18 @@ Current gaps (not yet exposed via MCP):
 
 ---
 
+## Branding & Repositioning
+After project memory and user memory are shipped, revisit the product positioning entirely.
+
+- Rewrite README, docs, and website to reflect the full value proposition
+- Current framing ("persistent memory of a codebase for AI agents") undersells the cross-agent angle
+- New positioning direction: **permanent, cross-session, cross-agent memory** — the memory layer that lives outside any single agent, survives context resets, and follows the developer across tools
+- Tagline candidates: "The memory layer your agents share", "One memory, every agent", "Persistent context across Claude, Copilot, Cursor, and beyond"
+- Rewrite the three-layer model to lead with memory (project + user + feat) rather than index/graph/feat
+- Update all install flows to emphasize that memory is agent-agnostic from day one
+
+---
+
 ## UX / Quality of Life
 
 - `mnemo update --watch` — watch mode, re-index on file save (debounced)
