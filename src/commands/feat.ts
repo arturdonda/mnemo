@@ -4,7 +4,8 @@ import { resolve, relative } from 'node:path';
 import { existsSync } from 'node:fs';
 import { simpleGit } from 'simple-git';
 import { resolveProjectId, assertInitialized } from '../core/project.js';
-import { ensurePaths, getPaths } from '../core/paths.js';
+import { ensurePaths, getPaths, getUserMemoryPath } from '../core/paths.js';
+import { listMemories } from '../core/memory/store.js';
 import { appendEvent, readEvents, buildContext, listFeats, featExists } from '../core/feat/store.js';
 import { getActiveFeat, setActiveFeat, clearActiveFeat } from '../core/feat/active.js';
 import { renderContext } from '../core/feat/renderer.js';
@@ -144,6 +145,9 @@ export function createFeatCommand(): Command {
 				const featName = await resolveActiveFeat(projectId, name);
 				const paths = getPaths(projectId);
 				const { readFile } = await import('node:fs/promises');
+
+				// Prepend user and project memories if they exist
+				await printMemoryHeader(paths.projectMemoryFile);
 
 				let ctx: ReturnType<typeof buildContext> | undefined;
 				if (existsSync(paths.contextFile(featName))) {
@@ -388,7 +392,23 @@ export function createFeatCommand(): Command {
 				await touchMeta(projectId, featName, 'done');
 				const active = await getActiveFeat(projectId);
 				if (active === featName) await clearActiveFeat(projectId);
-				console.log(`Feature done: ${featName}`);
+
+				console.log(`Feature done: ${featName}\n`);
+
+				// Print full context so the agent can review and distill memories
+				const paths = getPaths(projectId);
+				const { readFile } = await import('node:fs/promises');
+				const events = await readEvents(projectId, featName);
+				const metaRaw = await readFile(paths.featMeta(featName), 'utf-8');
+				const meta = JSON.parse(metaRaw) as FeatureMeta;
+				const ctx = buildContext(events, meta);
+				console.log('--- Feature Summary ---\n');
+				process.stdout.write(renderContext(ctx));
+				console.log('\n---');
+				console.log('Review the decisions and notes above.');
+				console.log('Promote any reusable insights to permanent memory:');
+				console.log(`  mnemo memory add --project "<architectural insight>"`);
+				console.log(`  mnemo memory add --user "<personal pattern or preference>"`);
 			} catch (e) {
 				handleError(e);
 			}
@@ -451,6 +471,32 @@ async function touchMeta(projectId: string, featName: string, status?: FeatureMe
 	meta.updatedAt = Date.now();
 	if (status) meta.status = status;
 	await wf(paths.featMeta(featName), JSON.stringify(meta, null, 2), 'utf-8');
+}
+
+async function printMemoryHeader(projectMemoryFile: string): Promise<void> {
+	const userEntries = await listMemories(getUserMemoryPath());
+	const projectEntries = await listMemories(projectMemoryFile);
+	if (userEntries.length === 0 && projectEntries.length === 0) return;
+
+	if (userEntries.length > 0) {
+		console.log('## User Memory (cross-agent)\n');
+		for (const e of userEntries) {
+			const tags = e.tags.length > 0 ? ` [${e.tags.join(', ')}]` : '';
+			console.log(`- ${e.text}${tags}`);
+		}
+		console.log('');
+	}
+
+	if (projectEntries.length > 0) {
+		console.log('## Project Memory\n');
+		for (const e of projectEntries) {
+			const tags = e.tags.length > 0 ? ` [${e.tags.join(', ')}]` : '';
+			console.log(`- ${e.text}${tags}`);
+		}
+		console.log('');
+	}
+
+	console.log('---\n');
 }
 
 async function getGitRoot(): Promise<string | null> {
