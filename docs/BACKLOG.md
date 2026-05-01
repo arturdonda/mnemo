@@ -35,11 +35,12 @@ Fuzzy is useful for exact-name lookups in graph commands:
 ---
 
 ## MCP Parity
-Everything available in the CLI should be available as an MCP tool.
-Current gaps (not yet exposed via MCP):
+
+> ✅ Graph tools shipped in v1.5.1: `get_deps`, `get_refs`, `get_affected`, `get_symbols` — extracted to dedicated `tools/graph.ts`, with automatic path resolution (accepts absolute, relative, or project-relative paths).
+
+Remaining gap:
 
 - `ask_codebase` (depends on `mnemo ask`, see above)
-- `get_graph_deps` / `get_graph_refs` / `get_graph_affected` / `get_graph_symbols`
 
 ---
 

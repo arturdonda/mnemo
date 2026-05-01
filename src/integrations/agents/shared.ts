@@ -70,6 +70,7 @@ Mnemo is registered as an MCP server. Use MCP tools when available — they requ
 | \`link_file\`             | \`mnemo feat link-file <path>\`                    |
 | \`get_deps\`              | \`mnemo graph deps <file>\`                        |
 | \`get_refs\`              | \`mnemo graph refs <file>\`                        |
+| \`get_affected\`          | \`mnemo graph affected <file>\`                    |
 | \`get_symbols\`           | \`mnemo graph symbols <file>\`                     |
 | \`add_project_memory\`    | \`mnemo memory add --project "<insight>"\`         |
 | \`add_user_memory\`       | \`mnemo memory add --user "<insight>"\`            |

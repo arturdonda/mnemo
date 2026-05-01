@@ -6,7 +6,6 @@ import { getPaths } from '../../../core/paths.js';
 import { createEmbedder } from '../../../core/index/embedder.js';
 import { SqliteVecStore } from '../../../core/index/backends/sqlite-vec.js';
 import { queryWithFreshness } from '../../../core/index/freshness.js';
-import { GraphStore } from '../../../core/graph/store.js';
 import { readConfig } from '../../../core/config.js';
 
 export function registerSearchTools(server: McpServer): void {
@@ -39,62 +38,4 @@ export function registerSearchTools(server: McpServer): void {
 		},
 	);
 
-	server.tool('get_deps', 'Get files that a given file imports (direct dependencies)', {
-		file: z.string().describe('File path as stored in the graph index'),
-	}, async ({ file }) => {
-		const projectId = await resolveProjectId(process.cwd());
-		const paths = getPaths(projectId);
-
-		if (!existsSync(paths.graphDb)) {
-			return { content: [{ type: 'text' as const, text: 'Graph not indexed. Run `mnemo update` first.' }] };
-		}
-
-		const store = new GraphStore(paths.graphDb);
-		try {
-			const deps = store.getDeps(file);
-			return { content: [{ type: 'text' as const, text: deps.length === 0 ? 'No dependencies found.' : deps.join('\n') }] };
-		} finally {
-			store.close();
-		}
-	});
-
-	server.tool('get_refs', 'Get files that import a given file (reverse dependencies)', {
-		file: z.string().describe('File path as stored in the graph index'),
-	}, async ({ file }) => {
-		const projectId = await resolveProjectId(process.cwd());
-		const paths = getPaths(projectId);
-
-		if (!existsSync(paths.graphDb)) {
-			return { content: [{ type: 'text' as const, text: 'Graph not indexed. Run `mnemo update` first.' }] };
-		}
-
-		const store = new GraphStore(paths.graphDb);
-		try {
-			const refs = store.getRefs(file);
-			return { content: [{ type: 'text' as const, text: refs.length === 0 ? 'No references found.' : refs.join('\n') }] };
-		} finally {
-			store.close();
-		}
-	});
-
-	server.tool('get_symbols', 'Get top-level functions and classes defined in a file', {
-		file: z.string().describe('File path as stored in the graph index'),
-	}, async ({ file }) => {
-		const projectId = await resolveProjectId(process.cwd());
-		const paths = getPaths(projectId);
-
-		if (!existsSync(paths.graphDb)) {
-			return { content: [{ type: 'text' as const, text: 'Graph not indexed. Run `mnemo update` first.' }] };
-		}
-
-		const store = new GraphStore(paths.graphDb);
-		try {
-			const symbols = store.getSymbols(file);
-			if (symbols.length === 0) return { content: [{ type: 'text' as const, text: 'No symbols found.' }] };
-			const text = symbols.map((s) => `${s.type.padEnd(8)} ${s.name}`).join('\n');
-			return { content: [{ type: 'text' as const, text }] };
-		} finally {
-			store.close();
-		}
-	});
 }

@@ -3,6 +3,7 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 import { createRequire } from 'node:module';
 import { registerFeatTools } from './tools/feat.js';
 import { registerSearchTools } from './tools/search.js';
+import { registerGraphTools } from './tools/graph.js';
 import { registerMemoryTools } from './tools/memory.js';
 
 const require = createRequire(import.meta.url);
@@ -12,6 +13,7 @@ export function createMcpServer(): McpServer {
 	const server = new McpServer({ name: 'mnemo', version });
 	registerFeatTools(server);
 	registerSearchTools(server);
+	registerGraphTools(server);
 	registerMemoryTools(server);
 	return server;
 }
