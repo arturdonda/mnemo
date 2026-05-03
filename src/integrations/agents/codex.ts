@@ -1,11 +1,11 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { MNEMO_AGENT_BLOCK, SKILL_MD } from './shared.js';
+import { XCTX_AGENT_BLOCK, SKILL_MD } from './shared.js';
 
-export { MNEMO_BLOCK_MARKER } from './shared.js';
+export { XCTX_BLOCK_MARKER } from './shared.js';
 
-const MCP_SERVER_KEY = 'mnemo';
+const MCP_SERVER_KEY = 'xctx';
 
 // Codex CLI uses TOML (~/.codex/config.toml), no parser needed — append section if absent
 export async function configureCodexMcp(): Promise<{ configured: boolean; path: string }> {
@@ -26,13 +26,13 @@ export async function configureCodexMcp(): Promise<{ configured: boolean; path: 
 		return { configured: false, path: configPath };
 	}
 
-	const section = `\n[mcp_servers.${MCP_SERVER_KEY}]\ncommand = "mnemo"\nargs = ["mcp", "serve"]\n`;
+	const section = `\n[mcp_servers.${MCP_SERVER_KEY}]\ncommand = "xctx"\nargs = ["mcp", "serve"]\n`;
 	writeFileSync(configPath, content.trimEnd() + section, 'utf-8');
 	return { configured: true, path: configPath };
 }
 
 // AGENTS.md — always-on instructions
-export const AGENTS_MD_BLOCK = MNEMO_AGENT_BLOCK;
+export const AGENTS_MD_BLOCK = XCTX_AGENT_BLOCK;
 
-// .agents/skills/mnemo/SKILL.md — cross-agent open standard
+// .agents/skills/xctx/SKILL.md — cross-agent open standard
 export const CODEX_SKILL_MD = SKILL_MD;

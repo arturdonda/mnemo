@@ -9,7 +9,7 @@ import { listMemories } from '../core/memory/store.js';
 import { appendEvent, readEvents, buildContext, listFeats, featExists } from '../core/feat/store.js';
 import { getActiveFeat, setActiveFeat, clearActiveFeat } from '../core/feat/active.js';
 import { renderContext } from '../core/feat/renderer.js';
-import { MnemoError, handleError } from '../core/error.js';
+import { XctxError, handleError } from '../core/error.js';
 import type { FeatureMeta } from '../core/feat/types.js';
 import type { ScoredChunk } from '../core/index/vector-store.js';
 
@@ -19,8 +19,8 @@ async function getProjectId(): Promise<string> {
 
 async function resolveActiveFeat(projectId: string, optFeat?: string): Promise<string> {
 	const name = optFeat ?? (await getActiveFeat(projectId));
-	if (!name) throw new MnemoError('No active feature. Use `mnemo feat start <name>` or `--feat <name>`.');
-	if (!featExists(projectId, name)) throw new MnemoError(`Feature "${name}" not found.`);
+	if (!name) throw new XctxError('No active feature. Use `xctx feat start <name>` or `--feat <name>`.');
+	if (!featExists(projectId, name)) throw new XctxError(`Feature "${name}" not found.`);
 	return name;
 }
 
@@ -81,7 +81,7 @@ export function createFeatCommand(): Command {
 				const active = await getActiveFeat(projectId);
 
 				if (feats.length === 0) {
-					console.log('No features yet. Run `mnemo feat start <name>` to create one.');
+					console.log('No features yet. Run `xctx feat start <name>` to create one.');
 					return;
 				}
 
@@ -104,7 +104,7 @@ export function createFeatCommand(): Command {
 			try {
 				const projectId = await getProjectId();
 				await assertInitialized(projectId);
-				if (!featExists(projectId, name)) throw new MnemoError(`Feature "${name}" not found.`);
+				if (!featExists(projectId, name)) throw new XctxError(`Feature "${name}" not found.`);
 				await setActiveFeat(projectId, name);
 				console.log(`Active feature: ${name}`);
 			} catch (e) {
@@ -176,7 +176,7 @@ export function createFeatCommand(): Command {
 							for (const s of suggestions) {
 								console.log(`· ${s.filePath}  (${s.score.toFixed(2)})`);
 							}
-							console.log('\nLink with: mnemo feat link-file <path>');
+							console.log('\nLink with: xctx feat link-file <path>');
 						}
 					} catch {
 						// suggestions are best-effort — never break feat context output
@@ -213,7 +213,7 @@ export function createFeatCommand(): Command {
 		.option('--feat <name>', 'Target feature (defaults to active)')
 		.action(async (text: string | undefined, opts: { feat?: string }) => {
 			try {
-				if (!text) throw new MnemoError('Blocker text is required.');
+				if (!text) throw new XctxError('Blocker text is required.');
 				const projectId = await getProjectId();
 				await assertInitialized(projectId);
 				const featName = await resolveActiveFeat(projectId, opts.feat);
@@ -243,7 +243,7 @@ export function createFeatCommand(): Command {
 				const match = ctx.blockers.find(
 					(b) => !b.resolved && b.text.toLowerCase().includes(text.toLowerCase()),
 				);
-				if (!match) throw new MnemoError(`No active blocker matching "${text}".`);
+				if (!match) throw new XctxError(`No active blocker matching "${text}".`);
 				await appendEvent(projectId, featName, { ts: Date.now(), type: 'blocker_resolved', text });
 				await touchMeta(projectId, featName);
 				console.log(`Blocker resolved: ${match.text.slice(0, 60)}${match.text.length > 60 ? '…' : ''}`);
@@ -264,7 +264,7 @@ export function createFeatCommand(): Command {
 				await assertInitialized(projectId);
 				const featName = await resolveActiveFeat(projectId, opts.feat);
 				const absPath = resolve(process.cwd(), filePath);
-				if (!existsSync(absPath)) throw new MnemoError(`File not found: ${filePath}`);
+				if (!existsSync(absPath)) throw new XctxError(`File not found: ${filePath}`);
 				const gitRoot = await getGitRoot();
 				const relPath = gitRoot ? relative(gitRoot, absPath).replace(/\\/g, '/') : filePath;
 				await appendEvent(projectId, featName, { ts: Date.now(), type: 'file_linked', path: relPath, reason: opts.reason });
@@ -353,7 +353,7 @@ export function createFeatCommand(): Command {
 				const paths = getPaths(projectId);
 
 				if (!existsSync(paths.indexDb)) {
-					throw new MnemoError('Project not indexed. Run `mnemo update` first.');
+					throw new XctxError('Project not indexed. Run `xctx update` first.');
 				}
 
 				const events = await readEvents(projectId, featName);
@@ -372,7 +372,7 @@ export function createFeatCommand(): Command {
 				for (const s of suggestions) {
 					console.log(`  ${s.score.toFixed(2)}  ${s.filePath}`);
 				}
-				console.log(`\nLink with: mnemo feat link-file <path>`);
+				console.log(`\nLink with: xctx feat link-file <path>`);
 			} catch (e) {
 				handleError(e);
 			}
@@ -407,8 +407,8 @@ export function createFeatCommand(): Command {
 				console.log('\n---');
 				console.log('Review the decisions and notes above.');
 				console.log('Promote any reusable insights to permanent memory:');
-				console.log(`  mnemo memory add --project "<architectural insight>"`);
-				console.log(`  mnemo memory add --user "<personal pattern or preference>"`);
+				console.log(`  xctx memory add --project "<architectural insight>"`);
+				console.log(`  xctx memory add --user "<personal pattern or preference>"`);
 			} catch (e) {
 				handleError(e);
 			}

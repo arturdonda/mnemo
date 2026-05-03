@@ -1,15 +1,15 @@
-export class MnemoError extends Error {
+export class XctxError extends Error {
   constructor(
     message: string,
     public readonly exitCode: number = 1
   ) {
     super(message);
-    this.name = 'MnemoError';
+    this.name = 'XctxError';
   }
 }
 
 export function handleError(e: unknown): never {
-  if (e instanceof MnemoError) {
+  if (e instanceof XctxError) {
     console.error(`Error: ${e.message}`);
     process.exit(e.exitCode);
   } else if (e instanceof Error) {

@@ -9,7 +9,7 @@ let store: GraphStore;
 let dbPath: string;
 
 beforeEach(() => {
-	dbPath = join(tmpdir(), `mnemo-graph-${Date.now()}-${Math.random().toString(36).slice(2)}.db`);
+	dbPath = join(tmpdir(), `xctx-graph-${Date.now()}-${Math.random().toString(36).slice(2)}.db`);
 	store = new GraphStore(dbPath);
 });
 

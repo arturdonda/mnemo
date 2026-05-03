@@ -34,7 +34,7 @@ describe('queryWithFreshness', () => {
 	let store: SqliteVecStore;
 
 	beforeEach(async () => {
-		tempDir = join(tmpdir(), `mnemo-fresh-${Date.now()}`);
+		tempDir = join(tmpdir(), `xctx-fresh-${Date.now()}`);
 		await mkdir(tempDir, { recursive: true });
 		store = new SqliteVecStore(join(tempDir, 'index.db'), DIMS);
 	});

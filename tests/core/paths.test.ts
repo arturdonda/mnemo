@@ -10,7 +10,7 @@ describe('getPaths', () => {
 	it('returns correct root path', async () => {
 		const { getPaths } = await import('../../src/core/paths.js');
 		const paths = getPaths(PROJECT_ID);
-		expect(paths.root).toMatch(/\.mnemo$/);
+		expect(paths.root).toMatch(/\.xctx$/);
 	});
 
 	it('returns correct projectRoot', async () => {
@@ -66,7 +66,7 @@ describe('ensurePaths', () => {
 	let tempDir: string;
 
 	beforeEach(() => {
-		tempDir = join(tmpdir(), `mnemo-test-${Date.now()}`);
+		tempDir = join(tmpdir(), `xctx-test-${Date.now()}`);
 		vi.spyOn(process, 'env', 'get').mockReturnValue({ ...process.env, HOME: tempDir, USERPROFILE: tempDir });
 	});
 

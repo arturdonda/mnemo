@@ -24,7 +24,7 @@ export function createModelsCommand(): Command {
 				const entries = Object.values(manifest.models);
 
 				if (entries.length === 0) {
-					console.log('No models installed. Run `mnemo update` to download the default model.');
+					console.log('No models installed. Run `xctx update` to download the default model.');
 					return;
 				}
 

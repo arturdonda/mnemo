@@ -1,89 +1,89 @@
-export const MNEMO_BLOCK_MARKER = '## Mnemo — Codebase Memory';
+export const XCTX_BLOCK_MARKER = '## Cross Context — Codebase Memory';
 
 // SKILL.md — cross-agent open standard (Copilot, Cursor, Windsurf, etc.)
-// Each skill lives in its own subdirectory: {agent-skills-dir}/mnemo/SKILL.md
+// Each skill lives in its own subdirectory: {agent-skills-dir}/xctx/SKILL.md
 export const SKILL_MD = `---
-name: mnemo
-description: Load Mnemo codebase memory context. Invoke at the start of every session, before exploring unfamiliar code, or when asked about the current feature being developed.
+name: xctx
+description: Load Cross Context codebase memory context. Invoke at the start of every session, before exploring unfamiliar code, or when asked about the current feature being developed.
 ---
 
-Run \`mnemo feat context\` to load the active feature context into this session.
+Run \`xctx feat context\` to load the active feature context into this session.
 
 The output contains: user memory (cross-agent), project memory (architectural decisions), active feature name, relevant files, decisions, blockers, and current status. Use this context to guide your work throughout the session.
 
-## Use mnemo throughout the session
+## Use xctx throughout the session
 
 Before exploring unfamiliar code:
 \`\`\`
-mnemo search "<query>"
-mnemo graph deps <file>
-mnemo graph refs <file>
+xctx search "<query>"
+xctx graph deps <file>
+xctx graph refs <file>
 \`\`\`
 
 After making an architectural decision:
 \`\`\`
-mnemo feat decision "<decision and rationale>"
+xctx feat decision "<decision and rationale>"
 \`\`\`
 
 When hitting or resolving a blocker:
 \`\`\`
-mnemo feat blocker "<description>"
-mnemo feat blocker resolve "<description>"
+xctx feat blocker "<description>"
+xctx feat blocker resolve "<description>"
 \`\`\`
 
 To record notes or link relevant files:
 \`\`\`
-mnemo feat note "<note>"
-mnemo feat link-file <path>
+xctx feat note "<note>"
+xctx feat link-file <path>
 \`\`\`
 
 ## When finishing a feature
 
-Run \`mnemo feat done\` and review the printed feature summary.
+Run \`xctx feat done\` and review the printed feature summary.
 Promote any reusable insights to permanent memory before closing the session:
 \`\`\`
 # Architectural decisions, patterns, or conventions for this project:
-mnemo memory add --project "<insight>"
+xctx memory add --project "<insight>"
 
 # Personal preferences or patterns you apply across all projects and agents:
-mnemo memory add --user "<insight>"
+xctx memory add --user "<insight>"
 \`\`\`
 
 Project memory persists across features. User memory persists across projects AND agents.
 `;
 
-export const MNEMO_AGENT_BLOCK = `## Mnemo — Codebase Memory
+export const XCTX_AGENT_BLOCK = `## Cross Context — Codebase Memory
 
-This project uses Mnemo for persistent context across AI sessions and agents. **You MUST use mnemo at the start of every session and throughout development.**
+This project uses Cross Context for persistent context across AI sessions and agents. **You MUST use xctx at the start of every session and throughout development.**
 
 ### MCP tools (preferred over CLI)
 
-Mnemo is registered as an MCP server. Use MCP tools when available — they require no shell permissions:
+Cross Context is registered as an MCP server. Use MCP tools when available — they require no shell permissions:
 
 | MCP tool                | CLI equivalent                                    |
 |-------------------------|---------------------------------------------------|
-| \`get_feat_context\`      | \`mnemo feat context\`                              |
-| \`search_codebase\`       | \`mnemo search "<query>"\`                         |
-| \`record_decision\`       | \`mnemo feat decision "<text>"\`                   |
-| \`record_blocker\`        | \`mnemo feat blocker "<text>"\`                    |
-| \`resolve_blocker\`       | \`mnemo feat blocker resolve "<text>"\`            |
-| \`link_file\`             | \`mnemo feat link-file <path>\`                    |
-| \`get_deps\`              | \`mnemo graph deps <file>\`                        |
-| \`get_refs\`              | \`mnemo graph refs <file>\`                        |
-| \`get_affected\`          | \`mnemo graph affected <file>\`                    |
-| \`get_symbols\`           | \`mnemo graph symbols <file>\`                     |
-| \`add_project_memory\`    | \`mnemo memory add --project "<insight>"\`         |
-| \`add_user_memory\`       | \`mnemo memory add --user "<insight>"\`            |
-| \`search_project_memory\` | \`mnemo memory search --project "<query>"\`        |
-| \`search_user_memory\`    | \`mnemo memory search --user "<query>"\`           |
-| \`list_memories\`         | \`mnemo memory list\`                              |
+| \`get_feat_context\`      | \`xctx feat context\`                               |
+| \`search_codebase\`       | \`xctx search "<query>"\`                          |
+| \`record_decision\`       | \`xctx feat decision "<text>"\`                    |
+| \`record_blocker\`        | \`xctx feat blocker "<text>"\`                     |
+| \`resolve_blocker\`       | \`xctx feat blocker resolve "<text>"\`             |
+| \`link_file\`             | \`xctx feat link-file <path>\`                     |
+| \`get_deps\`              | \`xctx graph deps <file>\`                         |
+| \`get_refs\`              | \`xctx graph refs <file>\`                         |
+| \`get_affected\`          | \`xctx graph affected <file>\`                     |
+| \`get_symbols\`           | \`xctx graph symbols <file>\`                      |
+| \`add_project_memory\`    | \`xctx memory add --project "<insight>"\`          |
+| \`add_user_memory\`       | \`xctx memory add --user "<insight>"\`             |
+| \`search_project_memory\` | \`xctx memory search --project "<query>"\`         |
+| \`search_user_memory\`    | \`xctx memory search --user "<query>"\`            |
+| \`list_memories\`         | \`xctx memory list\`                               |
 
 ### Required: start of every session
 
 Call \`get_feat_context\` (MCP) or run this CLI command FIRST, before reading any files:
 
 \`\`\`
-mnemo feat context
+xctx feat context
 \`\`\`
 
 The output includes **user memory** (your personal patterns, cross-agent), **project memory** (architectural decisions for this project), and the active feature context.
@@ -93,10 +93,10 @@ The output includes **user memory** (your personal patterns, cross-agent), **pro
 Always search before reading files:
 
 \`\`\`
-mnemo search "<query>"
-mnemo graph deps <file>
-mnemo graph refs <file>
-mnemo graph affected <file>
+xctx search "<query>"
+xctx graph deps <file>
+xctx graph refs <file>
+xctx graph affected <file>
 \`\`\`
 
 ### During development
@@ -104,57 +104,57 @@ mnemo graph affected <file>
 Record decisions, blockers, and notes as you work:
 
 \`\`\`
-mnemo feat decision "<decision and rationale>"
-mnemo feat blocker "<description>"
-mnemo feat blocker resolve "<description>"
-mnemo feat note "<note>"
-mnemo feat link-file <path>
+xctx feat decision "<decision and rationale>"
+xctx feat blocker "<description>"
+xctx feat blocker resolve "<description>"
+xctx feat note "<note>"
+xctx feat link-file <path>
 \`\`\`
 
 ### When finishing a feature
 
-Run \`mnemo feat done\` and review the printed feature summary.
+Run \`xctx feat done\` and review the printed feature summary.
 Promote any reusable insights to permanent memory:
 
 \`\`\`
 # Architectural decisions or patterns specific to this project:
-mnemo memory add --project "<insight>"
+xctx memory add --project "<insight>"
 
 # Personal preferences or patterns you apply across all projects and agents:
-mnemo memory add --user "<insight>"
+xctx memory add --user "<insight>"
 \`\`\`
 
-User memory is **cross-agent** — it is visible to Claude, Copilot, Cursor, Windsurf, and any other agent using mnemo.
+User memory is **cross-agent** — it is visible to Claude, Copilot, Cursor, Windsurf, and any other agent using xctx.
 
 ### Full command reference
 
 \`\`\`
-mnemo feat context               — load active feature context (run at session start)
-mnemo feat suggest-files         — suggest files to link based on current context
-mnemo feat start <name>          — start tracking a new feature
-mnemo feat list                  — list all features
-mnemo feat switch <name>         — switch active feature
-mnemo feat decision "<text>"     — record an architectural decision
-mnemo feat blocker "<text>"      — record a blocker
-mnemo feat blocker resolve "<text>" — resolve a blocker
-mnemo feat note "<text>"         — record a note
-mnemo feat status "<text>"       — update feature status
-mnemo feat link-file <path>      — link a file to the current feature
-mnemo feat done                  — mark feature as complete (prints summary for distillation)
+xctx feat context               — load active feature context (run at session start)
+xctx feat suggest-files         — suggest files to link based on current context
+xctx feat start <name>          — start tracking a new feature
+xctx feat list                  — list all features
+xctx feat switch <name>         — switch active feature
+xctx feat decision "<text>"     — record an architectural decision
+xctx feat blocker "<text>"      — record a blocker
+xctx feat blocker resolve "<text>" — resolve a blocker
+xctx feat note "<text>"         — record a note
+xctx feat status "<text>"       — update feature status
+xctx feat link-file <path>      — link a file to the current feature
+xctx feat done                  — mark feature as complete (prints summary for distillation)
 
-mnemo memory add --project "<text>"  — save architectural insight to project memory
-mnemo memory add --user "<text>"     — save personal pattern to user memory (cross-agent)
-mnemo memory list                    — list all memories (project + user)
-mnemo memory search "<query>"        — keyword search across memories
-mnemo memory remove <id>             — remove a memory entry
+xctx memory add --project "<text>"  — save architectural insight to project memory
+xctx memory add --user "<text>"     — save personal pattern to user memory (cross-agent)
+xctx memory list                    — list all memories (project + user)
+xctx memory search "<query>"        — keyword search across memories
+xctx memory remove <id>             — remove a memory entry
 
-mnemo search "<query>"           — semantic search (use before exploring unknown code)
-mnemo graph deps <file>          — files this file imports
-mnemo graph refs <file>          — files that import this file
-mnemo graph affected <file>      — transitive dependents (max depth 3)
-mnemo graph symbols <file>       — top-level functions/classes in a file
+xctx search "<query>"           — semantic search (use before exploring unknown code)
+xctx graph deps <file>          — files this file imports
+xctx graph refs <file>          — files that import this file
+xctx graph affected <file>      — transitive dependents (max depth 3)
+xctx graph symbols <file>       — top-level functions/classes in a file
 
-mnemo update                     — re-index the codebase
-mnemo status                     — show index health
+xctx update                     — re-index the codebase
+xctx status                     — show index health
 \`\`\`
 `;

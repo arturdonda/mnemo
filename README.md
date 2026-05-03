@@ -1,17 +1,17 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="website/assets/mnemo-lockup-v-dark.svg" />
-    <source media="(prefers-color-scheme: light)" srcset="website/assets/mnemo-lockup-v.svg" />
-    <img src="website/assets/mnemo-lockup-v.svg" alt="Mnemo" height="200" />
+    <source media="(prefers-color-scheme: dark)" srcset="website/assets/xctx-lockup-v-dark.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="website/assets/xctx-lockup-v.svg" />
+    <img src="website/assets/xctx-lockup-v.svg" alt="Cross Context" height="200" />
   </picture>
   <br /><br />
-  <strong>Persistent memory for AI coding agents.</strong>
+  <strong>Your codebase, remembered — across every session, across every agent.</strong>
   <br />
-  No more re-explaining your codebase every session.
+  Persistent context for AI coding agents.
   <br /><br />
 
-[![CI](https://github.com/arturdonda/mnemo/actions/workflows/ci.yml/badge.svg)](https://github.com/arturdonda/mnemo/actions/workflows/ci.yml)
-[![npm](https://img.shields.io/npm/v/mnemo-cli?color=d97706)](https://www.npmjs.com/package/mnemo-cli)
+[![CI](https://github.com/arturdonda/cross-context/actions/workflows/ci.yml/badge.svg)](https://github.com/arturdonda/cross-context/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/cross-context?color=d97706)](https://www.npmjs.com/package/cross-context)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 </div>
@@ -19,7 +19,7 @@
 ---
 
 ```bash
-npm install -g mnemo-cli
+npm install -g cross-context
 ```
 
 ---
@@ -30,26 +30,30 @@ You spend an hour with your AI agent. You explain the architecture, scope the re
 
 Next session — blank slate. The agent re-reads your directory tree, re-traces your imports, asks what framework you're using. You explain everything again.
 
+Hit your token limit mid-feature and need to switch from Claude to Copilot? Same thing — you start from zero and re-explain everything.
+
 **This isn't a token budget problem. It's a memory problem.**
 
 ---
 
-## What Mnemo does
+## What Cross Context does
 
-Mnemo keeps three indexes of your codebase, updated automatically on every git commit. Your agent reads them at session start and already knows where you left off.
+`xctx` keeps persistent memory of your codebase — updated automatically on every git commit. Any agent reads it at session start and already knows where you left off.
 
-### `mnemo feat context` — the differentiator
+Switch agents mid-feature, hit a context limit, or start a new session the next day — the memory follows you.
 
-Per-feature decisions, linked files, blockers, and status — persisted across sessions:
+### `xctx feat context` — the differentiator
+
+Per-feature decisions, linked files, blockers, and status — persisted across sessions and agents:
 
 ```
-$ mnemo feat context
+$ xctx feat context
 
 # FEAT: payment-integration
 
 Branch:       feature/payment-integration
 Status:       in-progress
-Last updated: 2026-04-25
+Last updated: 2026-05-02
 
 ## Relevant Files
 · src/routes/payments.ts   # main route handler
@@ -57,31 +61,31 @@ Last updated: 2026-04-25
 · src/models/order.ts
 
 ## Decisions
-· 2026-04-20  Stripe Checkout, not Payment Intents — simpler for MVP
-· 2026-04-22  Orders stay PENDING until webhook confirms payment
+· 2026-04-30  Stripe Checkout, not Payment Intents — simpler for MVP
+· 2026-05-01  Orders stay PENDING until webhook confirms payment
 
 ## Current Status
 Webhook handler implemented, writing tests.
 ```
 
-### `mnemo search` — semantic search
+### `xctx search` — semantic search
 
 Natural-language queries over your codebase. Fully local, no API keys.
 
 ```
-$ mnemo search "JWT authentication middleware"
+$ xctx search "JWT authentication middleware"
 
 src/middleware/auth.ts    lines 12–45   score 0.94
 src/services/token.ts     lines 1–28    score 0.87
 src/routes/protected.ts   lines 3–8     score 0.71
 ```
 
-### `mnemo graph` — structural graph
+### `xctx graph` — structural graph
 
 File-level dependency graph via Tree-sitter. Know what breaks before you touch it.
 
 ```
-$ mnemo graph deps src/services/stripe.ts
+$ xctx graph deps src/services/stripe.ts
 
 src/models/order.ts
 src/config/env.ts
@@ -94,26 +98,26 @@ src/utils/logger.ts
 
 ```bash
 # 1. Install
-npm install -g mnemo-cli
+npm install -g cross-context
 
 # 2. Initialize in your project
-mnemo init
+xctx init
 
 # 3. Index the codebase (downloads ONNX model on first run, ~88MB)
-mnemo update
+xctx update
 
 # 4. Start tracking a feature
-mnemo feat start payment-flow
+xctx feat start payment-flow
 
 # 5. Wire up your AI agent
-mnemo install claude     # Claude Code
-mnemo install codex      # OpenAI Codex / ChatGPT
-mnemo install copilot    # GitHub Copilot
-mnemo install cursor     # Cursor
-mnemo install windsurf   # Windsurf
+xctx install claude     # Claude Code
+xctx install codex      # OpenAI Codex / ChatGPT
+xctx install copilot    # GitHub Copilot
+xctx install cursor     # Cursor
+xctx install windsurf   # Windsurf
 ```
 
-Your agent now reads `mnemo feat context` at the start of every session and records decisions as you work.
+Your agent now reads `xctx feat context` at the start of every session and records decisions as you work.
 
 ---
 
@@ -121,39 +125,39 @@ Your agent now reads `mnemo feat context` at the start of every session and reco
 
 ```bash
 # Record an architectural decision
-mnemo feat decision "Using Stripe Checkout — simpler than Payment Intents for MVP"
+xctx feat decision "Using Stripe Checkout — simpler than Payment Intents for MVP"
 
 # Link files to the current feature
-mnemo feat link-file src/routes/payments.ts --reason "main route handler"
+xctx feat link-file src/routes/payments.ts --reason "main route handler"
 
 # Track and resolve blockers
-mnemo feat blocker "Webhook signature validation failing in test env"
-mnemo feat blocker resolve "Webhook signature validation failing in test env"
+xctx feat blocker "Webhook signature validation failing in test env"
+xctx feat blocker resolve "Webhook signature validation failing in test env"
 
 # Update status at end of session
-mnemo feat status "Webhook handler done, writing tests"
+xctx feat status "Webhook handler done, writing tests"
 ```
 
 ---
 
 ## Agent support
 
-| Agent          | Command                   | What gets installed                                        |
-| -------------- | ------------------------- | ---------------------------------------------------------- |
-| Claude Code    | `mnemo install claude`    | `CLAUDE.md` + `.claude/skills/mnemo.md` + MCP server in `~/.claude/settings.json` |
-| GitHub Copilot | `mnemo install copilot`   | `.github/copilot-instructions.md` + `.github/skills/mnemo/SKILL.md` + MCP server in `.vscode/mcp.json` |
-| OpenAI Codex   | `mnemo install codex`     | `AGENTS.md` + `.agents/skills/mnemo/SKILL.md` + MCP server in `~/.codex/config.toml` |
-| Cursor         | `mnemo install cursor`    | `.cursor/rules/mnemo.mdc` + `.cursor/skills/mnemo/SKILL.md` + MCP server in `.cursor/mcp.json` |
-| Windsurf       | `mnemo install windsurf`  | `.windsurfrules` + `.windsurf/skills/mnemo/SKILL.md` + MCP server in `~/.codeium/windsurf/mcp_config.json` |
+| Agent          | Command                    | What gets installed                                                                                       |
+| -------------- | -------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Claude Code    | `xctx install claude`      | `CLAUDE.md` + `.claude/skills/xctx.md` + MCP server in `~/.claude/settings.json`                        |
+| GitHub Copilot | `xctx install copilot`     | `.github/copilot-instructions.md` + `.github/skills/xctx/SKILL.md` + MCP server in `.vscode/mcp.json`   |
+| OpenAI Codex   | `xctx install codex`       | `AGENTS.md` + `.agents/skills/xctx/SKILL.md` + MCP server in `~/.codex/config.toml`                     |
+| Cursor         | `xctx install cursor`      | `.cursor/rules/xctx.mdc` + `.cursor/skills/xctx/SKILL.md` + MCP server in `.cursor/mcp.json`             |
+| Windsurf       | `xctx install windsurf`    | `.windsurfrules` + `.windsurf/skills/xctx/SKILL.md` + MCP server in `~/.codeium/windsurf/mcp_config.json` |
 
 All agents receive instructions to load feature context at session start, use MCP tools before CLI, and record decisions automatically.
 
-**All agents get MCP integration automatically.** Each `mnemo install <agent>` command registers the MCP server in the agent's native config file. Agents can then call `get_feat_context`, `search_codebase`, `record_decision`, and other tools natively — no shell permissions needed. Restart your agent once after install.
+**All agents get MCP integration automatically.** Each `xctx install <agent>` command registers the MCP server in the agent's native config file. Agents can then call `get_feat_context`, `search_codebase`, `record_decision`, and other tools natively — no shell permissions needed. Restart your agent once after install.
 
 **MCP server** (any MCP-compatible client):
 
 ```bash
-mnemo mcp serve
+xctx mcp serve
 ```
 
 Exposes: `get_feat_context`, `search_codebase`, `record_decision`, `record_blocker`, `resolve_blocker`, `link_file`, `get_deps`, `get_refs`, `get_symbols`.
@@ -162,13 +166,13 @@ Exposes: `get_feat_context`, `search_codebase`, `record_decision`, `record_block
 
 ## Privacy
 
-All indexes are stored locally in `~/.mnemo/`. The default embedding model (`all-MiniLM-L6-v2`) runs entirely on-device via ONNX Runtime. **No code is ever sent to any server.**
+All indexes are stored locally in `~/.xctx/`. The default embedding model (`all-MiniLM-L6-v2`) runs entirely on-device via ONNX Runtime. **No code is ever sent to any server.**
 
 Want better embedding quality? Swap providers:
 
 ```bash
-mnemo config set embedding.provider ollama
-mnemo config set embedding.model nomic-embed-text
+xctx config set embedding.provider ollama
+xctx config set embedding.model nomic-embed-text
 ```
 
 ---
@@ -181,47 +185,47 @@ mnemo config set embedding.model nomic-embed-text
 ### Project
 
 ```
-mnemo init                          Initialize Mnemo for this project
-mnemo update [--since <commit>]     Incrementally index the codebase (skips unchanged files)
-mnemo doctor                        Diagnose setup issues with fix instructions
-mnemo status                        Show index stats (files, chunks, last indexed)
+xctx init                          Initialize Cross Context for this project
+xctx update [--since <commit>]     Incrementally index the codebase (skips unchanged files)
+xctx doctor                        Diagnose setup issues with fix instructions
+xctx status                        Show index stats (files, chunks, last indexed)
 ```
 
 ### Feature context
 
 ```
-mnemo feat start <name>              Start a new feature context
-mnemo feat list                      List all features
-mnemo feat switch <name>             Switch active feature
-mnemo feat context [name]            Print current feature context (markdown)
-mnemo feat context [name] --no-suggest  Suppress file suggestions (for pipes)
-mnemo feat suggest-files             Suggest files to link based on current context
-mnemo feat decision "<text>"         Record an architectural decision
-mnemo feat blocker "<text>"          Record a blocker
-mnemo feat blocker resolve "<text>"  Resolve a blocker
-mnemo feat note "<text>"             Add a note
-mnemo feat status "<text>"           Update current status
-mnemo feat link-file <path>          Link a file to the feature
-mnemo feat unlink-file <path>        Unlink a file
-mnemo feat done                      Mark feature as done
+xctx feat start <name>              Start a new feature context
+xctx feat list                      List all features
+xctx feat switch <name>             Switch active feature
+xctx feat context [name]            Print current feature context (markdown)
+xctx feat context [name] --no-suggest  Suppress file suggestions (for pipes)
+xctx feat suggest-files             Suggest files to link based on current context
+xctx feat decision "<text>"         Record an architectural decision
+xctx feat blocker "<text>"          Record a blocker
+xctx feat blocker resolve "<text>"  Resolve a blocker
+xctx feat note "<text>"             Add a note
+xctx feat status "<text>"           Update current status
+xctx feat link-file <path>          Link a file to the feature
+xctx feat unlink-file <path>        Unlink a file
+xctx feat done                      Mark feature as done
 ```
 
 ### Search & graph
 
 ```
-mnemo search "<query>" [--limit n] [--output json] [--no-hybrid] [--include-tests]
-mnemo graph deps <file>
-mnemo graph refs <file>
-mnemo graph affected <file>
-mnemo graph symbols <file>
+xctx search "<query>" [--limit n] [--output json] [--no-hybrid] [--include-tests]
+xctx graph deps <file>
+xctx graph refs <file>
+xctx graph affected <file>
+xctx graph symbols <file>
 ```
 
 ### Configuration
 
 ```
-mnemo config list
-mnemo config get <key>
-mnemo config set <key> <value>
+xctx config list
+xctx config get <key>
+xctx config set <key> <value>
 ```
 
 | Key                   | Default                  | Options                    |
@@ -236,7 +240,7 @@ mnemo config set <key> <value>
 ### Export
 
 ```
-mnemo export obsidian [--output <dir>]    Export all feats as Obsidian vault
+xctx export obsidian [--output <dir>]    Export all feats as Obsidian vault
 ```
 
 </details>
@@ -245,8 +249,8 @@ mnemo export obsidian [--output <dir>]    Export all feats as Obsidian vault
 
 ## FAQ
 
-**Does Mnemo send my code anywhere?**
-No. All indexes are stored in `~/.mnemo/`. The default embedding model runs entirely on-device via ONNX Runtime.
+**Does Cross Context send my code anywhere?**
+No. All indexes are stored in `~/.xctx/`. The default embedding model runs entirely on-device via ONNX Runtime.
 
 **How much disk space does it use?**
 The ONNX model is ~88MB. The vector index for a 100k LOC project is typically 20–50MB. The graph index and feature cache are negligible.
@@ -255,10 +259,13 @@ The ONNX model is ~88MB. The vector index for a 100k LOC project is typically 20
 Yes. Tested on Windows, macOS, and Linux via GitHub Actions CI.
 
 **How do I reset the index?**
-Delete `~/.mnemo/projects/<id>/index.db` and run `mnemo update`. Or run `mnemo doctor` for guided diagnostics.
+Delete `~/.xctx/projects/<id>/index.db` and run `xctx update`. Or run `xctx doctor` for guided diagnostics.
 
 **Can I use it without git?**
-Yes, but the post-commit hook won't be installed. Run `mnemo update` manually after changes.
+Yes, but the post-commit hook won't be installed. Run `xctx update` manually after changes.
+
+**What happens when I switch agents?**
+The memory lives in `~/.xctx/`, not inside any agent. Any agent you wire up with `xctx install` reads the same context — decisions, files, status — regardless of which agent wrote it.
 
 ---
 

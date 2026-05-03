@@ -1,10 +1,10 @@
 {
-	"name": "mnemo-cli",
+	"name": "cross-context",
 	"version": "1.5.1",
-	"description": "Your codebase, remembered — across every AI session. Persistent context for AI coding agents.",
+	"description": "Your codebase, remembered — across every session, across every agent. Persistent context for AI coding agents.",
 	"type": "module",
 	"bin": {
-		"mnemo": "dist/cli.js"
+		"xctx": "dist/cli.js"
 	},
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -48,11 +48,11 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/arturdonda/mnemo.git"
+		"url": "git+https://github.com/arturdonda/cross-context.git"
 	},
-	"homepage": "https://arturdonda.github.io/mnemo",
+	"homepage": "https://arturdonda.github.io/cross-context",
 	"bugs": {
-		"url": "https://github.com/arturdonda/mnemo/issues"
+		"url": "https://github.com/arturdonda/cross-context/issues"
 	},
 	"keywords": [
 		"ai",

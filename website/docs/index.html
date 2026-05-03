@@ -3,8 +3,8 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Docs — Mnemo</title>
-		<meta name="description" content="Mnemo documentation — get started, CLI reference, architecture, and agent integration guides." />
+		<title>Docs — Cross Context</title>
+		<meta name="description" content="Cross Context documentation — get started, CLI reference, architecture, and agent integration guides." />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -13,7 +13,7 @@
 		<link rel="icon" href="../assets/favicon.svg" type="image/svg+xml" />
 		<script>
 			(function () {
-				var t = localStorage.getItem('mnemo-theme');
+				var t = localStorage.getItem('xctx-theme');
 				if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
 			})();
 		</script>
@@ -21,7 +21,7 @@
 	<body>
 		<svg width="0" height="0" style="position: absolute" aria-hidden="true">
 			<defs>
-				<symbol id="mnemo-mark" viewBox="0 0 96 96">
+				<symbol id="xctx-mark" viewBox="0 0 96 96">
 					<rect class="bar-outer" x="18" y="18" width="14" height="60" />
 					<rect class="bar-mid" x="42" y="29.2" width="14" height="37.6" />
 					<rect class="bar-outer" x="66" y="18" width="14" height="60" />
@@ -31,16 +31,16 @@
 
 		<!-- ── Nav ──────────────────────────────────────── -->
 		<nav>
-			<a class="nav-logo" href="../index.html" aria-label="Mnemo">
-				<img class="lockup lockup-light" src="../assets/mnemo-lockup-h.svg" alt="">
-				<img class="lockup lockup-dark"  src="../assets/mnemo-lockup-h-dark.svg" alt="">
+			<a class="nav-logo" href="../index.html" aria-label="Cross Context">
+				<img class="lockup lockup-light" src="../assets/xctx-lockup-h.svg" alt="">
+				<img class="lockup lockup-dark"  src="../assets/xctx-lockup-h-dark.svg" alt="">
 			</a>
 			<div class="nav-links">
-				<a href="https://github.com/arturdonda/mnemo">GitHub</a>
+				<a href="https://github.com/arturdonda/cross-context">GitHub</a>
 				<a href="index.html" style="color: var(--ink)">Docs</a>
-				<a href="https://github.com/arturdonda/mnemo/blob/main/CHANGELOG.md">Changelog</a>
+				<a href="https://github.com/arturdonda/cross-context/blob/main/CHANGELOG.md">Changelog</a>
 				<button class="theme-toggle" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">auto</button>
-				<a href="https://www.npmjs.com/package/mnemo-cli" class="btn btn-amber"> npm <span class="ver">v1.4.1</span></a>
+				<a href="https://www.npmjs.com/package/cross-context" class="btn btn-amber"> npm <span class="ver">v1.5.1</span></a>
 			</div>
 		</nav>
 
@@ -63,11 +63,11 @@
 					</div>
 					<div class="docs-nav-group">
 						<div class="docs-nav-label">CLI Reference</div>
-						<a href="#cli-init" class="docs-nav-link">mnemo init</a>
-						<a href="#cli-feat" class="docs-nav-link">mnemo feat</a>
-						<a href="#cli-search" class="docs-nav-link">mnemo search</a>
-						<a href="#cli-install" class="docs-nav-link">mnemo install</a>
-						<a href="#cli-mcp" class="docs-nav-link">mnemo mcp</a>
+						<a href="#cli-init" class="docs-nav-link">xctx init</a>
+						<a href="#cli-feat" class="docs-nav-link">xctx feat</a>
+						<a href="#cli-search" class="docs-nav-link">xctx search</a>
+						<a href="#cli-install" class="docs-nav-link">xctx install</a>
+						<a href="#cli-mcp" class="docs-nav-link">xctx mcp</a>
 					</div>
 					<div class="docs-nav-group">
 						<div class="docs-nav-label">Architecture</div>
@@ -82,35 +82,35 @@
 			<main class="docs-content">
 				<div class="docs-header">
 					<div class="section-label">Documentation</div>
-					<h1 class="docs-title">Get started with Mnemo</h1>
+					<h1 class="docs-title">Get started with Cross Context</h1>
 					<p class="docs-intro">
-						Mnemo gives AI coding agents persistent memory of your codebase — decisions, linked files, blockers, and status — across every session.
+						Cross Context gives AI coding agents persistent memory of your codebase — decisions, linked files, blockers, and status — across every session and every agent.
 					</p>
 				</div>
 
 				<!-- Installation -->
 				<section id="installation" class="docs-section">
 					<h2>Installation <a href="#installation" class="header-anchor" aria-label="Link to Installation">#</a></h2>
-					<p>Install Mnemo globally via npm. Node.js 20 or later is required.</p>
-					<pre><span class="cmd">npm install -g mnemo-cli</span></pre>
+					<p>Install Cross Context globally via npm. Node.js 20 or later is required.</p>
+					<pre><span class="cmd">npm install -g cross-context</span></pre>
 					<p>Verify the installation:</p>
-					<pre><span class="cmd">mnemo --version</span></pre>
+					<pre><span class="cmd">xctx --version</span></pre>
 				</section>
 
 				<!-- Initialization -->
 				<section id="initialization" class="docs-section">
 					<h2>Initialize a project <a href="#initialization" class="header-anchor" aria-label="Link to Initialize a project">#</a></h2>
-					<p>Run <code>mnemo init</code> inside any git repository. It installs a post-commit hook and creates the project config under <code>~/.mnemo/</code>.</p>
+					<p>Run <code>xctx init</code> inside any git repository. It installs a post-commit hook and creates the project config under <code>~/.xctx/</code>.</p>
 					<pre><span class="cmd">cd</span> <span class="str">my-project</span>
-<span class="cmd">mnemo init</span></pre>
+<span class="cmd">xctx init</span></pre>
 					<p>
-						Mnemo identifies your project by hashing its git remote URL — the same remote always maps to the same project, so your context survives re-clones
+						Cross Context identifies your project by hashing its git remote URL — the same remote always maps to the same project, so your context survives re-clones
 						and directory moves.
 					</p>
 
 					<div class="callout callout--info">
-						<strong>No git remote?</strong> Mnemo falls back to the absolute path of the repository root. You can always set a remote later with
-						<code>git remote add origin &lt;url&gt;</code> and re-run <code>mnemo init</code>.
+						<strong>No git remote?</strong> Cross Context falls back to the absolute path of the repository root. You can always set a remote later with
+						<code>git remote add origin &lt;url&gt;</code> and re-run <code>xctx init</code>.
 					</div>
 				</section>
 
@@ -118,14 +118,14 @@
 				<section id="agent-setup" class="docs-section">
 					<h2>Wire up your agent <a href="#agent-setup" class="header-anchor" aria-label="Link to Wire up your agent">#</a></h2>
 					<p>
-						Run <code>mnemo install &lt;agent&gt;</code> to generate the right config file for your AI coding agent. Mnemo keeps it up to date automatically
+						Run <code>xctx install &lt;agent&gt;</code> to generate the right config file for your AI coding agent. Cross Context keeps it up to date automatically
 						after every commit.
 					</p>
-					<pre><span class="cmd">mnemo install claude</span>    <span class="cmt"># CLAUDE.md + skill file + MCP in ~/.claude/settings.json</span>
-<span class="cmd">mnemo install copilot</span>   <span class="cmt"># copilot-instructions.md + skill file + MCP in .vscode/mcp.json</span>
-<span class="cmd">mnemo install codex</span>     <span class="cmt"># AGENTS.md + skill file + MCP in ~/.codex/config.toml</span>
-<span class="cmd">mnemo install cursor</span>    <span class="cmt"># .cursor/rules/mnemo.mdc + skill file + MCP in .cursor/mcp.json</span>
-<span class="cmd">mnemo install windsurf</span>  <span class="cmt"># .windsurfrules + skill file + MCP in ~/.codeium/windsurf/mcp_config.json</span></pre>
+					<pre><span class="cmd">xctx install claude</span>    <span class="cmt"># CLAUDE.md + skill file + MCP in ~/.claude/settings.json</span>
+<span class="cmd">xctx install copilot</span>   <span class="cmt"># copilot-instructions.md + skill file + MCP in .vscode/mcp.json</span>
+<span class="cmd">xctx install codex</span>     <span class="cmt"># AGENTS.md + skill file + MCP in ~/.codex/config.toml</span>
+<span class="cmd">xctx install cursor</span>    <span class="cmt"># .cursor/rules/xctx.mdc + skill file + MCP in .cursor/mcp.json</span>
+<span class="cmd">xctx install windsurf</span>  <span class="cmt"># .windsurfrules + skill file + MCP in ~/.codeium/windsurf/mcp_config.json</span></pre>
 
 					<table class="docs-table">
 						<thead>
@@ -138,39 +138,43 @@
 						<tbody>
 							<tr>
 								<td>Claude Code</td>
-								<td><code>mnemo install claude</code></td>
-								<td><code>CLAUDE.md</code> + <code>.claude/skills/mnemo.md</code> + MCP in <code>~/.claude/settings.json</code></td>
+								<td><code>xctx install claude</code></td>
+								<td><code>CLAUDE.md</code> + <code>.claude/skills/xctx.md</code> + MCP in <code>~/.claude/settings.json</code></td>
 							</tr>
 							<tr>
 								<td>GitHub Copilot</td>
-								<td><code>mnemo install copilot</code></td>
-								<td><code>.github/copilot-instructions.md</code> + <code>.github/skills/mnemo/SKILL.md</code> + MCP in <code>.vscode/mcp.json</code></td>
+								<td><code>xctx install copilot</code></td>
+								<td><code>.github/copilot-instructions.md</code> + <code>.github/skills/xctx/SKILL.md</code> + MCP in <code>.vscode/mcp.json</code></td>
 							</tr>
 							<tr>
 								<td>OpenAI Codex</td>
-								<td><code>mnemo install codex</code></td>
-								<td><code>AGENTS.md</code> + <code>.agents/skills/mnemo/SKILL.md</code> + MCP in <code>~/.codex/config.toml</code></td>
+								<td><code>xctx install codex</code></td>
+								<td><code>AGENTS.md</code> + <code>.agents/skills/xctx/SKILL.md</code> + MCP in <code>~/.codex/config.toml</code></td>
 							</tr>
 							<tr>
 								<td>Cursor</td>
-								<td><code>mnemo install cursor</code></td>
-								<td><code>.cursor/rules/mnemo.mdc</code> + <code>.cursor/skills/mnemo/SKILL.md</code> + MCP in <code>.cursor/mcp.json</code></td>
+								<td><code>xctx install cursor</code></td>
+								<td><code>.cursor/rules/xctx.mdc</code> + <code>.cursor/skills/xctx/SKILL.md</code> + MCP in <code>.cursor/mcp.json</code></td>
 							</tr>
 							<tr>
 								<td>Windsurf</td>
-								<td><code>mnemo install windsurf</code></td>
-								<td><code>.windsurfrules</code> + <code>.windsurf/skills/mnemo/SKILL.md</code> + MCP in <code>~/.codeium/windsurf/mcp_config.json</code></td>
+								<td><code>xctx install windsurf</code></td>
+								<td><code>.windsurfrules</code> + <code>.windsurf/skills/xctx/SKILL.md</code> + MCP in <code>~/.codeium/windsurf/mcp_config.json</code></td>
 							</tr>
 							<tr>
 								<td>Any MCP client</td>
-								<td><code>mnemo mcp serve</code></td>
+								<td><code>xctx mcp serve</code></td>
 								<td>stdio MCP server</td>
 							</tr>
 						</tbody>
 					</table>
 
 					<div class="callout callout--tip">
-						<strong>All agents get MCP integration automatically.</strong> Each <code>mnemo install &lt;agent&gt;</code> registers the MCP server in the agent's native config. Agents call <code>get_feat_context</code>, <code>search_codebase</code>, <code>record_decision</code>, and other tools natively — no shell permissions needed. Restart your agent once after install.
+						<strong>All agents get MCP integration automatically.</strong> Each <code>xctx install &lt;agent&gt;</code> registers the MCP server in the agent's native config. Agents call <code>get_feat_context</code>, <code>search_codebase</code>, <code>record_decision</code>, and other tools natively — no shell permissions needed. Restart your agent once after install.
+					</div>
+
+					<div class="callout callout--info">
+						<strong>Switching agents?</strong> The memory lives in <code>~/.xctx/</code>, not inside any agent. Wire up multiple agents and they all read the same context — decisions, files, and status — regardless of which agent wrote it.
 					</div>
 				</section>
 
@@ -178,35 +182,35 @@
 				<section id="feat-cache" class="docs-section">
 					<h2>FEAT Context Cache <span class="layer-badge">Layer 3</span> <a href="#feat-cache" class="header-anchor" aria-label="Link to FEAT Context Cache">#</a></h2>
 					<p>
-						The FEAT cache is Mnemo's differentiator. While Layers 1 and 2 index the <em>code</em>, Layer 3 captures the <em>work in progress</em> — what you're
+						The FEAT cache is Cross Context's differentiator. While Layers 1 and 2 index the <em>code</em>, Layer 3 captures the <em>work in progress</em> — what you're
 						building, why you made certain choices, and where you left off.
 					</p>
 					<p>Each feature is an append-only event log (<code>events.jsonl</code>) rendered into a <code>context.md</code> your agent reads at session start.</p>
 
 					<h3 id="feat-workflow">Workflow <a href="#feat-workflow" class="header-anchor" aria-label="Link to Workflow">#</a></h3>
 					<pre><span class="cmt"># Start a feature</span>
-<span class="cmd">mnemo feat start</span> <span class="str">payment-flow</span>
+<span class="cmd">xctx feat start</span> <span class="str">payment-flow</span>
 
 <span class="cmt"># Record decisions as you make them</span>
-<span class="cmd">mnemo feat decision</span> <span class="str">"Using Stripe Checkout — simpler for MVP"</span>
+<span class="cmd">xctx feat decision</span> <span class="str">"Using Stripe Checkout — simpler for MVP"</span>
 
 <span class="cmt"># Link the files in scope</span>
-<span class="cmd">mnemo feat link-file</span> src/routes/payments.ts
-<span class="cmd">mnemo feat link-file</span> src/services/stripe.ts
+<span class="cmd">xctx feat link-file</span> src/routes/payments.ts
+<span class="cmd">xctx feat link-file</span> src/services/stripe.ts
 
 <span class="cmt"># Note blockers</span>
-<span class="cmd">mnemo feat blocker</span> <span class="str">"Webhook signature verification failing on localhost"</span>
+<span class="cmd">xctx feat blocker</span> <span class="str">"Webhook signature verification failing on localhost"</span>
 
 <span class="cmt"># Check the generated context your agent will see</span>
-<span class="cmd">mnemo feat context</span>
+<span class="cmd">xctx feat context</span>
 
 <span class="cmt"># Finish and switch features</span>
-<span class="cmd">mnemo feat done</span>
-<span class="cmd">mnemo feat start</span> <span class="str">auth-refresh</span></pre>
+<span class="cmd">xctx feat done</span>
+<span class="cmd">xctx feat start</span> <span class="str">auth-refresh</span></pre>
 
 					<div class="callout callout--tip">
-						<strong>Tip:</strong> Run <code>mnemo feat context</code> at the start of any AI session. Paste the output into your agent's first message, or let
-						<code>mnemo install</code> inject it automatically.
+						<strong>Tip:</strong> Run <code>xctx feat context</code> at the start of any AI session. Paste the output into your agent's first message, or let
+						<code>xctx install</code> inject it automatically.
 					</div>
 				</section>
 
@@ -217,13 +221,13 @@
 						Semantic search over your codebase using local embeddings. Uses <code>all-MiniLM-L6-v2</code> (~88 MB) via ONNX Runtime — no API keys, no network
 						calls, no code leaves your machine.
 					</p>
-					<pre><span class="cmd">mnemo search</span> <span class="str">"JWT authentication middleware"</span>
-<span class="cmd">mnemo search</span> <span class="str">"database connection pooling"</span> <span class="cmt">--limit 5</span>
-<span class="cmd">mnemo search</span> <span class="str">"auth guards"</span> <span class="cmt">--include-tests</span></pre>
-					<p>The index is updated automatically on every git commit via the post-commit hook installed by <code>mnemo init</code>.</p>
+					<pre><span class="cmd">xctx search</span> <span class="str">"JWT authentication middleware"</span>
+<span class="cmd">xctx search</span> <span class="str">"database connection pooling"</span> <span class="cmt">--limit 5</span>
+<span class="cmd">xctx search</span> <span class="str">"auth guards"</span> <span class="cmt">--include-tests</span></pre>
+					<p>The index is updated automatically on every git commit via the post-commit hook installed by <code>xctx init</code>.</p>
 					<p>To index immediately without committing:</p>
-					<pre><span class="cmd">mnemo update</span></pre>
-					<p><code>mnemo update</code> performs <strong>incremental indexing</strong> by default — it hashes every file and only re-indexes files that changed, skipping unchanged ones. A full re-index of a large project (2 000+ files) completes in seconds on subsequent runs.</p>
+					<pre><span class="cmd">xctx update</span></pre>
+					<p><code>xctx update</code> performs <strong>incremental indexing</strong> by default — it hashes every file and only re-indexes files that changed, skipping unchanged ones. A full re-index of a large project (2 000+ files) completes in seconds on subsequent runs.</p>
 				</section>
 
 				<!-- Structural Graph -->
@@ -234,24 +238,24 @@
 						where — without reading file contents.
 					</p>
 					<pre><span class="cmt"># Files this file imports</span>
-<span class="cmd">mnemo graph deps</span> src/services/auth.ts
+<span class="cmd">xctx graph deps</span> src/services/auth.ts
 
 <span class="cmt"># Files that import this file</span>
-<span class="cmd">mnemo graph refs</span> src/routes/payments.ts
+<span class="cmd">xctx graph refs</span> src/routes/payments.ts
 
 <span class="cmt"># Transitive dependents (BFS, max depth 3)</span>
-<span class="cmd">mnemo graph affected</span> src/services/auth.ts
+<span class="cmd">xctx graph affected</span> src/services/auth.ts
 
 <span class="cmt"># Top-level functions and classes in a file</span>
-<span class="cmd">mnemo graph symbols</span> src/services/auth.ts</pre>
+<span class="cmd">xctx graph symbols</span> src/services/auth.ts</pre>
 				</section>
 
 				<!-- CLI: init -->
 				<section id="cli-init" class="docs-section">
-					<h2><code>mnemo init</code> <a href="#cli-init" class="header-anchor" aria-label="Link to mnemo init">#</a></h2>
-					<p>Initialize Mnemo for the current git repository.</p>
-					<pre><span class="cmd">mnemo init</span> [--force]</pre>
-					<p>Creates <code>~/.mnemo/projects/&lt;project-id&gt;/</code> and installs the post-commit hook at <code>.git/hooks/post-commit</code>.</p>
+					<h2><code>xctx init</code> <a href="#cli-init" class="header-anchor" aria-label="Link to xctx init">#</a></h2>
+					<p>Initialize Cross Context for the current git repository.</p>
+					<pre><span class="cmd">xctx init</span> [--force]</pre>
+					<p>Creates <code>~/.xctx/projects/&lt;project-id&gt;/</code> and installs the post-commit hook at <code>.git/hooks/post-commit</code>.</p>
 					<table class="docs-table">
 						<thead>
 							<tr><th>Flag</th><th>Description</th></tr>
@@ -264,7 +268,7 @@
 
 				<!-- CLI: feat -->
 				<section id="cli-feat" class="docs-section">
-					<h2><code>mnemo feat</code> <a href="#cli-feat" class="header-anchor" aria-label="Link to mnemo feat">#</a></h2>
+					<h2><code>xctx feat</code> <a href="#cli-feat" class="header-anchor" aria-label="Link to xctx feat">#</a></h2>
 					<p>Manage FEAT context cache entries.</p>
 					<table class="docs-table">
 						<thead>
@@ -288,8 +292,8 @@
 
 				<!-- CLI: search -->
 				<section id="cli-search" class="docs-section">
-					<h2><code>mnemo search</code> <a href="#cli-search" class="header-anchor" aria-label="Link to mnemo search">#</a></h2>
-					<pre><span class="cmd">mnemo search</span> <span class="str">"&lt;query&gt;"</span> [--limit &lt;n&gt;] [--include-tests] [--output json] [--no-hybrid]</pre>
+					<h2><code>xctx search</code> <a href="#cli-search" class="header-anchor" aria-label="Link to xctx search">#</a></h2>
+					<pre><span class="cmd">xctx search</span> <span class="str">"&lt;query&gt;"</span> [--limit &lt;n&gt;] [--include-tests] [--output json] [--no-hybrid]</pre>
 					<p>Results are ranked by hybrid score (semantic similarity + graph proximity + feat relevance). Scores display as decimals (e.g. <code>0.87</code>). Snippets show 6 lines of context.</p>
 					<table class="docs-table">
 						<thead>
@@ -306,17 +310,17 @@
 
 				<!-- CLI: install -->
 				<section id="cli-install" class="docs-section">
-					<h2><code>mnemo install</code> <a href="#cli-install" class="header-anchor" aria-label="Link to mnemo install">#</a></h2>
-					<pre><span class="cmd">mnemo install</span> <span class="str">claude|copilot|codex|cursor|windsurf</span></pre>
-					<p>Generates the agent-specific config file and adds instructions for the agent to load Mnemo context at session start.</p>
+					<h2><code>xctx install</code> <a href="#cli-install" class="header-anchor" aria-label="Link to xctx install">#</a></h2>
+					<pre><span class="cmd">xctx install</span> <span class="str">claude|copilot|codex|cursor|windsurf</span></pre>
+					<p>Generates the agent-specific config file and adds instructions for the agent to load Cross Context at session start.</p>
 				</section>
 
 				<!-- CLI: mcp -->
 				<section id="cli-mcp" class="docs-section">
-					<h2><code>mnemo mcp serve</code> <a href="#cli-mcp" class="header-anchor" aria-label="Link to mnemo mcp serve">#</a></h2>
-					<pre><span class="cmd">mnemo mcp serve</span> [--port &lt;n&gt;]</pre>
+					<h2><code>xctx mcp serve</code> <a href="#cli-mcp" class="header-anchor" aria-label="Link to xctx mcp serve">#</a></h2>
+					<pre><span class="cmd">xctx mcp serve</span> [--port &lt;n&gt;]</pre>
 					<p>
-						Starts a stdio-based MCP server exposing Mnemo tools to any MCP-compatible client. Useful for custom agent setups or IDE extensions that speak the
+						Starts a stdio-based MCP server exposing Cross Context tools to any MCP-compatible client. Useful for custom agent setups or IDE extensions that speak the
 						Model Context Protocol.
 					</p>
 				</section>
@@ -330,7 +334,7 @@
   <span class="str">"id"</span>:        <span class="str">"evt_01j..."</span>,
   <span class="str">"type"</span>:      <span class="str">"decision"</span> <span class="cmt">| "blocker" | "link-file" | "note" | ...</span>,
   <span class="str">"payload"</span>:   <span class="str">"&lt;text or path&gt;"</span>,
-  <span class="str">"timestamp"</span>: <span class="str">"2026-04-25T14:32:00Z"</span>
+  <span class="str">"timestamp"</span>: <span class="str">"2026-05-02T14:32:00Z"</span>
 }</pre>
 					<p>The <code>context.md</code> file is derived from this log on every write — it is never the source of truth.</p>
 				</section>
@@ -338,7 +342,7 @@
 				<!-- Storage -->
 				<section id="storage" class="docs-section">
 					<h2>Local storage layout <a href="#storage" class="header-anchor" aria-label="Link to Local storage layout">#</a></h2>
-					<pre>~/.mnemo/
+					<pre>~/.xctx/
   config.json
   projects/
     {project-id}/          <span class="cmt"># xxh3(git remote)[0:16]</span>
@@ -351,21 +355,21 @@
           context.md       <span class="cmt"># derived — do not edit</span>
           meta.json
       active_feat          <span class="cmt"># name of active feature (plain text)</span></pre>
-					<p>All data lives under <code>~/.mnemo/</code>. Nothing is written to your repository except the git hook and the agent config file.</p>
+					<p>All data lives under <code>~/.xctx/</code>. Nothing is written to your repository except the git hook and the agent config file.</p>
 				</section>
 
 				<!-- Privacy -->
 				<section id="privacy" class="docs-section">
 					<h2>Privacy <a href="#privacy" class="header-anchor" aria-label="Link to Privacy">#</a></h2>
 					<p>
-						Mnemo is designed to run entirely offline by default. The semantic index uses <code>all-MiniLM-L6-v2</code> downloaded once from Hugging Face (~88
+						Cross Context is designed to run entirely offline by default. The semantic index uses <code>all-MiniLM-L6-v2</code> downloaded once from Hugging Face (~88
 						MB) and cached locally. No code or context is ever sent to any external server.
 					</p>
 					<p>Optionally, you can use Ollama (local) or OpenAI (cloud) for better embedding quality:</p>
-					<pre><span class="cmd">mnemo config set embedding.provider</span> <span class="str">ollama</span>
-<span class="cmd">mnemo config set embedding.provider</span> <span class="str">openai</span></pre>
+					<pre><span class="cmd">xctx config set embedding.provider</span> <span class="str">ollama</span>
+<span class="cmd">xctx config set embedding.provider</span> <span class="str">openai</span></pre>
 					<div class="callout callout--info">
-						When using OpenAI, only code chunks sent to the embedding API. Mnemo never sends your FEAT context, decisions, or blockers to any external service.
+						When using OpenAI, only code chunks are sent to the embedding API. Cross Context never sends your FEAT context, decisions, or blockers to any external service.
 					</div>
 				</section>
 			</main>
@@ -379,12 +383,12 @@
 				<rect x="66" y="18" width="14" height="60" fill="currentColor"/>
 			</svg>
 			<div class="footer-links">
-				<a href="https://github.com/arturdonda/mnemo">GitHub</a>
-				<a href="https://www.npmjs.com/package/mnemo-cli">npm</a>
+				<a href="https://github.com/arturdonda/cross-context">GitHub</a>
+				<a href="https://www.npmjs.com/package/cross-context">npm</a>
 				<a href="index.html">Docs</a>
-				<a href="https://github.com/arturdonda/mnemo/blob/main/CHANGELOG.md">Changelog</a>
-				<a href="https://github.com/arturdonda/mnemo/blob/main/LICENSE">MIT License</a>
-				<a href="https://github.com/arturdonda/mnemo/issues">Issues</a>
+				<a href="https://github.com/arturdonda/cross-context/blob/main/CHANGELOG.md">Changelog</a>
+				<a href="https://github.com/arturdonda/cross-context/blob/main/LICENSE">MIT License</a>
+				<a href="https://github.com/arturdonda/cross-context/issues">Issues</a>
 			</div>
 			<p>Built by <a href="https://github.com/arturdonda">Artur Donda</a> · MIT License</p>
 		</footer>
@@ -400,7 +404,7 @@
 				};
 
 				function currentMode() {
-					var stored = localStorage.getItem('mnemo-theme');
+					var stored = localStorage.getItem('xctx-theme');
 					return stored === 'light' || stored === 'dark' ? stored : 'auto';
 				}
 				function applyMode(mode) {
@@ -414,8 +418,8 @@
 				btn.addEventListener('click', function () {
 					var modes = ['auto', 'light', 'dark'];
 					var next = modes[(modes.indexOf(currentMode()) + 1) % 3];
-					if (next === 'auto') localStorage.removeItem('mnemo-theme');
-					else localStorage.setItem('mnemo-theme', next);
+					if (next === 'auto') localStorage.removeItem('xctx-theme');
+					else localStorage.setItem('xctx-theme', next);
 					applyMode(next);
 				});
 

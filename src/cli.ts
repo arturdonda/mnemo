@@ -22,8 +22,8 @@ const { version } = require('../package.json') as { version: string };
 const program = new Command();
 
 program
-  .name('mnemo')
-  .description('Your codebase, remembered — across every AI session.')
+  .name('xctx')
+  .description('Your codebase, remembered — across every session, across every agent.')
   .version(version);
 
 program.addCommand(createInitCommand());

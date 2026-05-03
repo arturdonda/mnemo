@@ -13,7 +13,7 @@ import { getActiveFeat } from '../core/feat/active.js';
 import { readEvents, buildContext } from '../core/feat/store.js';
 import { readFile } from 'node:fs/promises';
 import type { FeatureMeta } from '../core/feat/types.js';
-import { MnemoError, handleError } from '../core/error.js';
+import { XctxError, handleError } from '../core/error.js';
 import { readConfig } from '../core/config.js';
 
 export function createSearchCommand(): Command {
@@ -39,7 +39,7 @@ export function createSearchCommand(): Command {
 					: existsSync(paths.indexDb);
 
 				if (!indexExists) {
-					throw new MnemoError('Project not indexed. Run `mnemo update` to index this project first.');
+					throw new XctxError('Project not indexed. Run `xctx update` to index this project first.');
 				}
 
 				const embedder = await createEmbedder(config);

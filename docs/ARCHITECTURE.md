@@ -2,7 +2,7 @@
 
 ## Overview
 
-Mnemo is a local CLI tool with three independently functional layers. Each layer can be used in isolation; they complement each other when combined.
+Cross Context is a local CLI tool with three independently functional layers. Each layer can be used in isolation; they complement each other when combined.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -11,7 +11,7 @@ Mnemo is a local CLI tool with three independently functional layers. Each layer
 │  Claude Code │   MCP Clients    │        Raw CLI                │
 │    Skill     │ (Cursor, Copilot)│   (any terminal/agent)        │
 ├──────────────┴──────────────────┴───────────────────────────────┤
-│                          Mnemo CLI                              │
+│                          Cross Context CLI                              │
 │                    (unified interface)                          │
 ├────────────────┬────────────────┬───────────────────────────────┤
 │  FEAT Cache    │ Semantic Index │    Structural Graph           │
@@ -20,7 +20,7 @@ Mnemo is a local CLI tool with three independently functional layers. Each layer
 │  JSONL         │  (pluggable)   │      SQLite                   │
 └────────────────┴────────────────┴───────────────────────────────┘
                               │
-                    ~/.mnemo/projects/{id}/
+                    ~/.xctx/projects/{id}/
 ```
 
 ---
@@ -62,7 +62,7 @@ Implementations:
 Switch with:
 
 ```bash
-mnemo config set vector-store lancedb
+xctx config set vector-store lancedb
 ```
 
 ### Embedding Pipeline
@@ -90,11 +90,11 @@ Indexing runs in parallel via Node.js `worker_threads`. Each worker handles an i
 | OpenAI API   | `openai`     | Best    | Paid | API key           |
 
 ```bash
-mnemo config set embedding.provider onnx          # default
-mnemo config set embedding.provider ollama
-mnemo config set embedding.model nomic-embed-text
-mnemo config set embedding.provider openai
-mnemo config set embedding.model text-embedding-3-small
+xctx config set embedding.provider onnx          # default
+xctx config set embedding.provider ollama
+xctx config set embedding.model nomic-embed-text
+xctx config set embedding.provider openai
+xctx config set embedding.model text-embedding-3-small
 ```
 
 Default bundled model: `all-MiniLM-L6-v2` (22MB ONNX, 384 dimensions). No internet, no API cost.
@@ -252,7 +252,7 @@ interface Blocker {
 ### Storage Layout
 
 ```
-~/.mnemo/projects/{project-id}/feats/{feat-name}/
+~/.xctx/projects/{project-id}/feats/{feat-name}/
   context.md        ← auto-generated, read by agents at session start
   events.jsonl      ← append-only event log (source of truth)
   meta.json         ← id, name, branch, status, timestamps
@@ -310,26 +310,26 @@ None active.
 **Typed commands produce structured events — avoid free-form `note` as default:**
 
 ```bash
-mnemo feat start <name> [--branch <branch>]
-mnemo feat list
-mnemo feat switch <name>
-mnemo feat context [<name>]          # dumps context.md to stdout
+xctx feat start <name> [--branch <branch>]
+xctx feat list
+xctx feat switch <name>
+xctx feat context [<name>]          # dumps context.md to stdout
 
 # Typed writes (preferred)
-mnemo feat decision "<text>"         # records architectural decision
-mnemo feat blocker "<text>"          # records a blocker
-mnemo feat blocker resolve "<text>"  # resolves a blocker
-mnemo feat link-file <path> [--reason "<why>"]
-mnemo feat unlink-file <path>
-mnemo feat status "<text>"           # updates current status
+xctx feat decision "<text>"         # records architectural decision
+xctx feat blocker "<text>"          # records a blocker
+xctx feat blocker resolve "<text>"  # resolves a blocker
+xctx feat link-file <path> [--reason "<why>"]
+xctx feat unlink-file <path>
+xctx feat status "<text>"           # updates current status
 
 # Free-form (for anything that doesn't fit above)
-mnemo feat note "<text>"
+xctx feat note "<text>"
 
-mnemo feat done                      # marks feat as completed
+xctx feat done                      # marks feat as completed
 ```
 
-**Active feat**: stored in `~/.mnemo/projects/{id}/active_feat`. Git hook auto-switches based on branch name if a feat with matching branch exists.
+**Active feat**: stored in `~/.xctx/projects/{id}/active_feat`. Git hook auto-switches based on branch name if a feat with matching branch exists.
 
 ---
 
@@ -353,29 +353,29 @@ This is the key insight that makes Recall more useful than pure RAG: results tha
 
 ## Agent Installer
 
-`mnemo install <agent>` writes or updates the agent-specific config file that instructs the agent to use Recall.
+`xctx install <agent>` writes or updates the agent-specific config file that instructs the agent to use Recall.
 
 | Command                 | Output file                               | What it adds                                                 |
 | ----------------------- | ----------------------------------------- | ------------------------------------------------------------ |
-| `mnemo install claude`  | `CLAUDE.md` + `~/.claude/skills/mnemo.md` | Context injection instructions + Skill                       |
-| `mnemo install codex`   | `AGENTS.md`                               | Instructions to call `mnemo feat context` and `mnemo search` |
-| `mnemo install copilot` | `.github/copilot-instructions.md`         | Same as AGENTS.md pattern                                    |
-| `mnemo install cursor`  | `.cursorrules`                            | Same pattern                                                 |
+| `xctx install claude`  | `CLAUDE.md` + `~/.claude/skills/xctx.md` | Context injection instructions + Skill                       |
+| `xctx install codex`   | `AGENTS.md`                               | Instructions to call `xctx feat context` and `xctx search` |
+| `xctx install copilot` | `.github/copilot-instructions.md`         | Same as AGENTS.md pattern                                    |
+| `xctx install cursor`  | `.cursorrules`                            | Same pattern                                                 |
 
 All generated files include:
 
-1. Instructions to run `mnemo feat context` at session start
-2. Instructions to use `mnemo search` before exploring unfamiliar code
-3. Instructions to record decisions with `mnemo feat decision`
+1. Instructions to run `xctx feat context` at session start
+2. Instructions to use `xctx search` before exploring unfamiliar code
+3. Instructions to record decisions with `xctx feat decision`
 
-Each `mnemo install` command is idempotent — safe to re-run after updates.
+Each `xctx install` command is idempotent — safe to re-run after updates.
 
 ---
 
 ## Update & Freshness Strategy
 
 ```
-1. git post-commit hook (installed by mnemo init)
+1. git post-commit hook (installed by xctx init)
    → git diff --name-only HEAD~1 HEAD
    → re-index only changed files (semantic + graph)
    → auto-switch active feat if branch matches
@@ -384,12 +384,12 @@ Each `mnemo install` command is idempotent — safe to re-run after updates.
    → sha256 check on every file in results
    → stale files re-indexed inline before returning
 
-3. mnemo update (manual)
+3. xctx update (manual)
    → full re-index of entire project
    → use after large merges or first clone
 
 4. File watcher (opt-in)
-   → mnemo config set watch true
+   → xctx config set watch true
    → chokidar with adaptive polling (interval increases when no changes detected, resets on activity)
    → 3s debounce before triggering re-index
 ```
@@ -400,7 +400,7 @@ Each `mnemo install` command is idempotent — safe to re-run after updates.
 #!/bin/sh
 changed=$(git diff --name-only HEAD~1 HEAD 2>/dev/null)
 if [ -n "$changed" ]; then
-  echo "$changed" | mnemo update --files-from-stdin --silent
+  echo "$changed" | xctx update --files-from-stdin --silent
 fi
 ```
 
@@ -410,35 +410,35 @@ fi
 
 ```bash
 # Global
-mnemo init
-mnemo update [--since <commit>] [--files-from-stdin]
-mnemo status
-mnemo config [get|set] <key> [<value>]
-mnemo install <claude|codex|copilot|cursor>
+xctx init
+xctx update [--since <commit>] [--files-from-stdin]
+xctx status
+xctx config [get|set] <key> [<value>]
+xctx install <claude|codex|copilot|cursor>
 
 # Search
-mnemo search <query> [--limit 10] [--output json]
-mnemo search <query> --type graph
+xctx search <query> [--limit 10] [--output json]
+xctx search <query> --type graph
 
 # Graph
-mnemo graph deps <file-or-symbol>
-mnemo graph refs <file-or-symbol>
-mnemo graph affected <file>
-mnemo graph symbols <file>
+xctx graph deps <file-or-symbol>
+xctx graph refs <file-or-symbol>
+xctx graph affected <file>
+xctx graph symbols <file>
 
 # FEAT
-mnemo feat start <name> [--branch <branch>]
-mnemo feat list
-mnemo feat switch <name>
-mnemo feat context [<name>]
-mnemo feat decision "<text>"
-mnemo feat blocker "<text>"
-mnemo feat blocker resolve "<text>"
-mnemo feat link-file <path> [--reason "<text>"]
-mnemo feat unlink-file <path>
-mnemo feat status "<text>"
-mnemo feat note "<text>"
-mnemo feat done
+xctx feat start <name> [--branch <branch>]
+xctx feat list
+xctx feat switch <name>
+xctx feat context [<name>]
+xctx feat decision "<text>"
+xctx feat blocker "<text>"
+xctx feat blocker resolve "<text>"
+xctx feat link-file <path> [--reason "<text>"]
+xctx feat unlink-file <path>
+xctx feat status "<text>"
+xctx feat note "<text>"
+xctx feat done
 ```
 
 ---
@@ -446,8 +446,8 @@ mnemo feat done
 ## MCP Server
 
 ```bash
-mnemo mcp serve    # stdio transport (default)
-mnemo mcp serve --port 3333   # HTTP/SSE transport
+xctx mcp serve    # stdio transport (default)
+xctx mcp serve --port 3333   # HTTP/SSE transport
 ```
 
 Exposes MCP tools:
@@ -491,4 +491,4 @@ Stable across directory renames if git remote exists. Consistent across team mem
 | File watcher      | chokidar + adaptive polling                  | Reduces CPU on idle repos; responsive on activity                                       |
 | Config format     | JSON                                         | Simple, universally readable                                                            |
 | FEAT storage      | events.jsonl + derived context.md            | Append-only (safe), human-readable, agent-consumable                                    |
-| Global data dir   | `~/.mnemo/`                                  | Mirrors pattern of `~/.npm`, `~/.cargo`                                                 |
+| Global data dir   | `~/.xctx/`                                  | Mirrors pattern of `~/.npm`, `~/.cargo`                                                 |

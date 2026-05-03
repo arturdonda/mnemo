@@ -7,7 +7,7 @@ describe('config module', () => {
 	let tempDir: string;
 
 	beforeEach(async () => {
-		tempDir = join(tmpdir(), `mnemo-config-${Date.now()}`);
+		tempDir = join(tmpdir(), `xctx-config-${Date.now()}`);
 		await mkdir(tempDir, { recursive: true });
 		vi.resetModules();
 		vi.doMock('node:os', () => ({ homedir: () => tempDir }));

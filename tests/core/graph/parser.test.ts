@@ -7,7 +7,7 @@ import { parseFile } from '../../../src/core/graph/parser.js';
 let tempDir: string;
 
 beforeAll(async () => {
-	tempDir = join(tmpdir(), `mnemo-parser-${Date.now()}`);
+	tempDir = join(tmpdir(), `xctx-parser-${Date.now()}`);
 	await mkdir(tempDir, { recursive: true });
 });
 

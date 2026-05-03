@@ -22,7 +22,7 @@ const DEFAULTS: MnemoConfig = {
 };
 
 function configPath(): string {
-	return join(homedir(), '.mnemo', 'config.json');
+	return join(homedir(), '.xctx', 'config.json');
 }
 
 export async function readConfig(): Promise<MnemoConfig> {
@@ -34,7 +34,7 @@ export async function readConfig(): Promise<MnemoConfig> {
 
 export async function writeConfig(config: MnemoConfig): Promise<void> {
 	const path = configPath();
-	await mkdir(join(homedir(), '.mnemo'), { recursive: true });
+	await mkdir(join(homedir(), '.xctx'), { recursive: true });
 	await writeFile(path, JSON.stringify(config, null, 2), 'utf-8');
 }
 

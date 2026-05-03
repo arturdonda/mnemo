@@ -30,7 +30,7 @@ describe('SqliteVecStore', () => {
 	let store: SqliteVecStore;
 
 	beforeEach(async () => {
-		tempDir = join(tmpdir(), `mnemo-vec-${Date.now()}`);
+		tempDir = join(tmpdir(), `xctx-vec-${Date.now()}`);
 		dbPath = join(tempDir, 'test.db');
 		await import('node:fs/promises').then((m) => m.mkdir(tempDir, { recursive: true }));
 		store = new SqliteVecStore(dbPath, DIMS);

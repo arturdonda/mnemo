@@ -22,7 +22,7 @@ describe('indexing pipeline (unit)', () => {
 	let store: SqliteVecStore;
 
 	beforeEach(async () => {
-		tempDir = join(tmpdir(), `mnemo-pipeline-${Date.now()}`);
+		tempDir = join(tmpdir(), `xctx-pipeline-${Date.now()}`);
 		await mkdir(tempDir, { recursive: true });
 		store = new SqliteVecStore(join(tempDir, 'index.db'), DIMS);
 	});
@@ -82,7 +82,7 @@ describe('indexing pipeline (unit)', () => {
 
 describe('chunkByFixedTokens + indexStats shape', () => {
 	it('processes 10 files worth of content without error', async () => {
-		const tempDir2 = join(tmpdir(), `mnemo-stats-${Date.now()}`);
+		const tempDir2 = join(tmpdir(), `xctx-stats-${Date.now()}`);
 		await mkdir(tempDir2, { recursive: true });
 		const store2 = new SqliteVecStore(join(tempDir2, 'index.db'), DIMS);
 

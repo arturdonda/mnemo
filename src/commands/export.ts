@@ -11,12 +11,12 @@ import type { FeatureMeta } from '../core/feat/types.js';
 import { handleError } from '../core/error.js';
 
 export function createExportCommand(): Command {
-	const exp = new Command('export').description('Export Mnemo data to external formats');
+	const exp = new Command('export').description('Export Cross Context data to external formats');
 
 	exp
 		.command('obsidian')
 		.description('Export all feat contexts as an Obsidian vault')
-		.option('--output <dir>', 'Output directory', '.mnemo-obsidian')
+		.option('--output <dir>', 'Output directory', '.xctx-obsidian')
 		.action(async (opts: { output: string }) => {
 			try {
 				const projectId = await resolveProjectId(process.cwd());

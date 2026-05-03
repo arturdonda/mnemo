@@ -1,4 +1,4 @@
-# Mnemo — Backlog
+# Cross Context — Backlog
 
 Ideas and future improvements not yet scheduled for implementation.
 Items are grouped by theme, roughly ordered by impact within each group.
@@ -9,26 +9,26 @@ Items are grouped by theme, roughly ordered by impact within each group.
 
 > ✅ Shipped in v1.5.0
 
-Project memory (`~/.mnemo/projects/{id}/memory.jsonl`), user memory (`~/.mnemo/memory.jsonl`), full CLI (`mnemo memory add/list/remove/search --project/--user`), MCP tools (`add_project_memory`, `add_user_memory`, `search_project_memory`, `search_user_memory`, `list_memories`), distillation flow in `mnemo feat done` + SKILL.md, memory sections prepended in `mnemo feat context` output (user memory first, then project memory).
+Project memory (`~/.xctx/projects/{id}/memory.jsonl`), user memory (`~/.xctx/memory.jsonl`), full CLI (`xctx memory add/list/remove/search --project/--user`), MCP tools (`add_project_memory`, `add_user_memory`, `search_project_memory`, `search_user_memory`, `list_memories`), distillation flow in `xctx feat done` + SKILL.md, memory sections prepended in `xctx feat context` output (user memory first, then project memory).
 
 ---
 
 ## Search & Retrieval
 
-### `mnemo ask "<question>"`
+### `xctx ask "<question>"`
 Single command that combines all memory layers into one synthesized answer.
 
 - Queries: semantic index + project memory + user memory + active feat context
 - Output: ranked, deduplicated results with source attribution
 - MCP tool: `ask_codebase`
-- Different from `mnemo search`: search returns chunks, ask returns a synthesized answer
+- Different from `xctx search`: search returns chunks, ask returns a synthesized answer
 
 ### Fuzzy Matching for Graph Commands
 Semantic search already handles typos/synonyms in natural language queries via embeddings.
 Fuzzy is useful for exact-name lookups in graph commands:
 
-- `mnemo graph symbols "UserServce"` → suggests `UserService`
-- `mnemo graph deps` with partial path → resolves to closest match
+- `xctx graph symbols "UserServce"` → suggests `UserService`
+- `xctx graph deps` with partial path → resolves to closest match
 - Use a library like `fuse.js` or simple Levenshtein distance
 - Scope: graph subcommands only (`deps`, `refs`, `affected`, `symbols`)
 
@@ -40,7 +40,7 @@ Fuzzy is useful for exact-name lookups in graph commands:
 
 Remaining gap:
 
-- `ask_codebase` (depends on `mnemo ask`, see above)
+- `ask_codebase` (depends on `xctx ask`, see above)
 
 ---
 
@@ -58,7 +58,7 @@ After project memory and user memory are shipped, revisit the product positionin
 
 ## UX / Quality of Life
 
-- `mnemo update --watch` — watch mode, re-index on file save (debounced)
-- `mnemo status` should show project memory count and user memory count
-- `mnemo doctor` should verify memory stores are readable
-- `mnemo feat context` should include a "Project Memory" and "User Memory" section at the top
+- `xctx update --watch` — watch mode, re-index on file save (debounced)
+- `xctx status` should show project memory count and user memory count
+- `xctx doctor` should verify memory stores are readable
+- `xctx feat context` should include a "Project Memory" and "User Memory" section at the top

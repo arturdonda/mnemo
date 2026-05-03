@@ -7,7 +7,7 @@ export function createMcpCommand(): Command {
 
 	mcp
 		.command('serve')
-		.description('Start the Mnemo MCP server (stdio transport by default)')
+		.description('Start the Cross Context MCP server (stdio transport by default)')
 		.action(async () => {
 			try {
 				const server = createMcpServer();

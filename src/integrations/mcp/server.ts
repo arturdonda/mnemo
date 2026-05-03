@@ -10,7 +10,7 @@ const require = createRequire(import.meta.url);
 const { version } = require('../../../package.json') as { version: string };
 
 export function createMcpServer(): McpServer {
-	const server = new McpServer({ name: 'mnemo', version });
+	const server = new McpServer({ name: 'xctx', version });
 	registerFeatTools(server);
 	registerSearchTools(server);
 	registerGraphTools(server);

@@ -10,12 +10,12 @@ let tempDir: string;
 let originalCwd: string;
 
 beforeAll(async () => {
-	tempDir = join(tmpdir(), `mnemo-e2e-mcp-${Date.now()}`);
+	tempDir = join(tmpdir(), `xctx-e2e-mcp-${Date.now()}`);
 	await mkdir(tempDir, { recursive: true });
 	originalCwd = process.cwd();
 	process.chdir(tempDir);
 
-	// init a minimal mnemo project directory so resolveProjectId works
+	// init a minimal xctx project directory so resolveProjectId works
 	const { getPaths } = await import('../../src/core/paths.js');
 	const { resolveProjectId } = await import('../../src/core/project.js');
 	const projectId = await resolveProjectId(tempDir);

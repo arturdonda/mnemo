@@ -102,7 +102,7 @@ async function discoverFiles(cwd: string): Promise<string[]> {
 	const files = await fg(pattern, {
 		cwd,
 		absolute: true,
-		ignore: ['**/node_modules/**', '**/dist/**', '**/.git/**', '**/.mnemo/**'],
+		ignore: ['**/node_modules/**', '**/dist/**', '**/.git/**', '**/.xctx/**'],
 	});
 	return files;
 }

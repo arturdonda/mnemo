@@ -8,7 +8,7 @@ let store: LanceDbStore;
 let dbPath: string;
 
 beforeEach(async () => {
-	dbPath = join(tmpdir(), `mnemo-lancedb-${Date.now()}-${Math.random().toString(36).slice(2)}`);
+	dbPath = join(tmpdir(), `xctx-lancedb-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 	store = new LanceDbStore(dbPath, 4);
 });
 

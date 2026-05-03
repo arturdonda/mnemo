@@ -10,7 +10,7 @@ describe('full FEAT flow (e2e)', () => {
 	let tempDir: string;
 
 	beforeEach(async () => {
-		tempDir = join(tmpdir(), `mnemo-e2e-${Date.now()}`);
+		tempDir = join(tmpdir(), `xctx-e2e-${Date.now()}`);
 		await mkdir(tempDir, { recursive: true });
 		vi.resetModules();
 		vi.doMock('node:os', () => ({ homedir: () => tempDir }));

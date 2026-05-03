@@ -10,7 +10,7 @@ let store: GraphStore;
 let dbPath: string;
 
 beforeAll(async () => {
-	tempDir = join(tmpdir(), `mnemo-e2e-graph-${Date.now()}`);
+	tempDir = join(tmpdir(), `xctx-e2e-graph-${Date.now()}`);
 	await mkdir(tempDir, { recursive: true });
 
 	dbPath = join(tempDir, 'graph.db');

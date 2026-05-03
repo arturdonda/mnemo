@@ -1,11 +1,11 @@
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { MNEMO_AGENT_BLOCK, SKILL_MD } from './shared.js';
+import { XCTX_AGENT_BLOCK, SKILL_MD } from './shared.js';
 
-export { MNEMO_BLOCK_MARKER } from './shared.js';
+export { XCTX_BLOCK_MARKER } from './shared.js';
 
-const MCP_SERVER_KEY = 'mnemo';
+const MCP_SERVER_KEY = 'xctx';
 
 export async function configureWindsurfMcp(): Promise<{ configured: boolean; path: string }> {
 	const windsurfDir = join(homedir(), '.codeium', 'windsurf');
@@ -25,7 +25,7 @@ export async function configureWindsurfMcp(): Promise<{ configured: boolean; pat
 		return { configured: false, path: mcpPath };
 	}
 
-	mcpServers[MCP_SERVER_KEY] = { command: 'mnemo', args: ['mcp', 'serve'] };
+	mcpServers[MCP_SERVER_KEY] = { command: 'xctx', args: ['mcp', 'serve'] };
 	config.mcpServers = mcpServers;
 
 	writeFileSync(mcpPath, JSON.stringify(config, null, 2) + '\n', 'utf-8');
@@ -33,7 +33,7 @@ export async function configureWindsurfMcp(): Promise<{ configured: boolean; pat
 }
 
 // .windsurfrules — always-on instructions (root of project)
-export const WINDSURF_RULES_BLOCK = MNEMO_AGENT_BLOCK;
+export const WINDSURF_RULES_BLOCK = XCTX_AGENT_BLOCK;
 
-// .windsurf/skills/mnemo/SKILL.md — Windsurf Cascade Skills (invokable)
+// .windsurf/skills/xctx/SKILL.md — Windsurf Cascade Skills (invokable)
 export const WINDSURF_SKILL_MD = SKILL_MD;

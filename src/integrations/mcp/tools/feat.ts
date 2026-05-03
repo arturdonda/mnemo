@@ -15,7 +15,7 @@ async function getProjectId(): Promise<string> {
 
 async function resolveActiveFeatName(projectId: string, featName?: string): Promise<string> {
 	const name = featName ?? (await getActiveFeat(projectId));
-	if (!name) throw new Error('No active feature. Start one with `mnemo feat start <name>`.');
+	if (!name) throw new Error('No active feature. Start one with `xctx feat start <name>`.');
 	return name;
 }
 

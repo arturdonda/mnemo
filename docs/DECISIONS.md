@@ -128,7 +128,7 @@ Format: decision → rationale → alternatives considered.
 
 **Decision:** Provide agent-specific installer commands that generate or update the appropriate config file for each agent.
 
-**Rationale:** Manual configuration per agent (editing CLAUDE.md, .cursorrules, AGENTS.md, copilot-instructions.md) is a significant adoption barrier. One command removes all friction. Idempotent — safe to re-run after Mnemo updates. Differentiates Mnemo from editor-specific tools by making cross-agent setup trivial.
+**Rationale:** Manual configuration per agent (editing CLAUDE.md, .cursorrules, AGENTS.md, copilot-instructions.md) is a significant adoption barrier. One command removes all friction. Idempotent — safe to re-run after Cross Context updates. Differentiates Cross Context from editor-specific tools by making cross-agent setup trivial.
 
 **Alternatives considered:**
 
@@ -147,11 +147,11 @@ Format: decision → rationale → alternatives considered.
 
 ---
 
-### D011 — Product name: Mnemo, CLI command: `mnemo`
+### D011 — Product name: Cross Context, CLI command: `xctx`
 
-**Decision:** Product name is **Mnemo**, CLI command is `mnemo`, npm package is `mnemo-cli`.
+**Decision:** Product name is **Cross Context**, CLI command is `xctx`, npm package is `cross-context`.
 
-**Rationale:** "Recall" was the prior working name but was disqualified after research found an active open-source project (`camgitt/memoir`) doing essentially the same thing and positioning in the same namespace. "Mnemo" evokes mnemonic/memory, is short (5 chars), works as a CLI command (`mnemo search`, `mnemo feat`), has no active product conflicts at time of decision, and the npm `mnemo` package is an abandoned 2014 stub.
+**Rationale:** "Recall" was the prior working name but was disqualified after research found an active open-source project (`camgitt/memoir`) doing essentially the same thing and positioning in the same namespace. "Cross Context" evokes mnemonic/memory, is short (5 chars), works as a CLI command (`xctx search`, `xctx feat`), has no active product conflicts at time of decision, and the npm `xctx` package is an abandoned 2014 stub.
 
 **Alternatives considered and discarded:**
 
@@ -222,7 +222,7 @@ Format: decision → rationale → alternatives considered.
 
 **Decision:** Implement the structural graph layer using Tree-sitter directly, rather than delegating to codebase-memory-mcp as a backend.
 
-**Rationale:** codebase-memory-mcp is an MCP server — integrating it as a backend would require running a separate process and communicating via MCP protocol, adding latency and a hard external dependency. Mnemo's unified CLI and offline-first model require owning the graph layer. Additionally, full control over the graph schema allows tight integration with the FEAT cache (e.g., knowing which graph nodes are in scope for a feature). The trade-off is implementation time, accepted because the MVP scope for Layer 2 is deliberately minimal (imports, exports, symbol names only — no full call graphs).
+**Rationale:** codebase-memory-mcp is an MCP server — integrating it as a backend would require running a separate process and communicating via MCP protocol, adding latency and a hard external dependency. Cross Context's unified CLI and offline-first model require owning the graph layer. Additionally, full control over the graph schema allows tight integration with the FEAT cache (e.g., knowing which graph nodes are in scope for a feature). The trade-off is implementation time, accepted because the MVP scope for Layer 2 is deliberately minimal (imports, exports, symbol names only — no full call graphs).
 
 **Alternatives considered:**
 
@@ -235,7 +235,7 @@ Format: decision → rationale → alternatives considered.
 
 **Decision:** All code, comments, documentation, commit messages, error messages, and CLI output must be written in en-US.
 
-**Rationale:** Mnemo is an open source product targeting an international developer audience. Mixed-language projects create friction for contributors, make automated tooling less reliable, and reduce discoverability. en-US is the de-facto standard for developer tooling globally.
+**Rationale:** Cross Context is an open source product targeting an international developer audience. Mixed-language projects create friction for contributors, make automated tooling less reliable, and reduce discoverability. en-US is the de-facto standard for developer tooling globally.
 
 **Scope:** Source code, comments, all docs (README, PRD, ARCHITECTURE, DECISIONS, STACK, TASKS, CLAUDE.md), CLI help text, error messages, commit messages.
 

@@ -9,7 +9,7 @@ describe('active feat', () => {
 	let tempDir: string;
 
 	beforeEach(async () => {
-		tempDir = join(tmpdir(), `mnemo-active-${Date.now()}`);
+		tempDir = join(tmpdir(), `xctx-active-${Date.now()}`);
 		await mkdir(tempDir, { recursive: true });
 		vi.resetModules();
 		vi.doMock('node:os', () => ({ homedir: () => tempDir }));

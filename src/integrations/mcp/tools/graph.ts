@@ -29,7 +29,7 @@ async function openStore(): Promise<{ store: GraphStore; paths: ReturnType<typeo
 	return { store: new GraphStore(paths.graphDb), paths };
 }
 
-const NOT_INDEXED = { content: [{ type: 'text' as const, text: 'Graph not indexed. Run `mnemo update` first.' }] };
+const NOT_INDEXED = { content: [{ type: 'text' as const, text: 'Graph not indexed. Run `xctx update` first.' }] };
 
 export function registerGraphTools(server: McpServer): void {
 	server.tool(

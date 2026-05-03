@@ -46,10 +46,10 @@ export function createDoctorCommand(): Command {
 				checks.push({
 					label: `Project initialized${initialized && projectId ? ` (id: ${projectId})` : ''}`,
 					ok: initialized,
-					fix: initialized ? undefined : 'Run `mnemo init` to initialize this project',
+					fix: initialized ? undefined : 'Run `xctx init` to initialize this project',
 				});
 			} catch {
-				checks.push({ label: 'Project initialized', ok: false, fix: 'Run `mnemo init` in a git repository' });
+				checks.push({ label: 'Project initialized', ok: false, fix: 'Run `xctx init` in a git repository' });
 			}
 
 			// 4. ONNX runtime loadable + model downloaded
@@ -68,8 +68,8 @@ export function createDoctorCommand(): Command {
 						ok: false,
 						detail: msg.slice(0, 120),
 						fix: isNativeError
-							? 'onnxruntime-node native binary is incompatible with this OS/Node version.\n  Switch to Ollama: mnemo config set embedding.provider ollama\n  Then pull a model: ollama pull nomic-embed-text\n  Or use OpenAI:   mnemo config set embedding.provider openai'
-							: 'Reinstall dependencies: npm install -g mnemo-cli',
+							? 'onnxruntime-node native binary is incompatible with this OS/Node version.\n  Switch to Ollama: xctx config set embedding.provider ollama\n  Then pull a model: ollama pull nomic-embed-text\n  Or use OpenAI:   xctx config set embedding.provider openai'
+							: 'Reinstall dependencies: npm install -g cross-context',
 					});
 				}
 
@@ -81,7 +81,7 @@ export function createDoctorCommand(): Command {
 					checks.push({
 						label: 'ONNX model (all-MiniLM-L6-v2)',
 						ok: modelExists,
-						fix: modelExists ? undefined : 'Run `mnemo update` to download automatically',
+						fix: modelExists ? undefined : 'Run `xctx update` to download automatically',
 					});
 				}
 			} else if (config['embedding.provider'] === 'ollama') {
@@ -93,7 +93,7 @@ export function createDoctorCommand(): Command {
 					checks.push({
 						label: `Ollama reachable (${config['embedding.ollamaUrl']})`,
 						ok: false,
-						fix: 'Start Ollama or update `mnemo config set embedding.ollamaUrl <url>`',
+						fix: 'Start Ollama or update `xctx config set embedding.ollamaUrl <url>`',
 					});
 				}
 			}
@@ -109,13 +109,13 @@ export function createDoctorCommand(): Command {
 						checks.push({
 							label: `Graph index (${edgeCount.toLocaleString('en-US')} edges)`,
 							ok: edgeCount > 0,
-							fix: edgeCount === 0 ? 'Run `mnemo update` to populate the dependency graph.' : undefined,
+							fix: edgeCount === 0 ? 'Run `xctx update` to populate the dependency graph.' : undefined,
 						});
 					} catch {
-						checks.push({ label: 'Graph index', ok: false, fix: 'Run `mnemo update` to rebuild the graph.' });
+						checks.push({ label: 'Graph index', ok: false, fix: 'Run `xctx update` to rebuild the graph.' });
 					}
 				} else {
-					checks.push({ label: 'Graph index', ok: false, fix: 'Run `mnemo update` to build the dependency graph.' });
+					checks.push({ label: 'Graph index', ok: false, fix: 'Run `xctx update` to build the dependency graph.' });
 				}
 			}
 
@@ -126,7 +126,7 @@ export function createDoctorCommand(): Command {
 			checks.push({
 				label: 'Git hook installed (.git/hooks/post-commit)',
 				ok: hookInstalled,
-				fix: hookInstalled ? undefined : 'Run `mnemo init` to reinstall hooks',
+				fix: hookInstalled ? undefined : 'Run `xctx init` to reinstall hooks',
 			});
 
 			// print results

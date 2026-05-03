@@ -8,20 +8,20 @@ import { ensurePaths } from '../core/paths.js';
 import { handleError } from '../core/error.js';
 
 const POST_COMMIT_HOOK = `#!/bin/sh
-# mnemo: re-index changed files and auto-switch feat by branch
+# xctx: re-index changed files and auto-switch feat by branch
 changed=$(git diff --name-only HEAD~1 HEAD 2>/dev/null)
 if [ -n "$changed" ]; then
-  echo "$changed" | mnemo update --files-from-stdin --silent 2>/dev/null || true
+  echo "$changed" | xctx update --files-from-stdin --silent 2>/dev/null || true
 fi
 branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
 if [ -n "$branch" ]; then
-  mnemo feat switch-by-branch "$branch" --silent 2>/dev/null || true
+  xctx feat switch-by-branch "$branch" --silent 2>/dev/null || true
 fi
 `;
 
 export function createInitCommand(): Command {
 	return new Command('init')
-		.description('Initialize Mnemo for this project')
+		.description('Initialize Cross Context for this project')
 		.action(async () => {
 			try {
 				const cwd = process.cwd();
@@ -35,17 +35,17 @@ export function createInitCommand(): Command {
 				const hookInstalled = await installGitHook(cwd);
 				const isFirstEver = isFirstTimeInit();
 
-				console.log(`✓ Mnemo initialized (project: ${projectName})`);
+				console.log(`✓ Cross Context initialized (project: ${projectName})`);
 				if (hookInstalled) console.log('✓ Git hook installed');
 
 				if (isFirstEver) {
 					console.log(`
 Next steps:
-  mnemo update              — index this codebase
-  mnemo feat start <name>   — start tracking a feature
-  mnemo install claude      — wire up Claude Code
+  xctx update              — index this codebase
+  xctx feat start <name>   — start tracking a feature
+  xctx install claude      — wire up Claude Code
 
-Run \`mnemo --help\` for all commands.`);
+Run \`xctx --help\` for all commands.`);
 				}
 			} catch (e) {
 				handleError(e);
@@ -60,7 +60,7 @@ async function installGitHook(cwd: string): Promise<boolean> {
 	const hookPath = join(hooksDir, 'post-commit');
 	if (existsSync(hookPath)) {
 		const existing = await import('node:fs/promises').then((m) => m.readFile(hookPath, 'utf-8'));
-		if (existing.includes('mnemo')) return false;
+		if (existing.includes('xctx')) return false;
 		await import('node:fs/promises').then((m) =>
 			m.writeFile(hookPath, existing.trimEnd() + '\n' + POST_COMMIT_HOOK, 'utf-8'),
 		);
@@ -72,9 +72,9 @@ async function installGitHook(cwd: string): Promise<boolean> {
 }
 
 function isFirstTimeInit(): boolean {
-	const mnemoRoot = join(homedir(), '.mnemo', 'projects');
+	const xctxRoot = join(homedir(), '.xctx', 'projects');
 	try {
-		return readdirSync(mnemoRoot).length <= 1;
+		return readdirSync(xctxRoot).length <= 1;
 	} catch {
 		return true;
 	}

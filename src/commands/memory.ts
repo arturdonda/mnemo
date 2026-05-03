@@ -2,7 +2,7 @@ import { Command } from 'commander';
 import { resolveProjectId, assertInitialized } from '../core/project.js';
 import { getPaths, getUserMemoryPath } from '../core/paths.js';
 import { addMemory, listMemories, removeMemory, searchMemories } from '../core/memory/store.js';
-import { handleError, MnemoError } from '../core/error.js';
+import { handleError, XctxError } from '../core/error.js';
 
 async function resolveFilePath(scope: 'project' | 'user'): Promise<string> {
 	if (scope === 'user') return getUserMemoryPath();
@@ -65,7 +65,7 @@ export function createMemoryCommand(): Command {
 						entries.forEach(formatEntry);
 						printed = true;
 					} else if (opts.user) {
-						console.log('No user memories yet. Add one with: mnemo memory add --user "<insight>"');
+						console.log('No user memories yet. Add one with: xctx memory add --user "<insight>"');
 					}
 				}
 
@@ -78,14 +78,14 @@ export function createMemoryCommand(): Command {
 						entries.forEach(formatEntry);
 						printed = true;
 					} else if (opts.project) {
-						console.log('No project memories yet. Add one with: mnemo memory add --project "<insight>"');
+						console.log('No project memories yet. Add one with: xctx memory add --project "<insight>"');
 					}
 				}
 
 				if (!printed && !opts.project && !opts.user) {
 					console.log('No memories yet.');
-					console.log('  mnemo memory add --project "<architectural insight>"');
-					console.log('  mnemo memory add --user "<personal preference or pattern>"');
+					console.log('  xctx memory add --project "<architectural insight>"');
+					console.log('  xctx memory add --user "<personal preference or pattern>"');
 				}
 			} catch (e) {
 				handleError(e);
@@ -102,7 +102,7 @@ export function createMemoryCommand(): Command {
 				const scope: 'project' | 'user' = opts.user ? 'user' : 'project';
 				const filePath = await resolveFilePath(scope);
 				const removed = await removeMemory(filePath, id);
-				if (!removed) throw new MnemoError(`Memory entry "${id}" not found in ${scope} memory.`);
+				if (!removed) throw new XctxError(`Memory entry "${id}" not found in ${scope} memory.`);
 				console.log(`Memory removed: ${id}`);
 			} catch (e) {
 				handleError(e);

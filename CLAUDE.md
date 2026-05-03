@@ -1,8 +1,8 @@
-# Mnemo — Agent Context
+# Cross Context — Agent Context
 
 ## What is this
 
-Mnemo is a CLI tool (`mnemo`) that gives AI coding agents persistent memory of a codebase. It solves the cold-start problem: agents stop rediscovering the project from scratch each session.
+Cross Context is a CLI tool (`xctx`) that gives AI coding agents persistent memory of a codebase. It solves the cold-start problem: agents stop rediscovering the project from scratch each session.
 
 Three layers:
 
@@ -21,7 +21,7 @@ See tasks: `docs/TASKS.md`
 ## Project structure
 
 ```
-mnemo/
+cross-context/
   src/
     cli.ts                  # entry point — registers all commands
     commands/               # CLI command handlers (one file per group)
@@ -35,7 +35,7 @@ mnemo/
         renderer.ts         # generates context.md from events
         active.ts           # tracks active feat
       project.ts            # project identity (XXH3 hash of git remote)
-      paths.ts              # ~/.mnemo/ directory structure
+      paths.ts              # ~/.xctx/ directory structure
     types.ts                # shared types (FeatureEvent, etc.)
   tests/
   dist/
@@ -58,20 +58,22 @@ npm run lint                           # biome check
 npm run typecheck                      # tsc --noEmit
 ```
 
+Install globally: `npm install -g cross-context`
+
 ## Conventions
 
 - **en-US only** — all code, comments, docs, commit messages, and error messages in English
 - **ESM only** — `import`/`export`, never `require()`
 - **TypeScript strict** — no implicit `any`, no unnecessary `!`
 - **Biome** for lint and format — run before committing
-- **Errors** — never call `process.exit()` directly; use `MnemoError` from `src/core/error.ts`
+- **Errors** — never call `process.exit()` directly; use `XctxError` from `src/core/error.ts`
 - **Tests** — one test file per module (`*.test.ts` next to the source file)
 - **No obvious comments** — comment only non-evident logic
 
 ## Runtime data
 
 ```
-~/.mnemo/
+~/.xctx/
   config.json
   projects/
     {project-id}/           # xxh3(git remote)[0:16]

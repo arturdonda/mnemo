@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        Before opening a bug report, run `mnemo doctor` and include the output below.
+        Before opening a bug report, run `xctx doctor` and include the output below.
 
   - type: textarea
     id: description
@@ -20,9 +20,9 @@ body:
     attributes:
       label: Steps to reproduce
       placeholder: |
-        1. Run `mnemo init`
-        2. Run `mnemo update`
-        3. Run `mnemo search "..."`
+        1. Run `xctx init`
+        2. Run `xctx update`
+        3. Run `xctx search "..."`
         4. See error
     validations:
       required: true
@@ -37,7 +37,7 @@ body:
   - type: textarea
     id: doctor
     attributes:
-      label: Output of `mnemo doctor`
+      label: Output of `xctx doctor`
       render: shell
     validations:
       required: false
@@ -59,10 +59,10 @@ body:
       required: true
 
   - type: input
-    id: mnemo
+    id: xctx
     attributes:
-      label: Mnemo version
-      placeholder: "e.g. 1.0.0 (run: mnemo --version)"
+      label: Cross Context version
+      placeholder: "e.g. 1.0.0 (run: xctx --version)"
     validations:
       required: true
 

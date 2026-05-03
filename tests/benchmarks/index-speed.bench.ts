@@ -1,9 +1,9 @@
 /**
- * Benchmarks for mnemo update (indexing) and mnemo search (query latency).
+ * Benchmarks for xctx update (indexing) and xctx search (query latency).
  *
  * PRD requirements:
- *   - mnemo update on a 100k LOC project: <60s
- *   - mnemo search query latency: <500ms
+ *   - xctx update on a 100k LOC project: <60s
+ *   - xctx search query latency: <500ms
  *
  * Run: npm run bench
  */
@@ -28,7 +28,7 @@ let projectId: string;
 let filePaths: string[];
 
 beforeAll(async () => {
-	tempDir = join(tmpdir(), `mnemo-bench-${Date.now()}`);
+	tempDir = join(tmpdir(), `xctx-bench-${Date.now()}`);
 	await mkdir(tempDir, { recursive: true });
 
 	// generate synthetic source files

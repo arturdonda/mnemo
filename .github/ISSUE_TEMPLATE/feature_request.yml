@@ -5,7 +5,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        For large features or architectural changes, consider opening a [GitHub Discussion](https://github.com/arturdonda/mnemo/discussions) first.
+        For large features or architectural changes, consider opening a [GitHub Discussion](https://github.com/arturdonda/xctx/discussions) first.
 
   - type: textarea
     id: problem

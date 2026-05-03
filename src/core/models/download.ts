@@ -6,7 +6,7 @@ import { homedir } from 'node:os';
 import { pipeline } from 'node:stream/promises';
 import { Readable } from 'node:stream';
 
-export const MODELS_DIR = join(homedir(), '.mnemo', 'models');
+export const MODELS_DIR = join(homedir(), '.xctx', 'models');
 export const MANIFEST_PATH = join(MODELS_DIR, 'manifest.json');
 
 export type ModelEntry = {

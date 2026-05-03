@@ -12,7 +12,7 @@ const STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000;
 
 export function createStatusCommand(): Command {
 	return new Command('status')
-		.description('Show the health summary of the Mnemo index')
+		.description('Show the health summary of the Cross Context index')
 		.action(async () => {
 			try {
 				const cwd = process.cwd();
@@ -20,7 +20,7 @@ export function createStatusCommand(): Command {
 				const paths = getPaths(projectId);
 
 				if (!existsSync(paths.projectMeta)) {
-					console.log('Project not initialized. Run `mnemo init` first.');
+					console.log('Project not initialized. Run `xctx init` first.');
 					return;
 				}
 
@@ -35,7 +35,7 @@ export function createStatusCommand(): Command {
 				console.log(`Store:   ${config['vector-store']}`);
 
 				if (!existsSync(dbPath)) {
-					console.log('\nIndex: not built. Run `mnemo update` to index the project.');
+					console.log('\nIndex: not built. Run `xctx update` to index the project.');
 					return;
 				}
 
@@ -50,7 +50,7 @@ export function createStatusCommand(): Command {
 					const age = Date.now() - lastIndexed;
 					if (age > STALE_THRESHOLD_MS) {
 						const hours = Math.round(age / 3600000);
-						console.log(`\nWarning: index is ${hours}h old with no commit. Run \`mnemo update\`.`);
+						console.log(`\nWarning: index is ${hours}h old with no commit. Run \`xctx update\`.`);
 					}
 				}
 			} catch (e) {

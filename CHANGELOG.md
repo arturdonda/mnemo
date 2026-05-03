@@ -1,12 +1,22 @@
 # Changelog
 
-All notable changes to Mnemo are documented here.  
+All notable changes to Cross Context are documented here.  
 Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/)  
 Versioning: [Semantic Versioning](https://semver.org/)
 
 ---
 
 ## [Unreleased]
+
+---
+
+## [1.6.0] — 2026-05-03
+
+### Changed
+- **Renamed from Mnemo to Cross Context** — project, npm package (`mnemo-cli` → `cross-context`), and CLI command (`mnemo` → `xctx`)
+- New positioning: persistent memory across every session and every agent — switch agents mid-feature without re-explaining anything
+- Data directory moved from `~/.mnemo/` to `~/.xctx/`
+- Updated README, website, and docs to reflect new branding and cross-agent value proposition
 
 ---
 

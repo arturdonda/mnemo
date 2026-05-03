@@ -2,7 +2,7 @@ import { xxh3 } from '@node-rs/xxhash';
 import { readFile, realpath } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { simpleGit } from 'simple-git';
-import { MnemoError } from './error.js';
+import { XctxError } from './error.js';
 import { getPaths } from './paths.js';
 import { existsSync } from 'node:fs';
 
@@ -42,6 +42,6 @@ export async function resolveProjectName(cwd: string = process.cwd()): Promise<s
 export async function assertInitialized(projectId: string): Promise<void> {
 	const paths = getPaths(projectId);
 	if (!existsSync(paths.projectMeta)) {
-		throw new MnemoError('Project not initialized. Run `mnemo init` first.');
+		throw new XctxError('Project not initialized. Run `xctx init` first.');
 	}
 }

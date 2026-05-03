@@ -1,7 +1,7 @@
 # Tasks — Phase 1: FEAT Context Cache
 
 **Goal:** Functional CLI to create and maintain feature context, with a Claude Code Skill.  
-**Done when:** `mnemo init`, all `mnemo feat *` commands, and `mnemo install claude` work end-to-end.
+**Done when:** `xctx init`, all `xctx feat *` commands, and `xctx install claude` work end-to-end.
 
 Embedding layers (Phase 2) and structural graph (Phase 3) are **out of scope for this phase**.
 
@@ -37,15 +37,15 @@ Embedding layers (Phase 2) and structural graph (Phase 3) are **out of scope for
 - [x] Create `src/commands/init.ts` empty
 - [x] Create `src/commands/install.ts` empty
 - [x] Create `src/commands/config.ts` empty
-- [x] Create `src/core/error.ts` with `MnemoError` and `handleError()`
+- [x] Create `src/core/error.ts` with `XctxError` and `handleError()`
 
-**Done when:** `mnemo --help` lists commands; `mnemo feat --help` lists subcommands.
+**Done when:** `xctx --help` lists commands; `xctx feat --help` lists subcommands.
 
 ---
 
 ## Block 2 — Core: paths and project identity
 
-### T003 — Paths: `~/.mnemo/` directory structure
+### T003 — Paths: `~/.xctx/` directory structure
 
 - [x] Create `src/core/paths.ts`
 - [x] Implement `getPaths(projectId: string)` returning all relevant paths
@@ -53,12 +53,12 @@ Embedding layers (Phase 2) and structural graph (Phase 3) are **out of scope for
 - [x] Write tests: `tests/core/paths.test.ts`
 
 ```typescript
-type MnemoPaths = {
-	root: string; // ~/.mnemo
-	projectRoot: string; // ~/.mnemo/projects/{id}
-	featsDir: string; // ~/.mnemo/projects/{id}/feats
-	activeFeatFile: string; // ~/.mnemo/projects/{id}/active_feat
-	projectMeta: string; // ~/.mnemo/projects/{id}/meta.json
+type XctxPaths = {
+	root: string; // ~/.xctx
+	projectRoot: string; // ~/.xctx/projects/{id}
+	featsDir: string; // ~/.xctx/projects/{id}/feats
+	activeFeatFile: string; // ~/.xctx/projects/{id}/active_feat
+	projectMeta: string; // ~/.xctx/projects/{id}/meta.json
 	featDir: (name: string) => string;
 	eventsFile: (name: string) => string;
 	contextFile: (name: string) => string;
@@ -66,7 +66,7 @@ type MnemoPaths = {
 };
 ```
 
-**Done when:** tests pass; dirs are created correctly under `~/.mnemo/`.
+**Done when:** tests pass; dirs are created correctly under `~/.xctx/`.
 
 ---
 
@@ -76,7 +76,7 @@ type MnemoPaths = {
 - [x] Implement `resolveProjectId()`: tries git remote URL, falls back to `cwd()`
 - [x] Hash with XXH3 (64-bit, hex, first 16 chars)
 - [x] Implement `resolveProjectName()`: directory name or `name` field from package.json
-- [x] Implement `assertInitialized()`: checks if `mnemo init` has been run; throws `MnemoError` if not
+- [x] Implement `assertInitialized()`: checks if `xctx init` has been run; throws `XctxError` if not
 - [x] Write tests: `tests/core/project.test.ts`
 
 **Done when:** `resolveProjectId()` returns a stable hash for the same project; tests pass.
@@ -164,20 +164,20 @@ type FeatureContext = {
 
 ## Block 4 — CLI commands
 
-### T009 — `mnemo init`
+### T009 — `xctx init`
 
 - [x] Implement in `src/commands/init.ts`
-- [x] Create `~/.mnemo/projects/{id}/` structure via `ensurePaths()`
+- [x] Create `~/.xctx/projects/{id}/` structure via `ensurePaths()`
 - [x] Write `meta.json` with project name and path
 - [x] Install `post-commit` git hook in `.git/hooks/`
 - [x] Idempotent: does not fail if already initialized
 - [x] Output: confirmation with project ID and path
 
-**Done when:** `mnemo init` runs without errors; `.git/hooks/post-commit` created; re-running is safe.
+**Done when:** `xctx init` runs without errors; `.git/hooks/post-commit` created; re-running is safe.
 
 ---
 
-### T010 — `mnemo feat start <name>`
+### T010 — `xctx feat start <name>`
 
 - [x] Validate project is initialized (`assertInitialized()`)
 - [x] Create feat directory via `ensurePaths()`
@@ -187,11 +187,11 @@ type FeatureContext = {
 - [x] Auto-detect current branch via `simple-git` and save to meta if available
 - [x] Output: confirmation with feat name and branch
 
-**Done when:** `mnemo feat start payment-flow` creates the structure and sets it as active.
+**Done when:** `xctx feat start payment-flow` creates the structure and sets it as active.
 
 ---
 
-### T011 — `mnemo feat list`
+### T011 — `xctx feat list`
 
 - [x] List all feats for the project
 - [x] Show: name, status, branch, last updated
@@ -202,7 +202,7 @@ type FeatureContext = {
 
 ---
 
-### T012 — `mnemo feat switch <name>`
+### T012 — `xctx feat switch <name>`
 
 - [x] Validate feat exists
 - [x] Update `active_feat`
@@ -212,40 +212,40 @@ type FeatureContext = {
 
 ---
 
-### T013 — `mnemo feat context [name]`
+### T013 — `xctx feat context [name]`
 
 - [x] No argument: uses active feat; error if none active
 - [x] With argument: uses specified feat
 - [x] Reads events.jsonl → `buildContext()` → `renderContext()` → stdout
 - [x] Output is pure markdown (no extra decoration) — for agent consumption via pipe
 
-**Done when:** `mnemo feat context | cat` prints clean markdown.
+**Done when:** `xctx feat context | cat` prints clean markdown.
 
 ---
 
-### T014 — `mnemo feat decision "<text>"`
+### T014 — `xctx feat decision "<text>"`
 
 - [x] Uses active feat or optional `--feat <name>`
 - [x] Appends `decision` event with timestamp and `author: 'user'`
 - [x] Regenerates `context.md`
 - [x] Output: confirmation with truncated text
 
-**Done when:** decision appears in `mnemo feat context`.
+**Done when:** decision appears in `xctx feat context`.
 
 ---
 
-### T015 — `mnemo feat blocker "<text>"`
+### T015 — `xctx feat blocker "<text>"`
 
 - [x] Appends `blocker` event
 - [x] Regenerates `context.md`
 - [x] Updates feat status to `blocked` if it was `in-progress`
 - [x] Output: confirmation
 
-**Done when:** blocker appears in the Blockers section of `mnemo feat context`.
+**Done when:** blocker appears in the Blockers section of `xctx feat context`.
 
 ---
 
-### T016 — `mnemo feat blocker resolve "<text>"`
+### T016 — `xctx feat blocker resolve "<text>"`
 
 - [x] Match by substring against active blocker text
 - [x] Appends `blocker_resolved` event
@@ -257,7 +257,7 @@ type FeatureContext = {
 
 ---
 
-### T017 — `mnemo feat link-file <path> [--reason "<text>"]`
+### T017 — `xctx feat link-file <path> [--reason "<text>"]`
 
 - [x] Validate file exists in the project (relative to CWD)
 - [x] Normalize path to be relative to git repo root
@@ -265,11 +265,11 @@ type FeatureContext = {
 - [x] Regenerates `context.md`
 - [x] Output: confirmation
 
-**Done when:** file appears in Relevant Files in `mnemo feat context`.
+**Done when:** file appears in Relevant Files in `xctx feat context`.
 
 ---
 
-### T018 — `mnemo feat unlink-file <path>`
+### T018 — `xctx feat unlink-file <path>`
 
 - [x] Appends `file_unlinked` event
 - [x] Regenerates `context.md`
@@ -279,17 +279,17 @@ type FeatureContext = {
 
 ---
 
-### T019 — `mnemo feat status "<text>"`
+### T019 — `xctx feat status "<text>"`
 
 - [x] Appends `status` event
 - [x] Regenerates `context.md`
 - [x] Output: confirmation
 
-**Done when:** Current Status updated in `mnemo feat context`.
+**Done when:** Current Status updated in `xctx feat context`.
 
 ---
 
-### T020 — `mnemo feat note "<text>"`
+### T020 — `xctx feat note "<text>"`
 
 - [x] Appends `note` event
 - [x] Regenerates `context.md`
@@ -299,7 +299,7 @@ type FeatureContext = {
 
 ---
 
-### T021 — `mnemo feat done`
+### T021 — `xctx feat done`
 
 - [x] Appends `feat_done` event
 - [x] Updates `meta.json` status to `done`
@@ -307,7 +307,7 @@ type FeatureContext = {
 - [x] Regenerates `context.md`
 - [x] Output: confirmation
 
-**Done when:** feat shows as `done` in `mnemo feat list`.
+**Done when:** feat shows as `done` in `xctx feat list`.
 
 ---
 
@@ -316,64 +316,64 @@ type FeatureContext = {
 ### T022 — Claude Code Skill
 
 - [x] Create `src/integrations/agents/claude.ts`
-- [x] Generate skill file content for `~/.claude/skills/mnemo.md`
-- [x] Skill exposes: `/mnemo-context`, `/mnemo-decision`, `/mnemo-blocker`, `/mnemo-note`
+- [x] Generate skill file content for `~/.claude/skills/xctx.md`
+- [x] Skill exposes: `/xctx-context`, `/xctx-decision`, `/xctx-blocker`, `/xctx-note`
 - [x] Each skill command runs the corresponding CLI command via shell and injects output
 
 **Skill content:**
 
 ```markdown
-# mnemo — codebase memory
+# xctx — codebase memory
 
-Run `mnemo feat context` at the start of any session to load the current feature context.
+Run `xctx feat context` at the start of any session to load the current feature context.
 
 ## Commands
 
-/mnemo-context — Load current feature context into this session
-Runs: mnemo feat context
+/xctx-context — Load current feature context into this session
+Runs: xctx feat context
 
-/mnemo-decision <text> — Record an architectural decision
-Runs: mnemo feat decision "<text>"
+/xctx-decision <text> — Record an architectural decision
+Runs: xctx feat decision "<text>"
 
-/mnemo-blocker <text> — Record a blocker
-Runs: mnemo feat blocker "<text>"
+/xctx-blocker <text> — Record a blocker
+Runs: xctx feat blocker "<text>"
 
-/mnemo-note <text> — Record a note
-Runs: mnemo feat note "<text>"
+/xctx-note <text> — Record a note
+Runs: xctx feat note "<text>"
 ```
 
 **Done when:** skill file generated with correct content.
 
 ---
 
-### T023 — `mnemo install claude`
+### T023 — `xctx install claude`
 
 - [x] Implement in `src/commands/install.ts`
-- [x] Copy skill to `~/.claude/skills/mnemo.md`
-- [x] Append Mnemo block to project's `CLAUDE.md` (create if not present)
+- [x] Copy skill to `~/.claude/skills/xctx.md`
+- [x] Append Cross Context block to project's `CLAUDE.md` (create if not present)
 - [x] Idempotent: does not duplicate if already installed
 - [x] Output: list of created/updated files
 
 **Block appended to project CLAUDE.md:**
 
 ```markdown
-## Mnemo — Codebase Memory
+## Cross Context — Codebase Memory
 
-This project uses Mnemo for persistent context across AI sessions.
+This project uses Cross Context for persistent context across AI sessions.
 
 At the start of each session:
 
-1. Run `mnemo feat context` to load the current feature context
-2. Use `mnemo search "<query>"` before exploring unfamiliar code (Phase 2)
+1. Run `xctx feat context` to load the current feature context
+2. Use `xctx search "<query>"` before exploring unfamiliar code (Phase 2)
 
 When making architectural decisions, run:
-`mnemo feat decision "<your decision and rationale>"`
+`xctx feat decision "<your decision and rationale>"`
 
 When hitting a blocker:
-`mnemo feat blocker "<description>"`
+`xctx feat blocker "<description>"`
 ```
 
-**Done when:** `mnemo install claude` creates skill and updates CLAUDE.md; re-running is safe.
+**Done when:** `xctx install claude` creates skill and updates CLAUDE.md; re-running is safe.
 
 ---
 
@@ -383,7 +383,7 @@ When hitting a blocker:
 
 - [x] Create `tests/e2e/feat-flow.test.ts`
 - [x] Test full flow: init → feat start → decision → blocker → resolve → context
-- [x] Use a temporary directory for `~/.mnemo/` during tests
+- [x] Use a temporary directory for `~/.xctx/` during tests
 - [x] Clean up after each test
 
 **Done when:** full flow passes in tests.
@@ -397,10 +397,10 @@ When hitting a blocker:
   - Feat not found
   - No active feat
   - File not found for link
-- [x] `mnemo --version` returns version from package.json
+- [x] `xctx --version` returns version from package.json
 - [x] All commands have descriptive `--help`
 
-**Done when:** every error has an actionable message (e.g. "Run `mnemo init` to initialize this project.").
+**Done when:** every error has an actionable message (e.g. "Run `xctx init` to initialize this project.").
 
 ---
 
@@ -426,21 +426,21 @@ Block 6 — Polish:       T024 T025
 # Phase 2 — Semantic Index
 
 **Goal:** Natural language search across the codebase via local embeddings. Zero infrastructure, works offline.  
-**Done when:** `mnemo search "authentication logic"` returns ranked results in <500ms on a 100k LOC project.
+**Done when:** `xctx search "authentication logic"` returns ranked results in <500ms on a 100k LOC project.
 
 ---
 
 ## Block 7 — Config system
 
-### T026 — `mnemo config get|set`
+### T026 — `xctx config get|set`
 - [x] Implement `src/commands/config.ts`
-- [x] Read/write `~/.mnemo/config.json`
-- [x] `mnemo config set <key> <value>` — supports dot notation (`embedding.provider`, `vector-store`)
-- [x] `mnemo config get <key>` — prints current value or default
-- [x] `mnemo config list` — prints all settings with defaults
+- [x] Read/write `~/.xctx/config.json`
+- [x] `xctx config set <key> <value>` — supports dot notation (`embedding.provider`, `vector-store`)
+- [x] `xctx config get <key>` — prints current value or default
+- [x] `xctx config list` — prints all settings with defaults
 - [x] Write tests: `tests/commands/config.test.ts`
 
-**Done when:** `mnemo config set embedding.provider ollama` persists and `mnemo config get embedding.provider` returns `ollama`.
+**Done when:** `xctx config set embedding.provider ollama` persists and `xctx config get embedding.provider` returns `ollama`.
 
 ---
 
@@ -524,15 +524,15 @@ type ScoredChunk = Chunk & { score: number }
 
 ## Block 10 — Search command
 
-### T032 — `mnemo update`
+### T032 — `xctx update`
 - [x] Implement `src/commands/update.ts`
-- [x] `mnemo update` — full re-index of entire project (respects `.gitignore`)
-- [x] `mnemo update --since <commit>` — re-index only files changed since commit
-- [x] `mnemo update --files-from-stdin` — re-index files piped via stdin (used by git hook)
+- [x] `xctx update` — full re-index of entire project (respects `.gitignore`)
+- [x] `xctx update --since <commit>` — re-index only files changed since commit
+- [x] `xctx update --files-from-stdin` — re-index files piped via stdin (used by git hook)
 - [x] Show progress: files found, files indexed, duration
-- [x] Update git hook in `mnemo init` to call `mnemo update --files-from-stdin`
+- [x] Update git hook in `xctx init` to call `xctx update --files-from-stdin`
 
-**Done when:** `mnemo update` indexes a real project; incremental update works via git hook after a commit.
+**Done when:** `xctx update` indexes a real project; incremental update works via git hook after a commit.
 
 ---
 
@@ -546,27 +546,27 @@ type ScoredChunk = Chunk & { score: number }
 
 ---
 
-### T034 — `mnemo search <query>`
+### T034 — `xctx search <query>`
 - [x] Implement `src/commands/search.ts`
-- [x] `mnemo search <query>` — embeds query, calls `VectorStore.query()`, prints results
+- [x] `xctx search <query>` — embeds query, calls `VectorStore.query()`, prints results
 - [x] Default: top 10 results
 - [x] `--limit <n>` flag
 - [x] `--output json` flag for machine-readable output
 - [x] Output format: `file:startLine-endLine (score)` + snippet (first 2 lines of chunk)
-- [x] Error if project not indexed: "Run `mnemo update` to index this project first."
+- [x] Error if project not indexed: "Run `xctx update` to index this project first."
 
-**Done when:** `mnemo search "JWT authentication"` returns relevant files in <500ms on a 50k LOC project.
+**Done when:** `xctx search "JWT authentication"` returns relevant files in <500ms on a 50k LOC project.
 
 ---
 
-## Block 11 — mnemo status + agent integration update
+## Block 11 — xctx status + agent integration update
 
-### T035 — `mnemo status`
+### T035 — `xctx status`
 - [x] Implement in `src/commands/status.ts`
 - [x] Show: project ID, total files indexed, total chunks, last indexed timestamp, embedding provider, vector store backend
 - [x] Warn if index is older than 24h without a commit
 
-**Done when:** `mnemo status` prints a readable health summary.
+**Done when:** `xctx status` prints a readable health summary.
 
 ---
 
@@ -580,11 +580,11 @@ type ScoredChunk = Chunk & { score: number }
 ---
 
 ### T037 — Update agent integrations for Phase 2
-- [x] Update `mnemo install claude`: add `/mnemo-search` to skill; add search instructions to CLAUDE.md block
-- [x] Update `mnemo install codex/copilot/cursor` (if already implemented): same search instructions
+- [x] Update `xctx install claude`: add `/xctx-search` to skill; add search instructions to CLAUDE.md block
+- [x] Update `xctx install codex/copilot/cursor` (if already implemented): same search instructions
 - [x] Add search to `src/integrations/agents/claude.ts` skill content
 
-**Done when:** skill includes `/mnemo-search <query>` that runs `mnemo search` and injects results.
+**Done when:** skill includes `/xctx-search <query>` that runs `xctx search` and injects results.
 
 ---
 
@@ -593,7 +593,7 @@ type ScoredChunk = Chunk & { score: number }
 # Phase 3 — Structural Graph + MCP + Agent Installers
 
 **Goal:** File-level dependency graph, MCP server for non-CLI agents, and remaining agent installers.  
-**Done when:** `mnemo graph deps <file>` works, `mnemo mcp serve` exposes all tools, and all four agent installers are implemented.
+**Done when:** `xctx graph deps <file>` works, `xctx mcp serve` exposes all tools, and all four agent installers are implemented.
 
 ---
 
@@ -628,28 +628,28 @@ type ScoredChunk = Chunk & { score: number }
 ### T040 — Graph indexing pipeline
 - [x] Create `src/core/graph/pipeline.ts`
 - [x] `indexGraphFiles(filePaths, projectId)`: parse + upsert all files
-- [x] Integrate with `mnemo update` — graph indexing runs alongside semantic indexing
+- [x] Integrate with `xctx update` — graph indexing runs alongside semantic indexing
 - [x] Graph freshness: use same XXH3 hash stored in graph nodes
 
-**Done when:** `mnemo update` populates both vector and graph indexes.
+**Done when:** `xctx update` populates both vector and graph indexes.
 
 ---
 
 ### T041 — Graph CLI commands
 - [x] Implement `src/commands/graph.ts`
-- [x] `mnemo graph deps <file>` — list files this file imports
-- [x] `mnemo graph refs <file>` — list files that import this file
-- [x] `mnemo graph affected <file>` — transitive dependents (max depth 3)
-- [x] `mnemo graph symbols <file>` — list top-level functions/classes
+- [x] `xctx graph deps <file>` — list files this file imports
+- [x] `xctx graph refs <file>` — list files that import this file
+- [x] `xctx graph affected <file>` — transitive dependents (max depth 3)
+- [x] `xctx graph symbols <file>` — list top-level functions/classes
 
-**Done when:** all four commands return correct results on the mnemo project itself.
+**Done when:** all four commands return correct results on the xctx project itself.
 
 ---
 
 ## Block 13 — Hybrid ranking
 
 ### T042 — Combine semantic + graph + feat scores
-- [x] Update `mnemo search` to apply hybrid scoring after vector retrieval:
+- [x] Update `xctx search` to apply hybrid scoring after vector retrieval:
 
 ```
 score =
@@ -674,10 +674,10 @@ score =
 ### T043 — MCP server setup
 - [x] Install `@modelcontextprotocol/sdk`
 - [x] Create `src/integrations/mcp/server.ts`
-- [x] Implement `mnemo mcp serve` command in `src/commands/mcp.ts`
+- [x] Implement `xctx mcp serve` command in `src/commands/mcp.ts`
 - [x] Support stdio transport (default) and `--port <n>` for HTTP/SSE
 
-**Done when:** `mnemo mcp serve` starts without errors and responds to MCP ping.
+**Done when:** `xctx mcp serve` starts without errors and responds to MCP ping.
 
 ---
 
@@ -700,16 +700,16 @@ score =
 
 ## Block 15 — Remaining agent installers
 
-### T046 — `mnemo install codex`
+### T046 — `xctx install codex`
 - [x] Create `src/integrations/agents/codex.ts`
 - [x] Generate/update `AGENTS.md` in project root
 - [x] Include: feat context instructions, search instructions, decision recording
 
-**Done when:** `AGENTS.md` created with correct Mnemo instructions; re-running is safe.
+**Done when:** `AGENTS.md` created with correct Cross Context instructions; re-running is safe.
 
 ---
 
-### T047 — `mnemo install copilot`
+### T047 — `xctx install copilot`
 - [x] Create `src/integrations/agents/copilot.ts`
 - [x] Generate/update `.github/copilot-instructions.md`
 - [x] Same content pattern as AGENTS.md
@@ -718,7 +718,7 @@ score =
 
 ---
 
-### T048 — `mnemo install cursor`
+### T048 — `xctx install cursor`
 - [x] Create `src/integrations/agents/cursor.ts`
 - [x] Generate/update `.cursorrules`
 - [x] Same content pattern
@@ -730,9 +730,9 @@ score =
 ## Block 16 — Polish Phase 3
 
 ### T049 — Obsidian export
-- [x] `mnemo export obsidian [--output <dir>]` — exports all feat contexts as an Obsidian vault
+- [x] `xctx export obsidian [--output <dir>]` — exports all feat contexts as an Obsidian vault
 - [x] One markdown file per feat, with wiki-links between related feats
-- [x] Default output: `.mnemo-obsidian/` in project root
+- [x] Default output: `.xctx-obsidian/` in project root
 
 **Done when:** exported vault opens correctly in Obsidian with all feats visible.
 
@@ -743,7 +743,7 @@ score =
 - [x] `tests/e2e/graph-flow.test.ts`: update → graph deps/refs → verify correctness
 - [x] `tests/e2e/mcp-flow.test.ts`: mcp serve → client calls → verify responses
 
-**Done when:** all e2e tests pass on the mnemo project itself as the test subject.
+**Done when:** all e2e tests pass on the xctx project itself as the test subject.
 
 ---
 
@@ -782,7 +782,7 @@ Phase 3 — Structural Graph + MCP:
 # Phase 4 — Distribution & Public Launch
 
 **Goal:** A polished, installable product that works reliably on Windows, macOS, and Linux, with user-facing documentation and a real publish pipeline.  
-**Done when:** `npm install -g mnemo-cli` works on all three OSes; product is publicly announced.
+**Done when:** `npm install -g cross-context` works on all three OSes; product is publicly announced.
 
 ---
 
@@ -790,22 +790,22 @@ Phase 3 — Structural Graph + MCP:
 
 ### T051 — Model download on first use
 - [x] Do NOT bundle the ONNX model in the npm package (22MB would bloat the install)
-- [x] On first `mnemo update`, detect if model is absent from `~/.mnemo/models/`
+- [x] On first `xctx update`, detect if model is absent from `~/.xctx/models/`
 - [x] Download `all-MiniLM-L6-v2.onnx` from a stable URL (GitHub Releases asset or Hugging Face)
 - [x] Show progress bar during download (`Model not found. Downloading all-MiniLM-L6-v2 (22MB)...`)
 - [x] Verify SHA256 checksum after download
-- [x] Cache at `~/.mnemo/models/all-MiniLM-L6-v2.onnx`
+- [x] Cache at `~/.xctx/models/all-MiniLM-L6-v2.onnx`
 
-**Done when:** `mnemo update` on a fresh install downloads the model automatically before indexing.
+**Done when:** `xctx update` on a fresh install downloads the model automatically before indexing.
 
 ---
 
-### T052 — `mnemo models` command
-- [x] `mnemo models list` — show installed models, their size, and which is active
-- [x] `mnemo models download <name>` — explicit download
-- [x] `mnemo models remove <name>` — delete from cache
+### T052 — `xctx models` command
+- [x] `xctx models list` — show installed models, their size, and which is active
+- [x] `xctx models download <name>` — explicit download
+- [x] `xctx models remove <name>` — delete from cache
 
-**Done when:** `mnemo models list` shows installed models with status.
+**Done when:** `xctx models list` shows installed models with status.
 
 ---
 
@@ -815,11 +815,11 @@ Phase 3 — Structural Graph + MCP:
 - [x] Install `vectordb` (LanceDB Node.js client)
 - [x] Create `src/core/index/backends/lancedb.ts` implementing `VectorStore`
 - [x] Same interface as sqlite-vec: `upsert`, `query`, `delete`, `close`
-- [x] Store in `~/.mnemo/projects/{id}/lancedb/`
+- [x] Store in `~/.xctx/projects/{id}/lancedb/`
 - [x] Write tests: `tests/core/index/backends/lancedb.test.ts`
-- [x] Document in `mnemo config set vector-store lancedb`
+- [x] Document in `xctx config set vector-store lancedb`
 
-**Done when:** switching to LanceDB via config and running `mnemo update` + `mnemo search` produces correct results.
+**Done when:** switching to LanceDB via config and running `xctx update` + `xctx search` produces correct results.
 
 ---
 
@@ -829,7 +829,7 @@ Phase 3 — Structural Graph + MCP:
 - [x] Audit all `path.join` calls — ensure no hardcoded `/` separators
 - [x] Audit `~` expansion — use `os.homedir()` everywhere, never assume `~`
 - [x] Git hooks: `.git/hooks/post-commit` vs `.git\hooks\post-commit` — use `path.join`
-- [x] Test `mnemo init` and `mnemo update` on Windows (native, not WSL)
+- [x] Test `xctx init` and `xctx update` on Windows (native, not WSL)
 - [x] Test file watcher on Windows (chokidar polling mode)
 
 **Done when:** full test suite passes on Windows via GitHub Actions.
@@ -849,8 +849,8 @@ Phase 3 — Structural Graph + MCP:
 
 ### T056 — Performance benchmarks
 - [x] Create `tests/benchmarks/` directory
-- [x] Benchmark `mnemo update` on a 100k LOC project — must complete in <60s (PRD requirement)
-- [x] Benchmark `mnemo search` latency — must return in <500ms (PRD requirement)
+- [x] Benchmark `xctx update` on a 100k LOC project — must complete in <60s (PRD requirement)
+- [x] Benchmark `xctx search` latency — must return in <500ms (PRD requirement)
 - [x] Benchmark memory usage during full re-index
 - [x] Add benchmark results to README
 
@@ -860,8 +860,8 @@ Phase 3 — Structural Graph + MCP:
 
 ## Block 20 — First-run experience
 
-### T057 — `mnemo doctor`
-- [x] `mnemo doctor` — diagnoses common setup issues and prints actionable fixes
+### T057 — `xctx doctor`
+- [x] `xctx doctor` — diagnoses common setup issues and prints actionable fixes
 - [x] Checks: Node.js version ≥20, git available, project initialized, model downloaded, git hooks installed, embedding provider reachable (Ollama if configured)
 - [x] Output: ✓/✗ per check with fix instructions
 
@@ -870,32 +870,32 @@ Phase 3 — Structural Graph + MCP:
 ✓ git 2.44.0
 ✓ Project initialized (id: a3f2b1c4d5e6f7a8)
 ✗ ONNX model not found
-  Fix: run `mnemo update` to download automatically
+  Fix: run `xctx update` to download automatically
 ✗ Git hook not installed
-  Fix: run `mnemo init` to reinstall hooks
+  Fix: run `xctx init` to reinstall hooks
 ```
 
-**Done when:** `mnemo doctor` catches all common failure modes with clear fix instructions.
+**Done when:** `xctx doctor` catches all common failure modes with clear fix instructions.
 
 ---
 
-### T058 — Friendly first-run output for `mnemo init`
-- [x] Detect if this is the first time `mnemo init` is run in any project
+### T058 — Friendly first-run output for `xctx init`
+- [x] Detect if this is the first time `xctx init` is run in any project
 - [x] Print a concise getting-started guide after init:
 
 ```
-✓ Mnemo initialized (project: my-app)
+✓ Cross Context initialized (project: my-app)
 ✓ Git hook installed
 
 Next steps:
-  mnemo update              — index this codebase
-  mnemo feat start <name>   — start tracking a feature
-  mnemo install claude      — wire up Claude Code
+  xctx update              — index this codebase
+  xctx feat start <name>   — start tracking a feature
+  xctx install claude      — wire up Claude Code
 
-Run `mnemo --help` for all commands.
+Run `xctx --help` for all commands.
 ```
 
-**Done when:** first-time users know exactly what to do next after `mnemo init`.
+**Done when:** first-time users know exactly what to do next after `xctx init`.
 
 ---
 
@@ -907,7 +907,7 @@ Run `mnemo --help` for all commands.
 - [x] Add demo GIF or screenshot (terminal recording of key commands)
 - [x] Keep current dev content in `docs/CONTRIBUTING.md`
 
-**Done when:** a developer who has never heard of Mnemo can install and use it from the README alone.
+**Done when:** a developer who has never heard of Cross Context can install and use it from the README alone.
 
 ---
 
@@ -946,10 +946,10 @@ Run `mnemo --help` for all commands.
 - [x] Bump `package.json` version to `1.0.0`
 - [x] Final review of all public-facing content (README, npm description, keywords)
 - [x] Tag and push: triggers automated release pipeline (T062)
-- [x] Verify `npm install -g mnemo-cli` works on a clean machine
-- [x] Verify `mnemo --version` returns `1.0.0`
+- [x] Verify `npm install -g cross-context` works on a clean machine
+- [x] Verify `xctx --version` returns `1.0.0`
 
-**Done when:** `mnemo-cli@1.0.0` is live on npm and installable globally.
+**Done when:** `cross-context@1.0.0` is live on npm and installable globally.
 
 ---
 
@@ -960,7 +960,7 @@ Run `mnemo --help` for all commands.
 - [x] GitHub repo: description, topics (`ai`, `cli`, `agents`, `mcp`, `codebase`), website field
 - [x] CI badge on README
 - [x] All links in README resolve correctly
-- [x] `mnemo install claude/codex/copilot/cursor` tested on real projects
+- [x] `xctx install claude/codex/copilot/cursor` tested on real projects
 
 **Done when:** everything on the checklist is checked.
 

@@ -36,7 +36,7 @@ describe('resolveProjectName', () => {
 	let tempDir: string;
 
 	beforeEach(async () => {
-		tempDir = join(tmpdir(), `mnemo-proj-${Date.now()}`);
+		tempDir = join(tmpdir(), `xctx-proj-${Date.now()}`);
 		await mkdir(tempDir, { recursive: true });
 	});
 
@@ -64,7 +64,7 @@ describe('assertInitialized', () => {
 	let tempDir: string;
 
 	beforeEach(async () => {
-		tempDir = join(tmpdir(), `mnemo-assert-${Date.now()}`);
+		tempDir = join(tmpdir(), `xctx-assert-${Date.now()}`);
 		await mkdir(tempDir, { recursive: true });
 	});
 
@@ -73,11 +73,11 @@ describe('assertInitialized', () => {
 		vi.restoreAllMocks();
 	});
 
-	it('throws MnemoError if meta.json does not exist', async () => {
+	it('throws XctxError if meta.json does not exist', async () => {
 		vi.resetModules();
 		vi.doMock('node:os', () => ({ homedir: () => tempDir }));
 		const { assertInitialized } = await import('../../src/core/project.js');
-		await expect(assertInitialized('nonexistent-id')).rejects.toThrow('mnemo init');
+		await expect(assertInitialized('nonexistent-id')).rejects.toThrow('xctx init');
 	});
 
 	it('resolves if meta.json exists', async () => {

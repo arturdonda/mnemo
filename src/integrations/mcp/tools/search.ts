@@ -21,7 +21,7 @@ export function registerSearchTools(server: McpServer): void {
 			const paths = getPaths(projectId);
 
 			if (!existsSync(paths.indexDb)) {
-				return { content: [{ type: 'text' as const, text: 'Project not indexed. Run `mnemo update` first.' }] };
+				return { content: [{ type: 'text' as const, text: 'Project not indexed. Run `xctx update` first.' }] };
 			}
 
 			const config = await readConfig();

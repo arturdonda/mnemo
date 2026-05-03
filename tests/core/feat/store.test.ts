@@ -107,7 +107,7 @@ describe('readEvents / appendEvent / featExists / listFeats', () => {
 	let tempDir: string;
 
 	beforeEach(async () => {
-		tempDir = join(tmpdir(), `mnemo-store-${Date.now()}`);
+		tempDir = join(tmpdir(), `xctx-store-${Date.now()}`);
 		await mkdir(tempDir, { recursive: true });
 		vi.resetModules();
 		vi.doMock('node:os', () => ({ homedir: () => tempDir }));

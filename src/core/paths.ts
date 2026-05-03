@@ -2,7 +2,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { mkdir } from 'node:fs/promises';
 
-export type MnemoPaths = {
+export type XctxPaths = {
 	root: string;
 	projectRoot: string;
 	featsDir: string;
@@ -17,8 +17,8 @@ export type MnemoPaths = {
 	featMeta: (name: string) => string;
 };
 
-export function getPaths(projectId: string): MnemoPaths {
-	const root = join(homedir(), '.mnemo');
+export function getPaths(projectId: string): XctxPaths {
+	const root = join(homedir(), '.xctx');
 	const projectRoot = join(root, 'projects', projectId);
 	const featsDir = join(projectRoot, 'feats');
 
@@ -39,10 +39,10 @@ export function getPaths(projectId: string): MnemoPaths {
 }
 
 export function getUserMemoryPath(): string {
-	return join(homedir(), '.mnemo', 'memory.jsonl');
+	return join(homedir(), '.xctx', 'memory.jsonl');
 }
 
-export async function ensurePaths(projectId: string, featName?: string): Promise<MnemoPaths> {
+export async function ensurePaths(projectId: string, featName?: string): Promise<XctxPaths> {
 	const paths = getPaths(projectId);
 
 	await mkdir(paths.featsDir, { recursive: true });

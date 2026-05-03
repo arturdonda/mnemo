@@ -13,7 +13,7 @@ let tempDir: string;
 let projectId: string;
 
 beforeAll(async () => {
-	tempDir = join(tmpdir(), `mnemo-e2e-search-${Date.now()}`);
+	tempDir = join(tmpdir(), `xctx-e2e-search-${Date.now()}`);
 	await mkdir(tempDir, { recursive: true });
 
 	// write fixture source files

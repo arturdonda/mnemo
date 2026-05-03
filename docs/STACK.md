@@ -105,12 +105,12 @@ Base config (`biome.json`):
 
 ```json
 {
-	"name": "mnemo-cli",
+	"name": "cross-context",
 	"version": "0.1.0",
 	"description": "Your codebase, remembered — across every AI session.",
 	"type": "module",
 	"bin": {
-		"mnemo": "./dist/cli.js"
+		"xctx": "./dist/cli.js"
 	},
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
@@ -160,17 +160,17 @@ Base config (`biome.json`):
 ## File structure
 
 ```
-mnemo/
+xctx/
   src/
     cli.ts                    # entry point: registers Program and all commands
     commands/
-      init.ts                 # mnemo init
-      feat.ts                 # mnemo feat *
-      install.ts              # mnemo install <agent>
-      config.ts               # mnemo config get|set
-      update.ts               # mnemo update (Phase 2+)
-      search.ts               # mnemo search (Phase 2+)
-      graph.ts                # mnemo graph (Phase 3+)
+      init.ts                 # xctx init
+      feat.ts                 # xctx feat *
+      install.ts              # xctx install <agent>
+      config.ts               # xctx config get|set
+      update.ts               # xctx update (Phase 2+)
+      search.ts               # xctx search (Phase 2+)
+      graph.ts                # xctx graph (Phase 3+)
     core/
       feat/
         store.ts              # FeatStore: events.jsonl read/write
@@ -178,8 +178,8 @@ mnemo/
         active.ts             # getActiveFeat(), setActiveFeat()
         types.ts              # FeatureEvent, FeatureContext, LinkedFile, etc.
       project.ts              # resolveProjectId(): git remote → xxh3 hash
-      paths.ts                # getPaths(): returns all ~/.mnemo/ paths
-      error.ts                # MnemoError, handleError(), exit codes
+      paths.ts                # getPaths(): returns all ~/.xctx/ paths
+      error.ts                # XctxError, handleError(), exit codes
     integrations/
       agents/
         claude.ts             # generates CLAUDE.md snippet + installs skill
@@ -223,9 +223,9 @@ import type { FeatureEvent } from './core/feat/types.js';
 ### Errors
 
 ```typescript
-// Never call process.exit() directly — throw MnemoError
-import { MnemoError } from './core/error.js';
-throw new MnemoError('Project not initialized. Run `mnemo init` first.', 1);
+// Never call process.exit() directly — throw XctxError
+import { XctxError } from './core/error.js';
+throw new XctxError('Project not initialized. Run `xctx init` first.', 1);
 ```
 
 ### Async

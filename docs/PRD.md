@@ -1,7 +1,7 @@
 # Product Requirements Document
 
-**Product:** Mnemo
-**CLI command:** `mnemo`
+**Product:** Cross Context
+**CLI command:** `xctx`
 **Status:** Draft
 **Last updated:** 2026-04-25
 
@@ -69,7 +69,7 @@ Most solutions (Continue.dev, Cody) require a specific editor. Developers using 
 
 ### Must Have (MVP)
 
-- `mnemo init` — set up indexes for a project
+- `xctx init` — set up indexes for a project
 - `codeindex search <query>` — semantic search across codebase
 - `codeindex feat start <name>` — create a feature context
 - `codeindex feat note <text>` — record a decision or observation
@@ -201,7 +201,7 @@ codeindex feat context >> /tmp/context.md    # pipe to file
 - Token reduction: target 40–60% fewer tokens spent on codebase exploration per session (measured via Claude Code token counter on benchmark projects)
 - Index freshness: <5% stale results in benchmark (files modified after last commit)
 - Query latency: semantic search <500ms on 100k LOC project
-- Setup time: `mnemo init` completes in <60s on 100k LOC project
+- Setup time: `xctx init` completes in <60s on 100k LOC project
 
 ### Qualitative
 
@@ -237,7 +237,7 @@ codeindex feat context >> /tmp/context.md    # pipe to file
 
 1. ~~**Language for CLI**~~ — **Resolved (D010)**: Node.js + TypeScript.
 2. ~~**Default embedding model**~~ — **Resolved (D003, D008)**: Bundled ONNX (`all-MiniLM-L6-v2`) as default; Ollama as auto-detected alternative; OpenAI as explicit opt-in.
-3. ~~**Product name**~~ — **Resolved (D011)**: **Mnemo**, CLI command `mnemo`. npm package: `mnemo-cli`.
+3. ~~**Product name**~~ — **Resolved (D011)**: **Cross Context**, CLI command `xctx`. npm package: `cross-context`.
 4. **Monetization**: Leaning toward free CLI (open source) + paid team sync. Not yet decided.
 5. **FEAT auto-naming**: Auto-detect from git branch name if a feat with matching branch exists. Explicit `--branch` flag overrides.
 

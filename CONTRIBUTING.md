@@ -1,4 +1,4 @@
-# Contributing to Mnemo
+# Contributing to Cross Context
 
 Thank you for your interest in contributing. This document covers setup, architecture, conventions, and the PR process.
 
@@ -12,9 +12,9 @@ This project follows the [Contributor Covenant](https://www.contributor-covenant
 
 ## Good First Issues
 
-Issues labeled [`good first issue`](https://github.com/arturdonda/mnemo/labels/good%20first%20issue) are explicitly scoped and well-defined — a good entry point if you are new to the codebase.
+Issues labeled [`good first issue`](https://github.com/arturdonda/cross-context/labels/good%20first%20issue) are explicitly scoped and well-defined — a good entry point if you are new to the codebase.
 
-Issues labeled [`help wanted`](https://github.com/arturdonda/mnemo/labels/help%20wanted) are higher-effort but welcome external contributions.
+Issues labeled [`help wanted`](https://github.com/arturdonda/cross-context/labels/help%20wanted) are higher-effort but welcome external contributions.
 
 If you want to work on something, leave a comment on the issue first so we can coordinate.
 
@@ -22,13 +22,13 @@ If you want to work on something, leave a comment on the issue first so we can c
 
 ## Architecture Overview
 
-Mnemo has three indexing layers:
+Cross Context has three indexing layers:
 
 | Layer            | Module            | Storage                           |
 | ---------------- | ----------------- | --------------------------------- |
-| FEAT Cache       | `src/core/feat/`  | `~/.mnemo/projects/{id}/feats/`   |
-| Semantic Index   | `src/core/index/` | `~/.mnemo/projects/{id}/index.db` |
-| Structural Graph | `src/core/graph/` | `~/.mnemo/projects/{id}/graph.db` |
+| FEAT Cache       | `src/core/feat/`  | `~/.xctx/projects/{id}/feats/`   |
+| Semantic Index   | `src/core/index/` | `~/.xctx/projects/{id}/index.db` |
+| Structural Graph | `src/core/graph/` | `~/.xctx/projects/{id}/graph.db` |
 
 See `docs/ARCHITECTURE.md` for full design documentation and `docs/DECISIONS.md` for architectural decision records (ADRs).
 
@@ -37,8 +37,8 @@ See `docs/ARCHITECTURE.md` for full design documentation and `docs/DECISIONS.md`
 ## Setup
 
 ```bash
-git clone https://github.com/arturdonda/mnemo
-cd mnemo
+git clone https://github.com/arturdonda/cross-context
+cd xctx
 npm install
 ```
 
@@ -69,10 +69,10 @@ src/
     graph/                # structural graph: parser, store, pipeline
     index/                # semantic index: embedder, chunker, backends
     models/               # model download and manifest
-    config.ts             # ~/.mnemo/config.json
-    paths.ts              # ~/.mnemo/ directory structure
+    config.ts             # ~/.xctx/config.json
+    paths.ts              # ~/.xctx/ directory structure
     project.ts            # project identity (XXH3 hash of git remote)
-    error.ts              # MnemoError + handleError
+    error.ts              # XctxError + handleError
   integrations/
     agents/               # Claude, Codex, Copilot, Cursor content
     mcp/                  # MCP server and tools
@@ -98,7 +98,7 @@ docs/
 - **ESM only** — `import`/`export`, never `require()`
 - **TypeScript strict** — no implicit `any`, no unnecessary `!`
 - **Biome** for lint and format — run before committing
-- **Errors** — never `process.exit()` directly; use `MnemoError` from `src/core/error.ts`
+- **Errors** — never `process.exit()` directly; use `XctxError` from `src/core/error.ts`
 - **Tests** — one test file per module; co-located as `*.test.ts`
 - **No obvious comments** — comment only non-evident logic
 
@@ -136,4 +136,4 @@ Architectural decisions are recorded in `docs/DECISIONS.md` as ADRs (D001–D0xx
 
 ## Proposing Features
 
-Open a [GitHub Discussion](https://github.com/arturdonda/mnemo/discussions) before opening an issue for large features. This keeps the issue tracker focused on actionable work.
+Open a [GitHub Discussion](https://github.com/arturdonda/cross-context/discussions) before opening an issue for large features. This keeps the issue tracker focused on actionable work.

@@ -1,20 +1,19 @@
-# Mnemo — Brand kit
+# Cross Context — Brand kit
 
-Layers-as-M. Three vertical bars: tall · short (centered upper third) · tall.
+Three vertical bars: tall · short (centered upper third) · tall.
 The short middle bar carries the sole accent and is the entire conceptual payload —
-three indexes (FEAT cache · semantic search · structural graph) that together form
-an M.
+three memory layers (FEAT cache · semantic search · structural graph).
 
 ## Files
 
 | File                      | Use                                                                      |
 | ------------------------- | ------------------------------------------------------------------------ |
-| `mnemo-mark.svg`          | Primary mark on light surfaces                                           |
-| `mnemo-mark-dark.svg`     | Primary mark on dark surfaces                                            |
-| `mnemo-mark-mono.svg`     | Single-color (`currentColor`) — for badges, inline text, embossed stamps |
-| `mnemo-lockup-h.svg`      | Horizontal mark + wordmark, light bg                                     |
-| `mnemo-lockup-h-dark.svg` | Horizontal mark + wordmark, dark bg                                      |
-| `mnemo-lockup-v.svg`      | Vertical (stacked) lockup                                                |
+| `xctx-mark.svg`           | Primary mark on light surfaces                                           |
+| `xctx-mark-dark.svg`      | Primary mark on dark surfaces                                            |
+| `xctx-mark-mono.svg`      | Single-color (`currentColor`) — for badges, inline text, embossed stamps |
+| `xctx-lockup-h.svg`       | Horizontal mark + wordmark, light bg                                     |
+| `xctx-lockup-h-dark.svg`  | Horizontal mark + wordmark, dark bg                                      |
+| `xctx-lockup-v.svg`       | Vertical (stacked) lockup                                                |
 | `favicon.svg`             | 16×16 optimized version                                                  |
 | `tokens.css`              | CSS custom properties — color, type, radius                              |
 

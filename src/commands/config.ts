@@ -1,9 +1,9 @@
 import { Command } from 'commander';
 import { readConfig, getConfigValue, setConfigValue, CONFIG_DEFAULTS } from '../core/config.js';
-import { MnemoError, handleError } from '../core/error.js';
+import { XctxError, handleError } from '../core/error.js';
 
 export function createConfigCommand(): Command {
-	const config = new Command('config').description('Get or set Mnemo configuration values');
+	const config = new Command('config').description('Get or set Cross Context configuration values');
 
 	config
 		.command('get <key>')
@@ -11,7 +11,7 @@ export function createConfigCommand(): Command {
 		.action(async (key: string) => {
 			try {
 				const value = await getConfigValue(key);
-				if (value === undefined) throw new MnemoError(`Unknown config key: "${key}"`);
+				if (value === undefined) throw new XctxError(`Unknown config key: "${key}"`);
 				console.log(String(value));
 			} catch (e) {
 				handleError(e);
