@@ -1,6 +1,6 @@
 {
 	"name": "cross-context",
-	"version": "1.5.1",
+	"version": "1.5.2",
 	"description": "Your codebase, remembered — across every session, across every agent. Persistent context for AI coding agents.",
 	"type": "module",
 	"bin": {
