@@ -10,7 +10,7 @@ Versioning: [Semantic Versioning](https://semver.org/)
 
 ---
 
-## [1.6.0] — 2026-05-03
+## [1.5.2] — 2026-05-03
 
 ### Changed
 - **Renamed from Mnemo to Cross Context** — project, npm package (`mnemo-cli` → `cross-context`), and CLI command (`mnemo` → `xctx`)
