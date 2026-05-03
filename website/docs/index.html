@@ -4,7 +4,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Docs — Cross Context</title>
-		<meta name="description" content="Cross Context documentation — get started, CLI reference, architecture, and agent integration guides." />
+		<meta name="description" content="Cross Context documentation — persistent memory for AI coding agents. Get started, CLI reference, five memory layers, and agent integration guides." />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
@@ -56,10 +56,12 @@
 						<a href="#agent-setup" class="docs-nav-link">Wire up your agent</a>
 					</div>
 					<div class="docs-nav-group">
-						<div class="docs-nav-label">Features</div>
-						<a href="#feat-cache" class="docs-nav-link">FEAT Context Cache</a>
-						<a href="#semantic-index" class="docs-nav-link">Semantic Index</a>
-						<a href="#structural-graph" class="docs-nav-link">Structural Graph</a>
+						<div class="docs-nav-label">Memory layers</div>
+						<a href="#feat-cache" class="docs-nav-link">Feature Context</a>
+						<a href="#project-memory" class="docs-nav-link">Project Memory</a>
+						<a href="#user-memory" class="docs-nav-link">Developer Memory</a>
+						<a href="#semantic-index" class="docs-nav-link">Codebase Index</a>
+						<a href="#structural-graph" class="docs-nav-link">Dependency Graph</a>
 					</div>
 					<div class="docs-nav-group">
 						<div class="docs-nav-label">CLI Reference</div>
@@ -84,7 +86,8 @@
 					<div class="section-label">Documentation</div>
 					<h1 class="docs-title">Get started with Cross Context</h1>
 					<p class="docs-intro">
-						Cross Context gives AI coding agents persistent memory of your codebase — decisions, linked files, blockers, and status — across every session and every agent.
+						Cross Context keeps five layers of persistent memory about your codebase and your work.
+						Any agent you wire up reads them at session start — switch from Claude to Copilot mid-feature and it picks up exactly where you left off.
 					</p>
 				</div>
 
@@ -178,16 +181,15 @@
 					</div>
 				</section>
 
-				<!-- FEAT Cache -->
+				<!-- Feature Context -->
 				<section id="feat-cache" class="docs-section">
-					<h2>FEAT Context Cache <span class="layer-badge">Layer 3</span> <a href="#feat-cache" class="header-anchor" aria-label="Link to FEAT Context Cache">#</a></h2>
+					<h2>Feature Context <span class="layer-badge">Layer 1</span> <a href="#feat-cache" class="header-anchor" aria-label="Link to Feature Context">#</a></h2>
 					<p>
-						The FEAT cache is Cross Context's differentiator. While Layers 1 and 2 index the <em>code</em>, Layer 3 captures the <em>work in progress</em> — what you're
-						building, why you made certain choices, and where you left off.
+						The working memory of your active feature — linked files, decisions, blockers, and current status.
+						Updated as you work. Read by any agent at session start. When you switch agents, this is what lets the new one continue without a briefing.
 					</p>
 					<p>Each feature is an append-only event log (<code>events.jsonl</code>) rendered into a <code>context.md</code> your agent reads at session start.</p>
 
-					<h3 id="feat-workflow">Workflow <a href="#feat-workflow" class="header-anchor" aria-label="Link to Workflow">#</a></h3>
 					<pre><span class="cmt"># Start a feature</span>
 <span class="cmd">xctx feat start</span> <span class="str">payment-flow</span>
 
@@ -196,27 +198,49 @@
 
 <span class="cmt"># Link the files in scope</span>
 <span class="cmd">xctx feat link-file</span> src/routes/payments.ts
-<span class="cmd">xctx feat link-file</span> src/services/stripe.ts
 
 <span class="cmt"># Note blockers</span>
 <span class="cmd">xctx feat blocker</span> <span class="str">"Webhook signature verification failing on localhost"</span>
 
-<span class="cmt"># Check the generated context your agent will see</span>
+<span class="cmt"># Print what any agent reads at session start</span>
 <span class="cmd">xctx feat context</span>
 
-<span class="cmt"># Finish and switch features</span>
-<span class="cmd">xctx feat done</span>
-<span class="cmd">xctx feat start</span> <span class="str">auth-refresh</span></pre>
+<span class="cmt"># Mark done — distills insights into memory</span>
+<span class="cmd">xctx feat done</span></pre>
 
 					<div class="callout callout--tip">
-						<strong>Tip:</strong> Run <code>xctx feat context</code> at the start of any AI session. Paste the output into your agent's first message, or let
-						<code>xctx install</code> inject it automatically.
+						<strong>Tip:</strong> <code>xctx install &lt;agent&gt;</code> injects <code>xctx feat context</code> automatically at every session start — you don't need to paste it manually.
 					</div>
+				</section>
+
+				<!-- Project Memory -->
+				<section id="project-memory" class="docs-section">
+					<h2>Project Memory <span class="layer-badge">Layer 2</span> <a href="#project-memory" class="header-anchor" aria-label="Link to Project Memory">#</a></h2>
+					<p>
+						Architectural patterns and constraints that apply across your entire codebase — not tied to any single feature.
+						Auth setup, DB conventions, API contracts — things every agent should know before writing a line.
+					</p>
+					<pre><span class="cmd">xctx memory add --project</span> <span class="str">"Auth uses JWT with 15min expiry, refresh token in httpOnly cookie"</span>
+<span class="cmd">xctx memory add --project</span> <span class="str">"All DB queries go through src/db/query.ts — never raw SQL"</span>
+<span class="cmd">xctx memory list --project</span></pre>
+					<p>Project memory appears at the top of every <code>xctx feat context</code> output, so agents always see it alongside the active feature.</p>
+				</section>
+
+				<!-- User Memory -->
+				<section id="user-memory" class="docs-section">
+					<h2>Developer Memory <span class="layer-badge">Layer 3</span> <a href="#user-memory" class="header-anchor" aria-label="Link to Developer Memory">#</a></h2>
+					<p>
+						Your personal patterns and preferences — follows you across every project and every agent, not just this codebase.
+						Agents learn how you work, not just what you're building.
+					</p>
+					<pre><span class="cmd">xctx memory add --user</span> <span class="str">"I prefer explicit error types over generic Error throws"</span>
+<span class="cmd">xctx memory add --user</span> <span class="str">"Always write the test before the implementation"</span>
+<span class="cmd">xctx memory list --user</span></pre>
 				</section>
 
 				<!-- Semantic Index -->
 				<section id="semantic-index" class="docs-section">
-					<h2>Semantic Index <span class="layer-badge">Layer 1</span> <a href="#semantic-index" class="header-anchor" aria-label="Link to Semantic Index">#</a></h2>
+					<h2>Codebase Index <span class="layer-badge">Layer 4</span> <a href="#semantic-index" class="header-anchor" aria-label="Link to Codebase Index">#</a></h2>
 					<p>
 						Semantic search over your codebase using local embeddings. Uses <code>all-MiniLM-L6-v2</code> (~88 MB) via ONNX Runtime — no API keys, no network
 						calls, no code leaves your machine.
@@ -232,7 +256,7 @@
 
 				<!-- Structural Graph -->
 				<section id="structural-graph" class="docs-section">
-					<h2>Structural Graph <span class="layer-badge">Layer 2</span> <a href="#structural-graph" class="header-anchor" aria-label="Link to Structural Graph">#</a></h2>
+					<h2>Dependency Graph <span class="layer-badge">Layer 5</span> <a href="#structural-graph" class="header-anchor" aria-label="Link to Dependency Graph">#</a></h2>
 					<p>
 						File-level dependency graph built with Tree-sitter. Tells your agent which files import what, which are affected by a change, and what symbols live
 						where — without reading file contents.
